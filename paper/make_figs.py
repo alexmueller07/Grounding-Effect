@@ -174,17 +174,20 @@ for xi, yi, e0, e1 in zip(pt, y, err[0], err[1]):
 axR.axvline(0, color=MUTED, linewidth=0.9, linestyle="--", zorder=2)
 for xi, yi in zip(pt, y):
     axR.text(xi, yi + 0.22, f"{xi:+.2f}", ha="center", fontsize=7.0, color=INK)
-axR.set_yticks(list(y) + [-0.95])
-axR.set_yticklabels(labels + ["mismatched image\n(LLaVA-1.5-7B)"], fontsize=7.4)
-for lab in axR.get_yticklabels()[-1:]:
+axR.set_yticks(list(y) + [-0.95, -1.72])
+axR.set_yticklabels(labels + ["mismatched image", "blank, uncapped cells"], fontsize=7.4)
+for lab in axR.get_yticklabels()[-2:]:
     lab.set_color(SIGHTED); lab.set_fontsize(6.6)
 axR.set_ylim(-0.6, 3.6); axR.set_xlim(-0.20, 0.15)
 axR.set_xlabel(r"$\Delta_{\mathrm{image}}$   (shaded: $\pm 0.10$)")
 axR.errorbar([0.1598], [-0.95], xerr=[[0.1598 - 0.1052], [0.2129 - 0.1598]], fmt="s",
              color=SIGHTED, ecolor=SIGHTED, elinewidth=1.0, capsize=3, markersize=4.5, zorder=3)
+axR.errorbar([0.1004], [-1.72], xerr=[[0.1004 - 0.0411], [0.1628 - 0.1004]], fmt="D",
+             color=SIGHTED, ecolor=SIGHTED, elinewidth=1.0, capsize=3, markersize=4.0, zorder=3)
+axR.text(0.1004, -1.50, "$+0.10$", ha="center", fontsize=7.0, color=SIGHTED)
 axR.text(0.1598, -0.73, "$+0.16$", ha="center", fontsize=7.0, color=SIGHTED)
 
-axR.set_ylim(-1.7, 3.6); axR.set_xlim(-0.20, 0.25)
+axR.set_ylim(-2.5, 3.6); axR.set_xlim(-0.20, 0.25)
 axR.set_title("(b) the part of the rise due to the image", loc="left")
 recessive(axR, axis="x")
 save(fig, "fig_lead.pdf")
