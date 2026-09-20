@@ -1,0 +1,17 @@
+{
+ "sentinel": true,
+ "n": 500,
+ "host": "vgi1",
+ "emb_cos": {
+  "mismatch": 0.92012426674366
+ },
+ "emb_cos_tok": {
+  "mismatch": 0.37425625681877134
+ },
+ "emb_cos_sd": {
+  "mismatch": 0.02242464434136695
+ },
+ "alt_permutation_emb_cos_mean": 0.9212746130228042,
+ "alt_permutation_n": 500,
+ "note": "cosine between the clean embeddings of image A and its substitute B; no pixel transform is involved, which is why lad_dose.py cannot produce it"
+}

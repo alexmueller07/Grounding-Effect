@@ -1,0 +1,116 @@
+{
+ "model": "llava-hf/llava-1.5-7b-hf",
+ "prompt_template": "A chat between a curious user and an artificial intelligence assistant. The assistant gives helpful, detailed, and polite answers to the user's questions.USER: <image> <QUESTION> ASSISTANT:",
+ "max_new": 64,
+ "bs": 16,
+ "splits": [
+  "random",
+  "popular",
+  "adversarial"
+ ],
+ "layers": [
+  2,
+  32
+ ],
+ "n_items": 9000,
+ "plan_sha": "84ef6b5fabd875b2dcd22c6d81fa39a984c4215d232c8d16afec0162f1882de0",
+ "plan_batches": 564,
+ "pix_seed": 20260919,
+ "grey_rgb": [
+  127,
+  127,
+  127
+ ],
+ "host": "vgi1",
+ "limit_images": 0,
+ "job_id": "21055",
+ "torch": "2.11.0+cu130",
+ "operator_is_prior_work": "arXiv 2407.21771 Eq.3 (+Eq.4 when gamma!=1)",
+ "prereg": "SPRINT/POPE_PREREG.md",
+ "tag": "pope_pai_both_grey",
+ "method": "pai_both",
+ "pixarm": "grey",
+ "alpha": 0.5,
+ "gamma": 1.1,
+ "rowmode": "lastrow",
+ "n_rows": 9000,
+ "n_truncated": 0,
+ "trunc_rate": 0.0,
+ "mean_tokens": 1.0,
+ "median_tokens": 1.0,
+ "empty_rate": 0.0,
+ "n_distinct_answers": 1,
+ "answer_dist": [
+  [
+   "No",
+   9000
+  ]
+ ],
+ "answer_dist_by_split": {
+  "adversarial": [
+   [
+    "No",
+    3000
+   ]
+  ],
+  "popular": [
+   [
+    "No",
+    3000
+   ]
+  ],
+  "random": [
+   [
+    "No",
+    3000
+   ]
+  ]
+ },
+ "derangement": null,
+ "mean_img_mass": 0.22186755089130666,
+ "img_mass_by_layer": [
+  0.7871933279308021,
+  0.29208602386374843,
+  0.47785697449395,
+  0.23641940679216217,
+  0.08811513107296423,
+  0.14739008435437864,
+  0.1592757573998566,
+  0.17847311462387971,
+  0.22558948780733643,
+  0.17934118063314586,
+  0.262166624267896,
+  0.25821386330516627,
+  0.2162089116924198,
+  0.23807691404899806,
+  0.18753898101495514,
+  0.17316112574850415,
+  0.21838831518453064,
+  0.24413079575549626,
+  0.20295002308826074,
+  0.16651106467272372,
+  0.16863771668034241,
+  0.14768072975971175,
+  0.1290215571140144,
+  0.13232916226306707,
+  0.11651498067410702,
+  0.14111259463408315,
+  0.12248083657142542,
+  0.14835517591935524,
+  0.16495822074142755,
+  0.24640633900326195,
+  0.30684871321662943,
+  0.33636858789844715
+ ],
+ "attn_calls": 72192,
+ "pai_applied_steps": 1128,
+ "pai_applied_prefill": 564,
+ "n_edited_first": 294912,
+ "mask_present": 0,
+ "causal_repairs": 36096,
+ "nomask_decode": 36096,
+ "mask_leak": 0,
+ "pixel_arm_desc": "flat (127,127,127) at the image's own pixel size",
+ "pixel_arm_frame": "own",
+ "secs": 1005.7655003070831
+}

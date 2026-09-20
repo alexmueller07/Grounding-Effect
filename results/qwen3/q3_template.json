@@ -1,0 +1,38 @@
+{
+ "sentinel": true,
+ "model": "Qwen/Qwen3-VL-8B-Instruct",
+ "revision": "0c351dd01ed87e9c1b53cbc748cba10e6187ff3b",
+ "template": "<|im_start|>user\n<|vision_start|><|image_pad|><|vision_end|>Please describe this image in detail.<|im_end|>\n<|im_start|>assistant\n",
+ "question": "Please describe this image in detail.",
+ "which": "m5",
+ "tok_class": "Qwen2Tokenizer",
+ "proc_class": "Qwen3VLProcessor",
+ "vocab": 151669,
+ "pad_id": 151643,
+ "eos_id": 151645,
+ "word_start_token_for_space_cat": "\u0120cat",
+ "cfg_class": "Qwen3VLConfig",
+ "text_config": {
+  "vocab_size": 151936,
+  "hidden_size": 4096,
+  "num_hidden_layers": 36,
+  "num_attention_heads": 32,
+  "num_key_value_heads": 8
+ },
+ "repo_bytes": 17545915883,
+ "repo_gib": 16.341,
+ "df_before": {
+  "total_gb": 3665.42,
+  "used_gb": 3413.88,
+  "free_gb": 65.27,
+  "pct_used": 93.14
+ },
+ "snapshot_path": "/data/alexmueller/hf_cache/hub/models--Qwen--Qwen3-VL-8B-Instruct/snapshots/0c351dd01ed87e9c1b53cbc748cba10e6187ff3b",
+ "df_after": {
+  "total_gb": 3665.42,
+  "used_gb": 3413.88,
+  "free_gb": 65.27,
+  "pct_used": 93.14
+ },
+ "secs": 7.6
+}

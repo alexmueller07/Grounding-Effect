@@ -1,0 +1,592 @@
+{
+ "sentinel": true,
+ "model": "Qwen/Qwen3-VL-8B-Instruct",
+ "revision": "0c351dd01ed87e9c1b53cbc748cba10e6187ff3b",
+ "n_gate_images": 24,
+ "bs_free": 4,
+ "bs_cont": 4,
+ "max_new_cont": 384,
+ "thresholds": {
+  "HG3": {
+   "len_frac": 0.5,
+   "agree": 0.75,
+   "empty": 0.1
+  },
+  "HG4_median_free": 32,
+  "HG5": {
+   "median": 12,
+   "le3": 0.3
+  }
+ },
+ "cut_f": 0.205,
+ "HG3_calibration_llava15": {
+  "tag": "llava-1.5-7b",
+  "cut_f": 0.5,
+  "n": 24,
+  "median_cont_len": 60.5,
+  "mean_cont_len": 60.166666666666664,
+  "median_remainder_len": 60.5,
+  "mean_remainder_len": 60.916666666666664,
+  "median_agree16": 1.0,
+  "mean_agree16": 0.9453125,
+  "exact_full_match": 16,
+  "empty_rate": 0.0,
+  "a_len_ok": true,
+  "b_agree_ok": true,
+  "c_empty_ok": true,
+  "pass": true,
+  "thresholds": {
+   "len_frac": 0.5,
+   "agree": 0.75,
+   "empty": 0.1
+  },
+  "per_row": [
+   {
+    "image_id": 13004,
+    "L": 69,
+    "cut": 34,
+    "remainder": 35,
+    "cont_len": 35,
+    "agree16": 1.0
+   },
+   {
+    "image_id": 17905,
+    "L": 97,
+    "cut": 48,
+    "remainder": 49,
+    "cont_len": 49,
+    "agree16": 1.0
+   },
+   {
+    "image_id": 14888,
+    "L": 99,
+    "cut": 49,
+    "remainder": 50,
+    "cont_len": 64,
+    "agree16": 0.75
+   },
+   {
+    "image_id": 8844,
+    "L": 100,
+    "cut": 50,
+    "remainder": 50,
+    "cont_len": 50,
+    "agree16": 1.0
+   },
+   {
+    "image_id": 7088,
+    "L": 105,
+    "cut": 52,
+    "remainder": 53,
+    "cont_len": 53,
+    "agree16": 1.0
+   },
+   {
+    "image_id": 1268,
+    "L": 106,
+    "cut": 53,
+    "remainder": 53,
+    "cont_len": 53,
+    "agree16": 1.0
+   },
+   {
+    "image_id": 11122,
+    "L": 108,
+    "cut": 54,
+    "remainder": 54,
+    "cont_len": 75,
+    "agree16": 0.625
+   },
+   {
+    "image_id": 17436,
+    "L": 114,
+    "cut": 57,
+    "remainder": 57,
+    "cont_len": 49,
+    "agree16": 0.75
+   },
+   {
+    "image_id": 13177,
+    "L": 117,
+    "cut": 58,
+    "remainder": 59,
+    "cont_len": 59,
+    "agree16": 1.0
+   },
+   {
+    "image_id": 3553,
+    "L": 118,
+    "cut": 59,
+    "remainder": 59,
+    "cont_len": 59,
+    "agree16": 1.0
+   },
+   {
+    "image_id": 13546,
+    "L": 120,
+    "cut": 60,
+    "remainder": 60,
+    "cont_len": 60,
+    "agree16": 1.0
+   },
+   {
+    "image_id": 16249,
+    "L": 120,
+    "cut": 60,
+    "remainder": 60,
+    "cont_len": 60,
+    "agree16": 1.0
+   },
+   {
+    "image_id": 11511,
+    "L": 122,
+    "cut": 61,
+    "remainder": 61,
+    "cont_len": 61,
+    "agree16": 1.0
+   },
+   {
+    "image_id": 6460,
+    "L": 124,
+    "cut": 62,
+    "remainder": 62,
+    "cont_len": 62,
+    "agree16": 1.0
+   },
+   {
+    "image_id": 10363,
+    "L": 125,
+    "cut": 62,
+    "remainder": 63,
+    "cont_len": 62,
+    "agree16": 1.0
+   },
+   {
+    "image_id": 6763,
+    "L": 131,
+    "cut": 65,
+    "remainder": 66,
+    "cont_len": 36,
+    "agree16": 0.5625
+   },
+   {
+    "image_id": 6771,
+    "L": 131,
+    "cut": 65,
+    "remainder": 66,
+    "cont_len": 66,
+    "agree16": 1.0
+   },
+   {
+    "image_id": 16439,
+    "L": 130,
+    "cut": 65,
+    "remainder": 65,
+    "cont_len": 65,
+    "agree16": 1.0
+   },
+   {
+    "image_id": 16228,
+    "L": 133,
+    "cut": 66,
+    "remainder": 67,
+    "cont_len": 67,
+    "agree16": 1.0
+   },
+   {
+    "image_id": 885,
+    "L": 134,
+    "cut": 67,
+    "remainder": 67,
+    "cont_len": 67,
+    "agree16": 1.0
+   },
+   {
+    "image_id": 9772,
+    "L": 140,
+    "cut": 70,
+    "remainder": 70,
+    "cont_len": 49,
+    "agree16": 1.0
+   },
+   {
+    "image_id": 2473,
+    "L": 143,
+    "cut": 71,
+    "remainder": 72,
+    "cont_len": 72,
+    "agree16": 1.0
+   },
+   {
+    "image_id": 15335,
+    "L": 145,
+    "cut": 72,
+    "remainder": 73,
+    "cont_len": 80,
+    "agree16": 1.0
+   },
+   {
+    "image_id": 5001,
+    "L": 181,
+    "cut": 90,
+    "remainder": 91,
+    "cont_len": 91,
+    "agree16": 1.0
+   }
+  ],
+  "free_median_len": 121.0
+ },
+ "meta": {
+  "model": "Qwen/Qwen3-VL-8B-Instruct",
+  "revision": "0c351dd01ed87e9c1b53cbc748cba10e6187ff3b",
+  "pad_id": 151643,
+  "eos_id": 151645,
+  "pad_is_eos": false,
+  "tok_class": "Qwen2Tokenizer",
+  "vocab": 151669,
+  "cls": "Qwen3VLForConditionalGeneration",
+  "dtype": "torch.bfloat16",
+  "proc_class": "Qwen3VLProcessor",
+  "n_params": 8767123696,
+  "load_path": "device_map_cuda0",
+  "rope_scaling": {
+   "mrope_interleaved": true,
+   "mrope_section": [
+    24,
+    20,
+    20
+   ],
+   "rope_type": "default",
+   "rope_theta": 5000000
+  },
+  "gen_eos": [
+   151645,
+   151643
+  ]
+ },
+ "HG1_template": {
+  "pass": true,
+  "template": "<|im_start|>user\n<|vision_start|><|image_pad|><|vision_end|>Please describe this image in detail.<|im_end|>\n<|im_start|>assistant\n",
+  "template_no_gen_prompt": "<|im_start|>user\n<|vision_start|><|image_pad|><|vision_end|>Please describe this image in detail.<|im_end|>\n",
+  "frozen_matches": true,
+  "used_apply_chat_template": true,
+  "generation_prompt_suffix": "<|im_start|>assistant\n"
+ },
+ "HG2_prefill_lands": {
+  "pass": true,
+  "n_rows": 48,
+  "rows_with_special_in_prefill": 0,
+  "rows_prefill_not_after_generation_prompt": 0,
+  "rows_turn_markers_changed": 0,
+  "diagnostic_rows_failing_string_form": 0,
+  "example": {
+   "decoded_tail": "<|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|vision_end|>Please describe this image in detail.<|im_end|>\n<|im_start|>assistant\nA beautiful woman taking a picture with her smart phone. A waterway under a bridge with people sitting down and a woman taking a photo. People underneath an arched bridge near the water. The woman is taking a photo of the white goose next to the river",
+   "special_counts": {
+    "151644": 2,
+    "151645": 1,
+    "151652": 1,
+    "151653": 1,
+    "151655": 260
+   },
+   "template_counts": {
+    "151644": 2,
+    "151645": 1,
+    "151652": 1,
+    "151653": 1,
+    "151655": 1
+   },
+   "nonconserved": [],
+   "gen_suffix_ids": [
+    151644,
+    77091,
+    198
+   ],
+   "pre_tail_ids": [
+    304,
+    7716,
+    13,
+    151645,
+    198,
+    151644,
+    77091,
+    198
+   ],
+   "prefill_first_ids": [
+    32,
+    6233,
+    5220,
+    4633,
+    264,
+    6802,
+    448,
+    1059
+   ],
+   "budget": 52
+  }
+ },
+ "HG3_self_continuation": {
+  "tag": "qwen3-vl-8b",
+  "cut_f": 0.205,
+  "n": 24,
+  "median_cont_len": 376.5,
+  "mean_cont_len": 362.9166666666667,
+  "median_remainder_len": 204.0,
+  "mean_remainder_len": 204.0,
+  "median_agree16": 1.0,
+  "mean_agree16": 0.9583333333333334,
+  "exact_full_match": 0,
+  "empty_rate": 0.0,
+  "a_len_ok": true,
+  "b_agree_ok": true,
+  "c_empty_ok": true,
+  "pass": true,
+  "thresholds": {
+   "len_frac": 0.5,
+   "agree": 0.75,
+   "empty": 0.1
+  },
+  "per_row": [
+   {
+    "image_id": 885,
+    "L": 256,
+    "cut": 52,
+    "remainder": 204,
+    "cont_len": 340,
+    "agree16": 0.375
+   },
+   {
+    "image_id": 1268,
+    "L": 256,
+    "cut": 52,
+    "remainder": 204,
+    "cont_len": 368,
+    "agree16": 1.0
+   },
+   {
+    "image_id": 2473,
+    "L": 256,
+    "cut": 52,
+    "remainder": 204,
+    "cont_len": 384,
+    "agree16": 1.0
+   },
+   {
+    "image_id": 3553,
+    "L": 256,
+    "cut": 52,
+    "remainder": 204,
+    "cont_len": 354,
+    "agree16": 1.0
+   },
+   {
+    "image_id": 5001,
+    "L": 256,
+    "cut": 52,
+    "remainder": 204,
+    "cont_len": 384,
+    "agree16": 1.0
+   },
+   {
+    "image_id": 6460,
+    "L": 256,
+    "cut": 52,
+    "remainder": 204,
+    "cont_len": 350,
+    "agree16": 1.0
+   },
+   {
+    "image_id": 6763,
+    "L": 256,
+    "cut": 52,
+    "remainder": 204,
+    "cont_len": 325,
+    "agree16": 0.6875
+   },
+   {
+    "image_id": 6771,
+    "L": 256,
+    "cut": 52,
+    "remainder": 204,
+    "cont_len": 374,
+    "agree16": 1.0
+   },
+   {
+    "image_id": 7088,
+    "L": 256,
+    "cut": 52,
+    "remainder": 204,
+    "cont_len": 384,
+    "agree16": 1.0
+   },
+   {
+    "image_id": 8844,
+    "L": 256,
+    "cut": 52,
+    "remainder": 204,
+    "cont_len": 361,
+    "agree16": 1.0
+   },
+   {
+    "image_id": 9772,
+    "L": 256,
+    "cut": 52,
+    "remainder": 204,
+    "cont_len": 384,
+    "agree16": 1.0
+   },
+   {
+    "image_id": 10363,
+    "L": 256,
+    "cut": 52,
+    "remainder": 204,
+    "cont_len": 384,
+    "agree16": 1.0
+   },
+   {
+    "image_id": 11122,
+    "L": 256,
+    "cut": 52,
+    "remainder": 204,
+    "cont_len": 384,
+    "agree16": 1.0
+   },
+   {
+    "image_id": 11511,
+    "L": 256,
+    "cut": 52,
+    "remainder": 204,
+    "cont_len": 384,
+    "agree16": 1.0
+   },
+   {
+    "image_id": 13004,
+    "L": 256,
+    "cut": 52,
+    "remainder": 204,
+    "cont_len": 244,
+    "agree16": 0.9375
+   },
+   {
+    "image_id": 13177,
+    "L": 256,
+    "cut": 52,
+    "remainder": 204,
+    "cont_len": 379,
+    "agree16": 1.0
+   },
+   {
+    "image_id": 13546,
+    "L": 256,
+    "cut": 52,
+    "remainder": 204,
+    "cont_len": 359,
+    "agree16": 1.0
+   },
+   {
+    "image_id": 14888,
+    "L": 256,
+    "cut": 52,
+    "remainder": 204,
+    "cont_len": 345,
+    "agree16": 1.0
+   },
+   {
+    "image_id": 15335,
+    "L": 256,
+    "cut": 52,
+    "remainder": 204,
+    "cont_len": 384,
+    "agree16": 1.0
+   },
+   {
+    "image_id": 16228,
+    "L": 256,
+    "cut": 52,
+    "remainder": 204,
+    "cont_len": 384,
+    "agree16": 1.0
+   },
+   {
+    "image_id": 16249,
+    "L": 256,
+    "cut": 52,
+    "remainder": 204,
+    "cont_len": 358,
+    "agree16": 1.0
+   },
+   {
+    "image_id": 16439,
+    "L": 256,
+    "cut": 52,
+    "remainder": 204,
+    "cont_len": 384,
+    "agree16": 1.0
+   },
+   {
+    "image_id": 17436,
+    "L": 256,
+    "cut": 52,
+    "remainder": 204,
+    "cont_len": 384,
+    "agree16": 1.0
+   },
+   {
+    "image_id": 17905,
+    "L": 256,
+    "cut": 52,
+    "remainder": 204,
+    "cont_len": 329,
+    "agree16": 1.0
+   }
+  ]
+ },
+ "HG4_free_length": {
+  "pass": true,
+  "n": 500,
+  "median": 256.0,
+  "mean": 255.82,
+  "sd": 2.2180171324856803,
+  "min": 218,
+  "max": 256,
+  "frac_le3": 0.0,
+  "at_max_256": 0.992,
+  "threshold_median": 32
+ },
+ "HG5_assembled": {
+  "thresholds": {
+   "median": 12,
+   "le3": 0.3
+  },
+  "arms": {
+   "cap1": {
+    "n": 24,
+    "median_cont_len": 384.0,
+    "mean_cont_len": 368.125,
+    "frac_le3": 0.041666666666666664,
+    "empty_rate": 0.0,
+    "at_max_384": 0.9583333333333334,
+    "pass": true
+   },
+   "cap5": {
+    "n": 24,
+    "median_cont_len": 384.0,
+    "mean_cont_len": 361.6666666666667,
+    "frac_le3": 0.0,
+    "empty_rate": 0.0,
+    "at_max_384": 0.9166666666666666,
+    "pass": true
+   }
+  },
+  "pass": true
+ },
+ "HG6_prefix_binds": {
+  "pass": true,
+  "n_differ": 48,
+  "n": 48
+ },
+ "gpu_peak_gib": 16.84,
+ "gpu_total_gib": 23.52,
+ "VERDICT": "RUN-ENDPOINT",
+ "why": "All harness gates pass.",
+ "secs": 246.4
+}

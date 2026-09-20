@@ -1,0 +1,50 @@
+{
+ "sentinel": true,
+ "family": "M5-qwen3-vl-8b",
+ "model": "Qwen/Qwen3-VL-8B-Instruct",
+ "revision": "0c351dd01ed87e9c1b53cbc748cba10e6187ff3b",
+ "armset": "blind",
+ "arms": [
+  "cap1g",
+  "cap5g"
+ ],
+ "gray": true,
+ "cut_f": 0.205,
+ "smoke": false,
+ "host": "vgi1",
+ "max_new_cont": 384,
+ "bs": 4,
+ "n_cells": 1500,
+ "rows": 3000,
+ "kder": 3,
+ "per_arm_rows": {
+  "cap1g": 1500,
+  "cap5g": 1500
+ },
+ "template": "<|im_start|>user\n<|vision_start|><|image_pad|><|vision_end|>Please describe this image in detail.<|im_end|>\n<|im_start|>assistant\n",
+ "gate_verdict": "RUN-ENDPOINT",
+ "per_arm": {
+  "cap1g": {
+   "mean_budget": 51.96,
+   "mean_cont_len": 348.36066666666665,
+   "median_cont_len": 384.0,
+   "frac_le3": 0.02,
+   "doubling_rate": 0.046,
+   "empty_cont_rate": 0.0033333333333333335,
+   "at_max_384": 0.896,
+   "at_max_192": 0.8993333333333333
+  },
+  "cap5g": {
+   "mean_budget": 51.96,
+   "mean_cont_len": 374.18266666666665,
+   "median_cont_len": 384.0,
+   "frac_le3": 0.005333333333333333,
+   "doubling_rate": 0.0,
+   "empty_cont_rate": 0.0,
+   "at_max_384": 0.9693333333333334,
+   "at_max_192": 0.9713333333333334
+  }
+ },
+ "cap5_topup_cells": 22,
+ "secs": 7538.1
+}

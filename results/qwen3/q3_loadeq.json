@@ -1,0 +1,57 @@
+{
+ "sentinel": true,
+ "n": 8,
+ "identical": 8,
+ "pass": true,
+ "lens_new": [
+  256,
+  256,
+  256,
+  256,
+  256,
+  256,
+  256,
+  256
+ ],
+ "lens_ref": [
+  256,
+  256,
+  256,
+  256,
+  256,
+  256,
+  256,
+  256
+ ],
+ "meta": {
+  "model": "Qwen/Qwen3-VL-8B-Instruct",
+  "revision": "0c351dd01ed87e9c1b53cbc748cba10e6187ff3b",
+  "pad_id": 151643,
+  "eos_id": 151645,
+  "pad_is_eos": false,
+  "tok_class": "Qwen2Tokenizer",
+  "vocab": 151669,
+  "cls": "Qwen3VLForConditionalGeneration",
+  "dtype": "torch.bfloat16",
+  "proc_class": "Qwen3VLProcessor",
+  "n_params": 8767123696,
+  "load_path": "device_map_cuda0",
+  "rope_scaling": {
+   "mrope_interleaved": true,
+   "mrope_section": [
+    24,
+    20,
+    20
+   ],
+   "rope_type": "default",
+   "rope_theta": 5000000
+  },
+  "gen_eos": [
+   151645,
+   151643
+  ]
+ },
+ "gpu_peak_gib": 16.7,
+ "gpu_total_gib": 23.52,
+ "secs": 33.2
+}

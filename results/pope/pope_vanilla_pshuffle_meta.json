@@ -1,0 +1,300 @@
+{
+ "model": "llava-hf/llava-1.5-7b-hf",
+ "prompt_template": "A chat between a curious user and an artificial intelligence assistant. The assistant gives helpful, detailed, and polite answers to the user's questions.USER: <image> <QUESTION> ASSISTANT:",
+ "max_new": 64,
+ "bs": 16,
+ "splits": [
+  "random",
+  "popular",
+  "adversarial"
+ ],
+ "layers": [
+  2,
+  32
+ ],
+ "n_items": 9000,
+ "plan_sha": "84ef6b5fabd875b2dcd22c6d81fa39a984c4215d232c8d16afec0162f1882de0",
+ "plan_batches": 564,
+ "pix_seed": 20260919,
+ "grey_rgb": [
+  127,
+  127,
+  127
+ ],
+ "host": "vgi1",
+ "limit_images": 0,
+ "job_id": "21057",
+ "torch": "2.11.0+cu130",
+ "operator_is_prior_work": "arXiv 2407.21771 Eq.3 (+Eq.4 when gamma!=1)",
+ "prereg": "SPRINT/POPE_PREREG.md",
+ "tag": "pope_vanilla_pshuffle",
+ "method": "vanilla",
+ "pixarm": "pshuffle",
+ "alpha": 0.0,
+ "gamma": 1.0,
+ "rowmode": "decode",
+ "n_rows": 9000,
+ "n_truncated": 2,
+ "trunc_rate": 0.00022222222222222223,
+ "mean_tokens": 24.27188888888889,
+ "median_tokens": 22.0,
+ "empty_rate": 0.0,
+ "n_distinct_answers": 4037,
+ "answer_dist": [
+  [
+   "Yes, there is a dining table in the image.",
+   115
+  ],
+  [
+   "Yes, there is a baseball glove in the image.",
+   56
+  ],
+  [
+   "Yes, there is a person in the image, and they are wearing a blue shirt.",
+   48
+  ],
+  [
+   "Yes, there is a bowl in the image, and it is filled with food.",
+   48
+  ],
+  [
+   "Yes, there is a spoon in the image.",
+   47
+  ],
+  [
+   "Yes, there is a dog in the image.",
+   45
+  ],
+  [
+   "Yes, there is a couch in the image, and it is covered with a blanket.",
+   41
+  ],
+  [
+   "Yes, there is a bottle in the image, which is part of the collage of pictures.",
+   40
+  ],
+  [
+   "Yes, there is a sports ball in the image, which is a baseball.",
+   38
+  ],
+  [
+   "Yes, there is a person in the image, and they are wearing a white shirt.",
+   36
+  ],
+  [
+   "Yes, there is a tennis racket in the image.",
+   35
+  ],
+  [
+   "Yes, there is a cup in the image, and it is placed on a table.",
+   31
+  ],
+  [
+   "Yes, there is an orange in the image.",
+   31
+  ],
+  [
+   "Yes, there is a person in the image, and they are wearing a red shirt.",
+   30
+  ],
+  [
+   "Yes, there is a broccoli in the image.",
+   28
+  ],
+  [
+   "Yes, there is a teddy bear in the image.",
+   27
+  ],
+  [
+   "Yes, there is a chair in the image.",
+   27
+  ],
+  [
+   "Yes, there is a traffic light in the image.",
+   27
+  ],
+  [
+   "Yes, there is a person in the image, and they are standing in front of a building.",
+   26
+  ],
+  [
+   "Yes, there is a mouse in the image.",
+   26
+  ]
+ ],
+ "answer_dist_by_split": {
+  "adversarial": [
+   [
+    "Yes, there is a dining table in the image.",
+    45
+   ],
+   [
+    "Yes, there is a baseball glove in the image.",
+    22
+   ],
+   [
+    "Yes, there is a bowl in the image, and it is filled with food.",
+    21
+   ],
+   [
+    "Yes, there is a spoon in the image.",
+    19
+   ],
+   [
+    "Yes, there is a dog in the image.",
+    18
+   ],
+   [
+    "Yes, there is a couch in the image, and it is covered with a blanket.",
+    17
+   ],
+   [
+    "Yes, there is a person in the image, and they are wearing a blue shirt.",
+    16
+   ],
+   [
+    "Yes, there is a bottle in the image, which is part of the collage of pictures.",
+    16
+   ],
+   [
+    "Yes, there is a sports ball in the image, which is a baseball.",
+    14
+   ],
+   [
+    "Yes, there is a tennis racket in the image.",
+    13
+   ]
+  ],
+  "popular": [
+   [
+    "Yes, there is a dining table in the image.",
+    54
+   ],
+   [
+    "Yes, there is a cup in the image, and it is placed on a table.",
+    18
+   ],
+   [
+    "Yes, there is a person in the image, and they are wearing a blue shirt.",
+    16
+   ],
+   [
+    "Yes, there is a chair in the image.",
+    15
+   ],
+   [
+    "Yes, there is a spoon in the image.",
+    14
+   ],
+   [
+    "Yes, there is a baseball glove in the image.",
+    13
+   ],
+   [
+    "Yes, there is a bowl in the image, and it is filled with food.",
+    13
+   ],
+   [
+    "Yes, there is a dog in the image.",
+    13
+   ],
+   [
+    "Yes, there is a bottle in the image, which is part of the collage of pictures.",
+    13
+   ],
+   [
+    "Yes, there is a person in the image, and they are wearing a white shirt.",
+    12
+   ]
+  ],
+  "random": [
+   [
+    "Yes, there is a baseball glove in the image.",
+    21
+   ],
+   [
+    "Yes, there is a person in the image, and they are wearing a blue shirt.",
+    16
+   ],
+   [
+    "Yes, there is a dining table in the image.",
+    16
+   ],
+   [
+    "Yes, there is a spoon in the image.",
+    14
+   ],
+   [
+    "Yes, there is a tennis racket in the image.",
+    14
+   ],
+   [
+    "Yes, there is a bowl in the image, and it is filled with food.",
+    14
+   ],
+   [
+    "Yes, there is a dog in the image.",
+    14
+   ],
+   [
+    "Yes, there is an orange in the image.",
+    13
+   ],
+   [
+    "Yes, there is a teddy bear in the image.",
+    13
+   ],
+   [
+    "Yes, there is a couch in the image, and it is covered with a blanket.",
+    13
+   ]
+  ]
+ },
+ "derangement": null,
+ "mean_img_mass": 0.17842003459483385,
+ "img_mass_by_layer": [
+  0.4792080762538504,
+  0.37919996160987424,
+  0.30445176035377153,
+  0.28952590196479294,
+  0.2484259250316214,
+  0.2033203928632305,
+  0.15887895591081458,
+  0.15046373634526494,
+  0.19398110888317122,
+  0.18667662170127775,
+  0.19056175556694363,
+  0.15710154384480302,
+  0.1760078268323807,
+  0.18991246753444907,
+  0.19845347740548722,
+  0.1879007985670093,
+  0.17369996650633238,
+  0.1477841503178397,
+  0.12597906043924761,
+  0.1190626130485577,
+  0.15596611427922621,
+  0.1093168824461969,
+  0.11226219905817762,
+  0.09301014117738034,
+  0.13038078704782835,
+  0.07940979002056815,
+  0.11842988813229909,
+  0.06848838298535305,
+  0.08386315172868418,
+  0.15002248234095725,
+  0.11446915397830043,
+  0.23370447546137985
+ ],
+ "attn_calls": 1474240,
+ "pai_applied_steps": 0,
+ "pai_applied_prefill": 0,
+ "n_edited_first": 0,
+ "mask_present": 0,
+ "causal_repairs": 36096,
+ "nomask_decode": 1438144,
+ "mask_leak": 0,
+ "pixel_arm_desc": "permute the 24x24 grid of 14x14 ViT patches",
+ "pixel_arm_frame": "m336",
+ "secs": 2115.291253566742
+}

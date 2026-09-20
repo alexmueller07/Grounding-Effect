@@ -1,0 +1,52 @@
+{
+ "sentinel": true,
+ "rung": "shuffle24",
+ "tag": "lad_f1_shuffle24",
+ "model": "llava-hf/llava-1.5-7b-hf",
+ "smoke": false,
+ "host": "vgi1",
+ "job_id": "21062",
+ "max_new_cont": 384,
+ "bs": 8,
+ "rows": 3000,
+ "kder": 3,
+ "n_cells": 1500,
+ "per_arm_rows": {
+  "cap1_shuffle24": 1500,
+  "cap5_shuffle24": 1500
+ },
+ "prefix_drift": 0,
+ "batch_order_identical": true,
+ "gate_rung_applied": {
+  "rows_changed": 8,
+  "rows": 8,
+  "cross_image_distinct": 3,
+  "pairs": 3
+ },
+ "rung_cache": {
+  "rung": "shuffle24",
+  "n_calls": 3000,
+  "n_distinct": 500,
+  "determinism_rechecks": 26,
+  "determinism_equal": 26
+ },
+ "mismatch": null,
+ "prereg": "SPRINT/LADDER_PREREG.md @ f186bcf",
+ "per_arm": {
+  "cap1_shuffle24": {
+   "mean_cont_len": 213.53733333333332,
+   "median_cont_len": 384.0,
+   "at_max_384": 0.5246666666666666,
+   "empty_cont_rate": 0.02666666666666667,
+   "n_distinct_texts": 1402
+  },
+  "cap5_shuffle24": {
+   "mean_cont_len": 322.81666666666666,
+   "median_cont_len": 384.0,
+   "at_max_384": 0.82,
+   "empty_cont_rate": 0.004666666666666667,
+   "n_distinct_texts": 1479
+  }
+ },
+ "secs": 4437.0
+}

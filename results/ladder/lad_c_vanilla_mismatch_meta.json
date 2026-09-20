@@ -1,0 +1,67 @@
+{
+ "sentinel": true,
+ "arm": "vanilla",
+ "rung": "mismatch",
+ "alpha": 0.0,
+ "gamma": 1.0,
+ "layers": [
+  2,
+  32
+ ],
+ "model": "llava-hf/llava-1.5-7b-hf",
+ "n": 500,
+ "max_new": 512,
+ "sample_seed": 20260817,
+ "n_truncated": 0,
+ "prompt": "A chat between a curious user and an artificial intelligence assistant. The assistant gives helpful, detailed, and polite answers to the user's questions.USER: <image> Please help me describe the image in detail. ASSISTANT:",
+ "bs": 4,
+ "limit": 0,
+ "gate_rung_applied": {
+  "rows": 4,
+  "rows_changed": 4,
+  "pairs": 3,
+  "cross_image_distinct": 3,
+  "grey_rows_equal": 0
+ },
+ "rung_cache": {
+  "rung": "mismatch",
+  "n_calls": 500,
+  "n_distinct": 500,
+  "determinism_rechecks": 0,
+  "determinism_equal": 0
+ },
+ "mismatch": {
+  "n": 500,
+  "seed": 20260919,
+  "map_sample": {
+   "885": 267191,
+   "1268": 235836,
+   "2473": 62025,
+   "3553": 163951,
+   "5001": 215778,
+   "6460": 21604,
+   "6763": 405972,
+   "6771": 446651,
+   "7088": 17905,
+   "8844": 366199
+  }
+ },
+ "attn_calls": 1136256,
+ "pai_applied_steps": 0,
+ "n_edited_first": 0,
+ "mask_present": 0,
+ "causal_repairs": 8000,
+ "nomask_decode": 1128256,
+ "mask_leak": 0,
+ "mention_occurrences": 3827,
+ "captions_with_mention": 500,
+ "hallucinated_occurrences": 3130,
+ "chair_i_pooled": 81.7873007577737,
+ "mean_tokens": 112.504,
+ "median_tokens": 115.0,
+ "n_distinct_texts": 500,
+ "host": "vgi1",
+ "job_id": "21088",
+ "prereg": "SPRINT/LADDER_PREREG.md @ f186bcf",
+ "secs": 781.2641277313232
+}

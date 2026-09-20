@@ -1,0 +1,128 @@
+{
+ "sentinel": true,
+ "host": "vgi1",
+ "model": "llava-hf/llava-1.5-7b-hf",
+ "n": 32,
+ "processor": {
+  "size": {
+   "shortest_edge": 336
+  },
+  "crop_size": {
+   "height": 336,
+   "width": 336
+  },
+  "resample": 3,
+  "do_center_crop": true,
+  "do_resize": true
+ },
+ "native_sizes": {
+  "(640, 427)": 8,
+  "(640, 480)": 6,
+  "(375, 500)": 2,
+  "(478, 640)": 1,
+  "(640, 426)": 2,
+  "(550, 640)": 1,
+  "(640, 361)": 1,
+  "(640, 464)": 1,
+  "(640, 425)": 1,
+  "(640, 440)": 1,
+  "(500, 365)": 1,
+  "(481, 640)": 1,
+  "(480, 640)": 1,
+  "(512, 640)": 1,
+  "(425, 282)": 1,
+  "(482, 640)": 1,
+  "(500, 334)": 1,
+  "(640, 428)": 1
+ },
+ "gates": {
+  "GATE_GEOM_IDENTITY": {
+   "identical": 32,
+   "n": 32,
+   "max_abs_diff": 0.0
+  },
+  "GATE_GREY_EQUIVALENCE": {
+   "identical": 32,
+   "n": 32
+  },
+  "GATE_IDENTITY_ROUNDTRIP": {
+   "identical": 32,
+   "n": 32
+  }
+ },
+ "per_rung": {
+  "noise16": {
+   "determinism_equal": 32,
+   "n": 32,
+   "changes_tensor": 32,
+   "cross_image_collisions": 0,
+   "pix_rmse_mean": 0.22453312017023563,
+   "pix_linf_mean": 1.0876597072929144
+  },
+  "noise32": {
+   "determinism_equal": 32,
+   "n": 32,
+   "changes_tensor": 32,
+   "cross_image_collisions": 0,
+   "pix_rmse_mean": 0.43194774352014065,
+   "pix_linf_mean": 2.1441609039902687
+  },
+  "noise64": {
+   "determinism_equal": 32,
+   "n": 32,
+   "changes_tensor": 32,
+   "cross_image_collisions": 0,
+   "pix_rmse_mean": 0.794565387070179,
+   "pix_linf_mean": 3.6734770834445953
+  },
+  "blur4": {
+   "determinism_equal": 32,
+   "n": 32,
+   "changes_tensor": 32,
+   "cross_image_collisions": 0,
+   "pix_rmse_mean": 0.33281290950253606,
+   "pix_linf_mean": 2.768840953707695
+  },
+  "blur16": {
+   "determinism_equal": 32,
+   "n": 32,
+   "changes_tensor": 32,
+   "cross_image_collisions": 0,
+   "pix_rmse_mean": 0.5217991108074784,
+   "pix_linf_mean": 2.964789167046547
+  },
+  "lowres16": {
+   "determinism_equal": 32,
+   "n": 32,
+   "changes_tensor": 32,
+   "cross_image_collisions": 0,
+   "pix_rmse_mean": 0.4934516828507185,
+   "pix_linf_mean": 3.1304366067051888
+  },
+  "shuffle24": {
+   "determinism_equal": 32,
+   "n": 32,
+   "changes_tensor": 32,
+   "cross_image_collisions": 0,
+   "pix_rmse_mean": 1.2810561563819647,
+   "pix_linf_mean": 3.7223245203495026
+  },
+  "identity": {
+   "determinism_equal": 32,
+   "n": 32,
+   "changes_tensor": 0,
+   "cross_image_collisions": 0,
+   "pix_rmse_mean": 0.0,
+   "pix_linf_mean": 0.0
+  },
+  "grey": {
+   "determinism_equal": 32,
+   "n": 32,
+   "changes_tensor": 32,
+   "cross_image_collisions": 0,
+   "pix_rmse_mean": 1.0957194212824106,
+   "pix_linf_mean": 1.9205250553786755
+  }
+ },
+ "ALL_GATES_PASS": true
+}

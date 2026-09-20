@@ -1,0 +1,57 @@
+{
+ "sentinel": true,
+ "model": "Qwen/Qwen3-VL-8B-Instruct",
+ "revision": "0c351dd01ed87e9c1b53cbc748cba10e6187ff3b",
+ "n_images": 8,
+ "smoke": true,
+ "prompt": "<|im_start|>user\n<|vision_start|><|image_pad|><|vision_end|>Please describe this image in detail.<|im_end|>\n<|im_start|>assistant\n",
+ "bs_free": 4,
+ "max_new_free": 256,
+ "free_real": {
+  "mean_len": 256.0,
+  "median_len": 256.0,
+  "sd": 0.0,
+  "min": 256,
+  "max": 256,
+  "at_max_256": 1.0,
+  "frac_le3": 0.0,
+  "n_below_MIN_LEN": 0,
+  "below_MIN_LEN_ids": []
+ },
+ "free_gray": {
+  "mean_len": 75.0,
+  "median_len": 75.0,
+  "sd": 0.0,
+  "min": 75,
+  "max": 75,
+  "at_max_256": 0.0,
+  "frac_le3": 0.0
+ },
+ "GATE_ATTENDS": {
+  "pass": true,
+  "statistic": "delta_recall",
+  "delta_recall": 0.81875,
+  "ci": [
+   0.66875,
+   0.95
+  ],
+  "mean_recall_real": 0.81875,
+  "mean_recall_gray": 0.0,
+  "n_images_scored": 8,
+  "descriptive_precision": {
+   "mean_prec_real": null,
+   "mean_prec_gray": null,
+   "n_pairs_both_define_precision": 0
+  },
+  "identical_caption_rate": 0.0,
+  "identical_ids": [],
+  "nboot": 4000,
+  "seed": 20260919,
+  "rule": "PASS iff ci_lo > 0 and identical_caption_rate <= 0.50"
+ },
+ "mean_objects_per_caption": {
+  "real": 3.0,
+  "gray": 0.0
+ },
+ "secs": 35.9
+}

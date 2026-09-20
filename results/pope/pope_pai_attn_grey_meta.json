@@ -1,0 +1,148 @@
+{
+ "model": "llava-hf/llava-1.5-7b-hf",
+ "prompt_template": "A chat between a curious user and an artificial intelligence assistant. The assistant gives helpful, detailed, and polite answers to the user's questions.USER: <image> <QUESTION> ASSISTANT:",
+ "max_new": 64,
+ "bs": 16,
+ "splits": [
+  "random",
+  "popular",
+  "adversarial"
+ ],
+ "layers": [
+  2,
+  32
+ ],
+ "n_items": 9000,
+ "plan_sha": "84ef6b5fabd875b2dcd22c6d81fa39a984c4215d232c8d16afec0162f1882de0",
+ "plan_batches": 564,
+ "pix_seed": 20260919,
+ "grey_rgb": [
+  127,
+  127,
+  127
+ ],
+ "host": "vgi1",
+ "limit_images": 0,
+ "job_id": "21054",
+ "torch": "2.11.0+cu130",
+ "operator_is_prior_work": "arXiv 2407.21771 Eq.3 (+Eq.4 when gamma!=1)",
+ "prereg": "SPRINT/POPE_PREREG.md",
+ "tag": "pope_pai_attn_grey",
+ "method": "pai_attn",
+ "pixarm": "grey",
+ "alpha": 0.5,
+ "gamma": 1.0,
+ "rowmode": "lastrow",
+ "n_rows": 9000,
+ "n_truncated": 0,
+ "trunc_rate": 0.0,
+ "mean_tokens": 1.1208888888888888,
+ "median_tokens": 1.0,
+ "empty_rate": 0.0,
+ "n_distinct_answers": 3,
+ "answer_dist": [
+  [
+   "No",
+   8895
+  ],
+  [
+   "No, there is no snowboard in the image.",
+   67
+  ],
+  [
+   "No, there is no surfboard in the image.",
+   38
+  ]
+ ],
+ "answer_dist_by_split": {
+  "adversarial": [
+   [
+    "No",
+    2967
+   ],
+   [
+    "No, there is no snowboard in the image.",
+    23
+   ],
+   [
+    "No, there is no surfboard in the image.",
+    10
+   ]
+  ],
+  "popular": [
+   [
+    "No",
+    2980
+   ],
+   [
+    "No, there is no snowboard in the image.",
+    14
+   ],
+   [
+    "No, there is no surfboard in the image.",
+    6
+   ]
+  ],
+  "random": [
+   [
+    "No",
+    2948
+   ],
+   [
+    "No, there is no snowboard in the image.",
+    30
+   ],
+   [
+    "No, there is no surfboard in the image.",
+    22
+   ]
+  ]
+ },
+ "derangement": null,
+ "mean_img_mass": 0.2501197382162015,
+ "img_mass_by_layer": [
+  0.7085155660273336,
+  0.33333755834094175,
+  0.524121049659472,
+  0.31905347079778396,
+  0.1811327420254337,
+  0.22505763989496738,
+  0.2227005161450687,
+  0.22568605882478943,
+  0.28201666416217247,
+  0.24165704056409235,
+  0.3067163998353566,
+  0.2884751966764741,
+  0.26510156994910106,
+  0.28562460800117634,
+  0.22210608679035032,
+  0.21879644990495756,
+  0.25128957481249004,
+  0.26283615650543085,
+  0.21757431111648573,
+  0.173874169059679,
+  0.17289637103148386,
+  0.14458076370523332,
+  0.1412164939052247,
+  0.1363508015184115,
+  0.12015694293939898,
+  0.13739298679040257,
+  0.12551985514607836,
+  0.16058742970967968,
+  0.1711251547309101,
+  0.2576450197462072,
+  0.32396755240699077,
+  0.3543550440288605
+ ],
+ "attn_calls": 131328,
+ "pai_applied_steps": 2052,
+ "pai_applied_prefill": 564,
+ "n_edited_first": 294912,
+ "mask_present": 0,
+ "causal_repairs": 36096,
+ "nomask_decode": 95232,
+ "mask_leak": 0,
+ "pixel_arm_desc": "flat (127,127,127) at the image's own pixel size",
+ "pixel_arm_frame": "own",
+ "secs": 1045.7271568775177
+}

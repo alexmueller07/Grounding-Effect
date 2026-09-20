@@ -1,0 +1,161 @@
+{
+ "gates": {
+  "G1_data_integrity": {
+   "pass": true,
+   "blocking": true,
+   "detail": {
+    "n_images": 500,
+    "missing": 0,
+    "aggregate_sha256": "5e3e9de97139411a39e8057a9c3c06890321dfd6855b4ff087faac7695ed7330"
+   }
+  },
+  "G6_causality_no_mask": {
+   "pass": true,
+   "blocking": true,
+   "detail": {
+    "future_key_mass": 0.0,
+    "shape": [
+     2,
+     4,
+     7,
+     7
+    ]
+   }
+  },
+  "G9_frame_equivalence": {
+   "pass": false,
+   "blocking": false,
+   "detail": {
+    "max_abs_pixel_diff": 2.221149444580078,
+    "per_image": [
+     0.015007853507995605,
+     0.015007853507995605,
+     0.015007853507995605,
+     0.015007853507995605,
+     0.015007853507995605,
+     0.015007853507995605,
+     2.221149444580078,
+     2.221149444580078
+    ],
+    "note": "REPORTED: bounds how much the m336 ladder frame can move a number by itself"
+   }
+  },
+  "G11_determinism": {
+   "pass": true,
+   "blocking": true,
+   "detail": {
+    "n": 288,
+    "differing": 0
+   }
+  },
+  "G2_token_identity": {
+   "pass": true,
+   "blocking": true,
+   "detail": {
+    "arms_compared": [
+     "sighted/vanilla",
+     "sighted/pai_full",
+     "sighted/pai_attn",
+     "grey/vanilla"
+    ],
+    "n_items": 288,
+    "plan_sha": "b917c7879f39f9c3c7f2088e74bd21d38d0a7ead2bd456b9f389bb00613e1ffc",
+    "len_hist": {
+     "49": 167,
+     "50": 79,
+     "51": 40,
+     "52": 2
+    }
+   }
+  },
+  "G7a_liveness_edits": {
+   "pass": true,
+   "blocking": true,
+   "detail": {
+    "vanilla(applied,prefill)": [
+     0,
+     0
+    ],
+    "pai_full": [
+     518,
+     0
+    ],
+    "pai_attn": [
+     410,
+     20
+    ],
+    "note": "pai_full must NOT edit prefill (released --use-attn --use-cfg path); pai_attn must (released --use-attn path)"
+   }
+  },
+  "G7b_liveness_mass": {
+   "pass": true,
+   "blocking": true,
+   "detail": {
+    "img_attn_mass_vanilla": 0.16432957351207733,
+    "pai_full": 0.30360278487205505,
+    "pai_attn": 0.29121124744415283
+   }
+  },
+  "G7c_answers_move": {
+   "pass": true,
+   "blocking": true,
+   "detail": {
+    "frac_answers_differing_pai_full": 0.9340277777777778,
+    "pai_attn": 0.90625,
+    "grey_vs_sighted": 1.0,
+    "note": "REPORTED magnitudes: on a yes/no endpoint most answers coincide even under a live intervention, so the blocking condition is only that SOME move"
+   }
+  },
+  "G8_grey_constant": {
+   "pass": true,
+   "blocking": true,
+   "detail": {
+    "note": "asserted per batch inside run_arm/two_stream (FATAL_GREY_PIX_ROWS_DIFFER)"
+   }
+  },
+  "G_masks": {
+   "pass": true,
+   "blocking": true,
+   "detail": {
+    "mask_leak": 0,
+    "mask_present": 0,
+    "causal_repairs": 6401,
+    "nomask_decode": 175680
+   }
+  },
+  "G10_batch_invariance": {
+   "pass": true,
+   "blocking": false,
+   "detail": {
+    "n": 4,
+    "differing": 1,
+    "note": "REPORTED: batch composition is identical across arms by construction (the plan depends only on the text), so any batch-shape effect is common to every arm and cancels in the paired contrasts"
+   }
+  },
+  "G5_decode_loop_vs_hf": {
+   "pass": true,
+   "blocking": true,
+   "detail": {
+    "mismatches": 0,
+    "n": 4
+   }
+  },
+  "G4_copy_drift_vs_pa_gen": {
+   "pass": true,
+   "blocking": true,
+   "detail": {
+    "pa_gen_sha256": "594c7103462fd58bbdf0afa2d59f74ad7737239b41dccf7623b1b5690ff8e677",
+    "frozen_sha256": "594c7103462fd58bbdf0afa2d59f74ad7737239b41dccf7623b1b5690ff8e677",
+    "mismatches": 0,
+    "n": 4
+   }
+  }
+ },
+ "limit_images": 16,
+ "n_items": 288,
+ "plan_sha": "b917c7879f39f9c3c7f2088e74bd21d38d0a7ead2bd456b9f389bb00613e1ffc",
+ "secs": 312.54223132133484,
+ "blocking_failures": [],
+ "host": "vgi1",
+ "job_id": "21044"
+}

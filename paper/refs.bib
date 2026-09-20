@@ -1,0 +1,595 @@
+% refs.bib -- ICLR 2027 submission
+% Every entry below was verified at primary source (arXiv abs page metadata,
+% publisher/proceedings record, CrossRef, PubMed, or the paper PDF itself).
+% Entry type rule: inproceedings/article only where the venue was VERIFIED at a
+% proceedings/publisher record; otherwise misc with the arXiv id in howpublished.
+% Unverified author-asserted venues are NOT encoded as venues.
+
+% ============================================================================
+% LOAD-BEARING
+% ============================================================================
+
+% VERIFIED arXiv:2407.21771v1 (31 Jul 2024).
+% Venue VERIFIED: Springer LNCS, Computer Vision -- ECCV 2024, pp. 125--140,
+% DOI 10.1007/978-3-031-73010-8_8 (CrossRef + OpenAlex agree).
+@inproceedings{pai,
+  author    = {Liu, Shi and Zheng, Kecheng and Chen, Wei},
+  title     = {Paying More Attention to Image: A Training-Free Method for Alleviating Hallucination in {LVLMs}},
+  booktitle = {Computer Vision -- {ECCV} 2024},
+  series    = {Lecture Notes in Computer Science},
+  publisher = {Springer Nature Switzerland},
+  pages     = {125--140},
+  year      = {2024},
+  doi       = {10.1007/978-3-031-73010-8_8}
+}
+
+% VERIFIED arXiv:2311.16922v1 (28 Nov 2023 -- the only version; id prefix 2311
+% = November 2023, preprint predates the 2024 venue year).
+% Venue VERIFIED at CVF Open Access (its own BibTeX record) and at the resolved
+% DOI record: CVPR 2024, pp. 13872--13882, DOI 10.1109/CVPR52733.2024.01316.
+% Title and all seven authors are identical on arXiv, CVF and the DOI record.
+% IDENTITY: several similarly titled contrastive-decoding hallucination papers
+% exist (e.g. AVCD, Retrieval-VCD). This is the diffusion-noise one: the CVF
+% PDF, Sec. 3 (Method), reads "Following the forward diffusion process in image
+% generation [24], the distorted image is modeled as follows", where [24] is
+% Ho, Jain & Abbeel, Denoising Diffusion Probabilistic Models.
+@inproceedings{vcd,
+  author    = {Leng, Sicong and Zhang, Hang and Chen, Guanzheng and Li, Xin and Lu, Shijian and Miao, Chunyan and Bing, Lidong},
+  title     = {Mitigating Object Hallucinations in Large Vision-Language Models through Visual Contrastive Decoding},
+  booktitle = {Proceedings of the {IEEE/CVF} Conference on Computer Vision and Pattern Recognition ({CVPR})},
+  pages     = {13872--13882},
+  year      = {2024},
+  doi       = {10.1109/CVPR52733.2024.01316}
+}
+
+% VERIFIED arXiv:2609.01888v1 (1 Sep 2026). Title and authors match exactly.
+% No journal-ref, no comments -> venue NOT asserted.
+@misc{safefaith,
+  author       = {Fazli, Mehrdad and Mansouri, Sina and Marvania, Mohit and Zhu, Ziwei},
+  title        = {Does Playing it Safe Count as Faithfulness? Reassessing {LVLM} Hallucination Mitigation Methods},
+  year         = {2026},
+  howpublished = {arXiv:2609.01888}
+}
+
+% VERIFIED arXiv:2602.13600v2 (28 May 2026). Author surnames match the label.
+@misc{savaa,
+  author       = {Zhang, Jiacheng and Liu, Feng and Du, Chao and Pang, Tianyu},
+  title        = {{SAVAA}: Mitigating Hallucinations in {LVLMs} via Step-wise Adaptive Visual Attention Amplification},
+  year         = {2026},
+  howpublished = {arXiv:2602.13600}
+}
+
+% VERIFIED arXiv:2606.29847v1 (29 Jun 2026). Method acronym CAI confirmed in abstract.
+% arXiv journal-ref states "ECCV 2026" -- an author-supplied claim; ECCV 2026
+% proceedings were not verifiable at a proceedings index, so venue is NOT asserted.
+@misc{cai,
+  author       = {Lei, Yuqing and Lyu, Wenbo and Du, Yingjun and Zhen, Xiantong and Snoek, Cees G. M. and Shao, Ling},
+  title        = {See Only When Needed: Context-Aware Attention Intervention for Mitigating Hallucinations in {LVLMs}},
+  year         = {2026},
+  howpublished = {arXiv:2606.29847}
+}
+
+% VERIFIED arXiv:2606.07647v1 (2 Jun 2026). Method acronym TLVS confirmed in abstract.
+@misc{tlvs,
+  author       = {Zhang, Ruipeng and Li, Zhihao and Chen, C. L. Philip and Zhang, Tong},
+  title        = {Steer Where It Matters: Token-Level Visual-Sensitivity Steering for {LVLMs} Hallucination Mitigation},
+  year         = {2026},
+  howpublished = {arXiv:2606.07647}
+}
+
+% VERIFIED arXiv:2512.03661v2 (30 Jul 2026). Method acronym DSAS confirmed in abstract.
+@misc{dsas,
+  author       = {Ferrando, Alex and Suau, Xavier and Gonz{\`{a}}lez, Jordi and Rodriguez, Pau},
+  title        = {Dynamically Scaled Activation Steering},
+  year         = {2025},
+  howpublished = {arXiv:2512.03661}
+}
+
+% VERIFIED arXiv:2511.17194v2 (28 Aug 2026). Title matches exactly.
+% arXiv comments say "EMNLP 2026" -- author claim, not verified at the ACL Anthology.
+@misc{drift,
+  author       = {Xu, Zhiyuan and Abaimov, Stanislav and Gardiner, Joseph and Belguith, Sana},
+  title        = {Progressive Behavioral Drift through Compression Valleys in Large Language Models},
+  year         = {2025},
+  howpublished = {arXiv:2511.17194}
+}
+
+% VERIFIED arXiv:2606.20419v2 (28 Aug 2026).
+% arXiv comments claim a COLM 2026 workshop / EMNLP 2026; ambiguous and unverified.
+@misc{spectral,
+  author       = {Tiwari, Karn and Chordia, Varnith and P., Prathosh A.},
+  title        = {Spectral Query-Key Product Weight Steering for Training-Free {VLM} Hallucination Mitigation},
+  year         = {2026},
+  howpublished = {arXiv:2606.20419}
+}
+
+% VERIFIED arXiv:2502.03628v2 (1 Jul 2025). VISTA is the method name, confirmed
+% in the abstract. Venue VERIFIED at PMLR: ICML 2025, PMLR vol. 267,
+% pp. 35799--35819, paper id pmlr-v267-li25ca. PMLR assigns no DOI.
+% (PMLR house-styles the title with "Via"; the authors' own lowercase "via" is kept.)
+@inproceedings{vista,
+  author    = {Li, Zhuowei and Shi, Haizhou and Gao, Yunhe and Liu, Di and Wang, Zhenting and Chen, Yuxiao and Liu, Ting and Zhao, Long and Wang, Hao and Metaxas, Dimitris N.},
+  title     = {The Hidden Life of Tokens: Reducing Hallucination of Large Vision-Language Models via Visual Information Steering},
+  booktitle = {Proceedings of the 42nd International Conference on Machine Learning ({ICML})},
+  series    = {Proceedings of Machine Learning Research},
+  volume    = {267},
+  pages     = {35799--35819},
+  publisher = {PMLR},
+  year      = {2025},
+  url       = {https://proceedings.mlr.press/v267/li25ca.html}
+}
+
+% VERIFIED arXiv:2511.10292v2 (19 May 2026). RUDDER confirmed in the abstract
+% (Residual-Update Directed DEcoding Regulation).
+% arXiv comments say "Accepted by ICML 2026" -- author claim, not verified at PMLR.
+@misc{rudder,
+  author       = {Zou, Zhengtao and Gao, Ya and Guan, Jiarui and Li, Bin and Marttinen, Pekka},
+  title        = {Adaptive Residual-Update Steering for Low-Overhead Hallucination Mitigation in Large Vision Language Models},
+  year         = {2025},
+  howpublished = {arXiv:2511.10292}
+}
+
+% VERIFIED arXiv:2605.24957v1 (24 May 2026).
+% NOTE: this paper defines NO method acronym at all. It is NOT "SADI" (that name
+% belongs to arXiv:2410.12299, a different paper by different authors).
+@misc{regionaware,
+  author       = {Xu, Yuanzhi and Gao, Qian and Fan, Jun and Ding, Guohui and Yang, Zhenyu and Lin, Sixue and Xiao, Yuteng},
+  title        = {Mitigating Object Hallucinations in Vision-Language Models through Region-Aware Attention Recalibration},
+  year         = {2026},
+  howpublished = {arXiv:2605.24957}
+}
+
+% VERIFIED arXiv:2603.04908v1 (5 Mar 2026). Method acronym AdaIAT confirmed in abstract.
+@misc{adaiat,
+  author       = {Zhong, Li'an and He, Ziqiang and Zheng, Jibin and Li, Jin and Wang, Z. Jane and Kang, Xiangui},
+  title        = {{AdaIAT}: Adaptively Increasing Attention to Generated Text to Alleviate Hallucinations in {LVLM}},
+  year         = {2026},
+  howpublished = {arXiv:2603.04908}
+}
+
+% VERIFIED arXiv:2505.21472v2 (11 Aug 2025) AND the published version.
+% Venue VERIFIED at CVF Open Access + CrossRef: WACV 2026, pp. 1242--1251,
+% DOI 10.1109/WACV61042.2026.00127. The PUBLISHED TITLE DIFFERS from the arXiv
+% title; the published title is used here. Authors match the label.
+@inproceedings{caac,
+  author    = {Fazli, Mehrdad and Wei, Bowen and Sari, Ahmet and Zhu, Ziwei},
+  title     = {{CAAC}: Confidence-Aware Attention Calibration to Reduce Hallucinations in Large Vision-Language Models},
+  booktitle = {Proceedings of the {IEEE/CVF} Winter Conference on Applications of Computer Vision ({WACV})},
+  pages     = {1242--1251},
+  year      = {2026},
+  doi       = {10.1109/WACV61042.2026.00127}
+}
+
+% VERIFIED arXiv:2305.14800v6 (23 Jan 2024).
+% Venue VERIFIED: NeurIPS 36 (2023), pp. 40924--40943, DOI 10.52202/075280-1782.
+@inproceedings{shortcut,
+  author    = {Yang, Xu and Wu, Yongliang and Yang, Mingzhuo and Chen, Haokun and Geng, Xin},
+  title     = {Exploring Diverse In-Context Configurations for Image Captioning},
+  booktitle = {Advances in Neural Information Processing Systems 36 ({NeurIPS} 2023)},
+  pages     = {40924--40943},
+  year      = {2023},
+  doi       = {10.52202/075280-1782}
+}
+
+% VERIFIED arXiv:2406.02265v3 (6 Aug 2024).
+% Venue VERIFIED at the ACL Anthology: ACL 2024 (Volume 1: Long Papers),
+% pp. 9285--9299, DOI 10.18653/v1/2024.acl-long.503. Title/author form taken
+% from the Anthology's canonical record (note lowercase "augmented").
+@inproceedings{endpoint,
+  author    = {Li, Wenyan and Li, Jiaang and Ramos, Rita and Tang, Raphael and Elliott, Desmond},
+  title     = {Understanding Retrieval Robustness for Retrieval-augmented Image Captioning},
+  booktitle = {Proceedings of the 62nd Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)},
+  publisher = {Association for Computational Linguistics},
+  pages     = {9285--9299},
+  year      = {2024},
+  doi       = {10.18653/v1/2024.acl-long.503}
+}
+
+% VERIFIED arXiv:2501.17148v3 (3 Mar 2025). Title and authors match exactly.
+% Venue VERIFIED at PMLR: ICML 2025, PMLR vol. 267, pp. 67035--67080,
+% paper id pmlr-v267-wu25a. PMLR assigns no DOI.
+@inproceedings{axbench,
+  author    = {Wu, Zhengxuan and Arora, Aryaman and Geiger, Atticus and Wang, Zheng and Huang, Jing and Jurafsky, Dan and Manning, Christopher D. and Potts, Christopher},
+  title     = {{AxBench}: Steering {LLMs}? Even Simple Baselines Outperform Sparse Autoencoders},
+  booktitle = {Proceedings of the 42nd International Conference on Machine Learning ({ICML})},
+  series    = {Proceedings of Machine Learning Research},
+  volume    = {267},
+  pages     = {67035--67080},
+  publisher = {PMLR},
+  year      = {2025},
+  url       = {https://proceedings.mlr.press/v267/wu25a.html}
+}
+
+% ============================================================================
+% EVALUATION METHODOLOGY
+% ============================================================================
+
+% VERIFIED arXiv:1910.05446v3 (16 Jun 2020). Title and authors match exactly.
+% No journal-ref and no published version found -> venue NOT asserted.
+@misc{choi,
+  author       = {Choi, Dami and Shallue, Christopher J. and Nado, Zachary and Lee, Jaehoon and Maddison, Chris J. and Dahl, George E.},
+  title        = {On Empirical Comparisons of Optimizers for Deep Learning},
+  year         = {2019},
+  howpublished = {arXiv:1910.05446}
+}
+
+% VERIFIED from the paper PDF itself (openreview.net/references/pdf?id=HyT0zqkwG,
+% 87761 bytes, %PDF-1.5, 4 pages). Running header on every page reads
+% "Workshop track - ICLR 2018". Byline as printed: D. Sculley, Jasper Snoek,
+% Ali Rahimi, Alex Wiltschko (Google AI). No arXiv id, no DOI.
+@inproceedings{winnerscurse,
+  author    = {Sculley, D. and Snoek, Jasper and Rahimi, Ali and Wiltschko, Alex},
+  title     = {Winner's Curse? On Pace, Progress, and Empirical Rigor},
+  booktitle = {International Conference on Learning Representations ({ICLR}) Workshop Track},
+  year      = {2018},
+  url       = {https://openreview.net/forum?id=rJWF0Fywf}
+}
+
+% VERIFIED arXiv:1907.06902v3 (16 Aug 2019).
+% Venue VERIFIED: RecSys 2019, pp. 101--109, DOI 10.1145/3298689.3347058
+% (the DOI resolves and matches).
+@inproceedings{dacrema,
+  author    = {Ferrari Dacrema, Maurizio and Cremonesi, Paolo and Jannach, Dietmar},
+  title     = {Are We Really Making Much Progress? A Worrying Analysis of Recent Neural Recommendation Approaches},
+  booktitle = {Proceedings of the 13th {ACM} Conference on Recommender Systems ({RecSys} 2019)},
+  publisher = {ACM},
+  pages     = {101--109},
+  year      = {2019},
+  doi       = {10.1145/3298689.3347058}
+}
+
+% VERIFIED arXiv:2005.09683v2 (1 Jun 2020).
+% Venue VERIFIED: RecSys 2020, pp. 240--248, DOI 10.1145/3383313.3412488.
+@inproceedings{rendle,
+  author    = {Rendle, Steffen and Krichene, Walid and Zhang, Li and Anderson, John},
+  title     = {Neural Collaborative Filtering vs. Matrix Factorization Revisited},
+  booktitle = {Proceedings of the 14th {ACM} Conference on Recommender Systems ({RecSys} 2020)},
+  publisher = {ACM},
+  pages     = {240--248},
+  year      = {2020},
+  doi       = {10.1145/3383313.3412488}
+}
+
+% VERIFIED arXiv:1711.10337v4 (29 Oct 2018). Title and authors match exactly.
+% Venue VERIFIED at proceedings.neurips.cc (2018 index + paper page metadata,
+% checked with a working positive control): Advances in Neural Information
+% Processing Systems 31 (NeurIPS 2018). That index publishes no page numbers.
+@inproceedings{lucic,
+  author    = {Lucic, Mario and Kurach, Karol and Michalski, Marcin and Gelly, Sylvain and Bousquet, Olivier},
+  title     = {Are {GANs} Created Equal? A Large-Scale Study},
+  booktitle = {Advances in Neural Information Processing Systems 31 ({NeurIPS} 2018)},
+  year      = {2018},
+  url       = {https://papers.nips.cc/paper_files/paper/2018/hash/e46de7e1bcaaced9a54f1e9d0d2f800d-Abstract.html}
+}
+
+% ============================================================================
+% FOUNDATIONAL
+% ============================================================================
+
+% VERIFIED: canonical record from the ACL Anthology (D18-1437.bib) and CrossRef.
+% arXiv:1809.02156v2 confirms the same author list.
+@inproceedings{chair,
+  author    = {Rohrbach, Anna and Hendricks, Lisa Anne and Burns, Kaylee and Darrell, Trevor and Saenko, Kate},
+  title     = {Object Hallucination in Image Captioning},
+  booktitle = {Proceedings of the 2018 Conference on Empirical Methods in Natural Language Processing},
+  publisher = {Association for Computational Linguistics},
+  pages     = {4035--4045},
+  year      = {2018},
+  doi       = {10.18653/v1/D18-1437}
+}
+
+% VERIFIED: canonical record from the ACL Anthology (2023.emnlp-main.20.bib).
+% NOTE: the Anthology and CrossRef print the fifth author as "Xin Zhao";
+% arXiv:2305.10355v3 prints "Wayne Xin Zhao". The published form is used here.
+@inproceedings{pope,
+  author    = {Li, Yifan and Du, Yifan and Zhou, Kun and Wang, Jinpeng and Zhao, Xin and Wen, Ji-Rong},
+  title     = {Evaluating Object Hallucination in Large Vision-Language Models},
+  booktitle = {Proceedings of the 2023 Conference on Empirical Methods in Natural Language Processing},
+  publisher = {Association for Computational Linguistics},
+  pages     = {292--305},
+  year      = {2023},
+  doi       = {10.18653/v1/2023.emnlp-main.20}
+}
+
+% VERIFIED arXiv:2310.03744v2 (15 May 2024).
+% Venue VERIFIED: CVPR 2024, pp. 26286--26296, DOI 10.1109/CVPR52733.2024.02484.
+@inproceedings{llava15,
+  author    = {Liu, Haotian and Li, Chunyuan and Li, Yuheng and Lee, Yong Jae},
+  title     = {Improved Baselines with Visual Instruction Tuning},
+  booktitle = {Proceedings of the {IEEE/CVF} Conference on Computer Vision and Pattern Recognition ({CVPR})},
+  pages     = {26286--26296},
+  year      = {2024},
+  doi       = {10.1109/CVPR52733.2024.02484}
+}
+
+% VERIFIED arXiv:2408.03326v3 (26 Oct 2024).
+% Venue VERIFIED at TMLR's official bib (jmlr.org/tmlr/papers/bib/zKv8qULV6n.bib):
+% Transactions on Machine Learning Research, 2025, ISSN 2835-8856. TMLR is
+% continuous-publication: no volume, issue, pages or DOI.
+@article{llavaov,
+  author  = {Li, Bo and Zhang, Yuanhan and Guo, Dong and Zhang, Renrui and Li, Feng and Zhang, Hao and Zhang, Kaichen and Zhang, Peiyuan and Li, Yanwei and Liu, Ziwei and Li, Chunyuan},
+  title   = {{LLaVA}-{OneVision}: Easy Visual Task Transfer},
+  journal = {Transactions on Machine Learning Research},
+  issn    = {2835-8856},
+  year    = {2025},
+  url     = {https://openreview.net/forum?id=zKv8qULV6n}
+}
+
+% VERIFIED arXiv:2306.14824v3 (13 Jul 2023; v1 26 Jun 2023). Id prefix 2306 =
+% June 2023; the 2024 year below is the venue year, not the preprint year.
+% Venue VERIFIED at OpenReview: venueid ICLR.cc/2024/Conference, venue field
+% "ICLR 2024 poster", forum lLmqxkfSIw, publication date 16 Jan 2024. ICLR
+% publishes no page numbers and no DOI.
+% NOTE: the PUBLISHED record differs from the arXiv record in two ways. It
+% drops the "Kosmos-2:" title prefix, and it adds an EIGHTH author, Qixiang Ye
+% (arXiv v3 lists 7, without him). The published title and 8-author list are
+% used here because this is the ICLR 2024 record.
+@inproceedings{kosmos2,
+  author    = {Peng, Zhiliang and Wang, Wenhui and Dong, Li and Hao, Yaru and Huang, Shaohan and Ma, Shuming and Ye, Qixiang and Wei, Furu},
+  title     = {Grounding Multimodal Large Language Models to the World},
+  booktitle = {The Twelfth International Conference on Learning Representations ({ICLR})},
+  year      = {2024},
+  url       = {https://openreview.net/forum?id=lLmqxkfSIw}
+}
+
+% VERIFIED arXiv:2502.13923v1 (19 Feb 2025 -- the only version; id prefix 2502
+% = February 2025). No journal-ref, no DOI, no comments -> venue NOT asserted.
+% CREDIT LINE: the report's own title page bylines the work to "Qwen Team,
+% Alibaba Group" with no individual authors. The arXiv record lists individual
+% names but TRUNCATES them ("additional authors not shown" on the abs page, and
+% the API returns the same truncated 27), so the full individual list is not
+% recoverable from the record; the corporate byline as printed is used instead.
+@misc{qwen25vl,
+  author       = {{Qwen Team}},
+  title        = {{Qwen2.5-VL} Technical Report},
+  year         = {2025},
+  howpublished = {arXiv:2502.13923}
+}
+
+% VERIFIED at Springer (link.springer.com/chapter/10.1007/978-3-319-10602-1_48)
+% and CrossRef: ECCV 2014, LNCS, pp. 740--755.
+% NOTE: the PUBLISHED version has 8 authors (both sources agree, 8 citation_author
+% tags). arXiv:1405.0312v3 lists 10, adding Lubomir Bourdev and Ross Girshick.
+% The published 8-author list is used here because this is the ECCV 2014 record.
+@inproceedings{coco,
+  author    = {Lin, Tsung-Yi and Maire, Michael and Belongie, Serge and Hays, James and Perona, Pietro and Ramanan, Deva and Doll{\'{a}}r, Piotr and Zitnick, C. Lawrence},
+  title     = {Microsoft {COCO}: Common Objects in Context},
+  booktitle = {Computer Vision -- {ECCV} 2014},
+  series    = {Lecture Notes in Computer Science},
+  publisher = {Springer International Publishing},
+  pages     = {740--755},
+  year      = {2014},
+  doi       = {10.1007/978-3-319-10602-1_48}
+}
+
+% VERIFIED at CrossRef (DOI record), PubMed (PMID 15405679) and the Wiley
+% article page: Cancer 3(1):32--35, 1950. Author prints as "W. J. Youden";
+% the expanded given name was not confirmed at any source, so initials are kept.
+% DOI omitted deliberately: it contains < and > which do not survive BibTeX/LaTeX
+% text mode cleanly. DOI is 10.1002/1097-0142(1950)3:1<32::AID-CNCR2820030106>3.0.CO;2-3
+@article{youden1950,
+  author  = {Youden, W. J.},
+  title   = {Index for Rating Diagnostic Tests},
+  journal = {Cancer},
+  volume  = {3},
+  number  = {1},
+  pages   = {32--35},
+  year    = {1950}
+}
+
+% VERIFIED at CrossRef (APA's own deposit) and PubMed (PMID 2966230):
+% J. Exp. Psychol. General 117(1):34--50, 1988, DOI 10.1037/0096-3445.117.1.34.
+@article{snodgrass1988,
+  author  = {Snodgrass, Joan G. and Corwin, June},
+  title   = {Pragmatics of Measuring Recognition Memory: Applications to Dementia and Amnesia},
+  journal = {Journal of Experimental Psychology: General},
+  volume  = {117},
+  number  = {1},
+  pages   = {34--50},
+  year    = {1988},
+  doi     = {10.1037/0096-3445.117.1.34}
+}
+
+@misc{llmsdt2026,
+  title        = {{LLMs} as Signal Detectors: Sensitivity, Bias, and the Temperature-Criterion Analogy},
+  author       = {Cacioli, Jon-Paul},
+  year         = {2026},
+  howpublished = {arXiv:2603.14893}
+}
+
+@misc{llmmetacog2026,
+  title        = {Do {LLMs} Know What They Know? Measuring Metacognitive Efficiency with Signal Detection Theory},
+  author       = {Cacioli, Jon-Paul},
+  year         = {2026},
+  howpublished = {arXiv:2603.25112}
+}
+
+@misc{machinepsych2026,
+  title        = {Machine Psychometrics: A Mathematical Psychology of Artificial Intelligence},
+  author       = {Bogdan, Alex and de Valois-Franklin, Adrian},
+  year         = {2026},
+  howpublished = {arXiv:2605.23952}
+}
+
+@article{decarlo2002,
+  title   = {Signal detection theory with finite mixture distributions: Theoretical developments with applications to recognition memory},
+  author  = {DeCarlo, Lawrence T.},
+  journal = {Psychological Review},
+  volume  = {109},
+  number  = {4},
+  pages   = {710--721},
+  year    = {2002},
+  doi     = {10.1037/0033-295X.109.4.710}
+}
+% refs_ablation.bib
+% Image-ablated / blind-control prior work. Verified at primary source 2026-09-16.
+% Each entry below was read from https://arxiv.org/abs/<id> (title, author list,
+% version, submission date) and, where a venue is given, from the publisher's
+% own proceedings index. No field here is inferred or reconstructed.
+
+% Verified: arXiv:2606.31257v1, submitted Tue, 30 Jun 2026. cs.CV.
+% No journal-ref, no DOI, no venue comment on the arXiv record -> misc entry.
+@misc{liao2026decodable,
+  author       = {Liao, Chih-Ting and Shen, Fei and Cao, Xin and Chua, Tat-Seng},
+  title        = {Decodable Is Not Grounded: A Vision-Ablation Arbiter for {VLM} Spatial Reasoning},
+  year         = {2026},
+  howpublished = {arXiv:2606.31257},
+  eprint       = {2606.31257},
+  archivePrefix = {arXiv},
+  primaryClass = {cs.CV},
+  note         = {Version v1, 30 June 2026}
+}
+
+% Verified: arXiv:2607.03647v1, submitted Sat, 4 Jul 2026. cs.CV.
+% No journal-ref, no DOI, no venue comment on the arXiv record -> misc entry.
+@misc{zafar2026medical,
+  author       = {Zafar, Anas and Murali, Leema Krishna and Bharadwaj, Siddhant
+                  and Vashist, Ashish and Wu, Jia},
+  title        = {Do Medical Vision Language Models Actually See? {A} Counterfactual
+                  Grounding Framework and Hard-Negative Contrastive Training for
+                  Visually-Reliant Medical {VLMs}},
+  year         = {2026},
+  howpublished = {arXiv:2607.03647},
+  eprint       = {2607.03647},
+  archivePrefix = {arXiv},
+  primaryClass = {cs.CV},
+  note         = {Version v1, 4 July 2026}
+}
+
+% Verified: arXiv:2605.22903v1, submitted Thu, 21 May 2026.
+% Venue VERIFIED independently of the author-supplied arXiv comment, at the CVF
+% Open Access proceedings index for CVPR 2026 Workshops (GRAIL-V), which lists
+% this paper with pages 11260--11273 and its own BibTeX record. Published venue
+% therefore used in place of the arXiv preprint form.
+@inproceedings{lan2026seeing,
+  author    = {Lan, Zixuan and Sun, Luzhe and Walter, Matthew R. and Zhou, Jiawei},
+  title     = {Seeing without Looking: Do Vision-Language Benchmarks Really Test Vision?},
+  booktitle = {Proceedings of the {IEEE/CVF} Conference on Computer Vision and
+               Pattern Recognition ({CVPR}) Workshops},
+  year      = {2026},
+  month     = {June},
+  pages     = {11260--11273},
+  note      = {{GRAIL-V} Workshop; also arXiv:2605.22903}
+}
+
+% ============================================================================
+% BLIND BASELINES / LANGUAGE PRIORS / GENERATIVE COVERAGE
+% Verified at primary source 2026-09-16 (arXiv abs + arXiv HTML full text,
+% CVF Open Access / proceedings.neurips.cc paper pages, CrossRef DOI records).
+% ============================================================================
+
+% VERIFIED arXiv:2403.20330v2 (9 Apr 2024; v1 29 Mar 2024). Title and all 11
+% authors identical on arXiv, the NeurIPS paper page and the CrossRef record.
+% Venue VERIFIED at proceedings.neurips.cc (2024 index lists it under the MAIN
+% Conference track, not Datasets and Benchmarks; paper page + official BibTeX)
+% and CrossRef: NeurIPS 37 (2024), pp. 27056--27087, DOI 10.52202/079017-0850.
+% NOTE: MG = score with image minus score without image (Sec. 4.3, Eq. 1). The
+% subscript notation differs between versions: arXiv writes S_v - S_wv, the
+% NeurIPS PDF writes S_wv - S_ov, so "wv" means "without" on arXiv and "with"
+% in the proceedings. For GeminiPro-Vision and CogVLM-Chat the no-image setting
+% used pure grey images instead of removing image tokens (Sec. 5.1).
+@inproceedings{mmstar,
+  author    = {Chen, Lin and Li, Jinsong and Dong, Xiaoyi and Zhang, Pan and Zang, Yuhang and Chen, Zehui and Duan, Haodong and Wang, Jiaqi and Qiao, Yu and Lin, Dahua and Zhao, Feng},
+  title     = {Are We on the Right Way for Evaluating Large Vision-Language Models?},
+  booktitle = {Advances in Neural Information Processing Systems 37 ({NeurIPS} 2024)},
+  pages     = {27056--27087},
+  year      = {2024},
+  doi       = {10.52202/079017-0850}
+}
+
+% VERIFIED arXiv:2311.07397v2 (23 Feb 2024; v1 13 Nov 2023). Title identical in
+% v1 and v2; 11 authors per the arXiv abs page.
+% No journal-ref, comments "14 pages, 9 figures" -> venue NOT asserted. Not found
+% in the ACL Anthology full bib export (positive controls POPE and CHAIR found);
+% OpenAlex lists only the arXiv preprint; the authors' GitHub README cites it as
+% an arXiv preprint; DBLP returned a bot-check page and was NOT consulted. Venue
+% absence is therefore unconfirmed, not established.
+@misc{amber,
+  author       = {Wang, Junyang and Wang, Yuhang and Xu, Guohai and Zhang, Jing and Gu, Yukai and Jia, Haitao and Wang, Jiaqi and Xu, Haiyang and Yan, Ming and Zhang, Ji and Sang, Jitao},
+  title        = {{AMBER}: An {LLM}-free Multi-dimensional Benchmark for {MLLMs} Hallucination Evaluation},
+  year         = {2023},
+  howpublished = {arXiv:2311.07397}
+}
+
+% VERIFIED arXiv:1612.00837v3 (15 May 2017; v1 2 Dec 2016) and the CVF Open
+% Access page + paper PDF. Venue VERIFIED at CVF Open Access (CVPR 2017 index)
+% and the CrossRef record of DOI 10.1109/CVPR.2017.670 (IEEE deposit).
+% NOTE: CVF house-styles the title "Making the v in VQA"; the paper PDF, arXiv
+% and the IEEE record all print "V", which is kept. PAGES DIFFER between sources:
+% the IEEE DOI record gives 6325--6334, the CVF Open Access page gives
+% 6904--6913. The DOI-record pagination is used so pages match the DOI.
+% IDENTITY: this is the 5-author CVPR paper, NOT the 6-author IJCV extension of
+% the same title (DOI 10.1007/s11263-018-1116-0, adds Aishwarya Agrawal).
+@inproceedings{goyal2017vqa,
+  author    = {Goyal, Yash and Khot, Tejas and Summers-Stay, Douglas and Batra, Dhruv and Parikh, Devi},
+  title     = {Making the {V} in {VQA} Matter: Elevating the Role of Image Understanding in Visual Question Answering},
+  booktitle = {Proceedings of the {IEEE} Conference on Computer Vision and Pattern Recognition ({CVPR})},
+  pages     = {6325--6334},
+  year      = {2017},
+  doi       = {10.1109/CVPR.2017.670}
+}
+
+% VERIFIED arXiv:1712.00377v2 (3 Jun 2018; v1 1 Dec 2017) and the CVF Open
+% Access page + paper PDF. Venue VERIFIED at CVF Open Access (CVPR 2018 index,
+% 2018-06-20 listing) and the CrossRef record: CVPR 2018, pp. 4971--4980 (CVF
+% and CrossRef agree), DOI 10.1109/CVPR.2018.00522. Title and all 4 authors
+% identical on arXiv, CVF and CrossRef.
+@inproceedings{agrawal2018vqacp,
+  author    = {Agrawal, Aishwarya and Batra, Dhruv and Parikh, Devi and Kembhavi, Aniruddha},
+  title     = {Don't Just Assume; Look and Answer: Overcoming Priors for Visual Question Answering},
+  booktitle = {Proceedings of the {IEEE/CVF} Conference on Computer Vision and Pattern Recognition ({CVPR})},
+  pages     = {4971--4980},
+  year      = {2018},
+  doi       = {10.1109/CVPR.2018.00522}
+}
+
+@inproceedings{sparc,
+  author    = {Mingi Jung and Saehyung Lee and Eunji Kim and Sungroh Yoon},
+  title     = {Visual Attention Never Fades: Selective Progressive Attention {ReCalibration}
+               for Detailed Image Captioning in Multimodal Large Language Models},
+  booktitle = {Proceedings of the 42nd International Conference on Machine Learning (ICML)},
+  series    = {Proceedings of Machine Learning Research},
+  volume    = {267},
+  pages     = {28527--28551},
+  year      = {2025},
+  note      = {arXiv:2502.01419}
+}
+
+@misc{mirage,
+  author        = {Hao Yin and Guangzong Si and Zilei Wang},
+  title         = {The Mirage of Performance Gains: Why Contrastive Decoding Fails to
+                   Mitigate Object Hallucinations in {MLLMs}?},
+  year          = {2025},
+  eprint        = {2504.10020},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.CV}
+}
+
+@inproceedings{lessismore,
+  author    = {Zihao Yue and Liang Zhang and Qin Jin},
+  title     = {Less is More: Mitigating Multimodal Hallucination from an {EOS} Decision Perspective},
+  booktitle = {Proceedings of the 62nd Annual Meeting of the Association for Computational
+               Linguistics (ACL)},
+  year      = {2024},
+  note      = {arXiv:2402.14545}
+}
+
+@inproceedings{throne,
+  author    = {Prannay Kaul and Zhizhong Li and Hao Yang and Yonatan Dukler and
+               Ashwin Swaminathan and C. J. Taylor and Stefano Soatto},
+  title     = {{THRONE}: An Object-based Hallucination Benchmark for the Free-form
+               Generations of Large Vision-Language Models},
+  booktitle = {Proceedings of the {IEEE/CVF} Conference on Computer Vision and Pattern
+               Recognition ({CVPR})},
+  year      = {2024},
+  note      = {arXiv:2405.05256}
+}
+
+@misc{kaduri2025whats,
+  author        = {Omri Kaduri and Shai Bagon and Tali Dekel},
+  title         = {What's in the Image? A Deep-Dive into the Vision of Vision Language Models},
+  year          = {2024},
+  eprint        = {2411.17491},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.CV}
+}

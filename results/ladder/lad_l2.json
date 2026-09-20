@@ -1,0 +1,817 @@
+{
+ "sentinel": true,
+ "host": "vgi1",
+ "B": 4000,
+ "seed": 20260919,
+ "prereg": "SPRINT/LADDER_PREREG.md @ 09ddcf6 (Amendment 1)",
+ "usable_thresholds": {
+  "min_captions_with_mention": 250,
+  "min_mention_occurrences": 1000
+ },
+ "PC3": {
+  "measured": {
+   "CHAIR_s_vanilla": 45.0,
+   "CHAIR_i_vanilla": 12.777632610399792,
+   "CHAIR_i_pai05": 7.213396307428081,
+   "H_vanilla": 0.781577325939618,
+   "F_vanilla": 0.010018499700356965
+  },
+  "reference": {
+   "CHAIR_s_vanilla": 45.0,
+   "CHAIR_i_vanilla": 12.78,
+   "CHAIR_i_pai05": 7.2,
+   "H_vanilla": 0.78,
+   "F_vanilla": 0.01
+  },
+  "abs_dev": {
+   "CHAIR_s_vanilla": 0.0,
+   "CHAIR_i_vanilla": 0.002367389600207659,
+   "CHAIR_i_pai05": 0.013396307428080512,
+   "H_vanilla": 0.0015773259396180128,
+   "F_vanilla": 1.8499700356965076e-05
+  },
+  "PASS": true,
+  "tol_chair": 0.05,
+  "tol_rate": 0.005,
+  "n_images": 500,
+  "sighted": {
+   "vanilla": {
+    "H": 0.781577325939618,
+    "F": 0.010018499700356965,
+    "J": 0.7715588262392611,
+    "dprime": 3.1031856630275887,
+    "c": 0.7740614854578063,
+    "logOR": 5.8681349355124865,
+    "H_raw": 0.781750924784217,
+    "F_raw": 0.010005732450883318,
+    "J_raw": 0.7717451923333337,
+    "dprime_uncorr": 3.1042530520030756,
+    "c_uncorr": 0.7740063177720771
+   },
+   "pai05": {
+    "H": 0.708256315465188,
+    "F": 0.005041819745173141,
+    "J": 0.7032144957200148,
+    "dprime": 3.121245769269687,
+    "c": 1.0123249845742333,
+    "logOR": 6.1718640604909405,
+    "H_raw": 0.7083847102342786,
+    "F_raw": 0.005028922820365834,
+    "J_raw": 0.7033557874139128,
+    "dprime_uncorr": 3.122506185554269,
+    "c_uncorr": 1.012581114072704
+   },
+   "gain_i": 5.564236302971711,
+   "dJ": -0.06834433051924627
+  }
+ },
+ "sighted_contrast": {
+  "gain_i": {
+   "point": 5.564236302971711,
+   "ci": [
+    3.881185937088238,
+    7.175845194117467
+   ],
+   "n_boot": 4000
+  },
+  "dJ": {
+   "point": -0.06834433051924627,
+   "ci": [
+    -0.08813326240131937,
+    -0.04850034593033559
+   ],
+   "n_boot": 4000
+  }
+ },
+ "severity": {
+  "emb_cos": {
+   "noise16": 0.9924591437578202,
+   "noise32": 0.9843563538789749,
+   "noise64": 0.9660489087104798,
+   "blur4": 0.9557860012054443,
+   "blur16": 0.8740106561183929,
+   "lowres16": 0.9105524725914002,
+   "shuffle24": 0.9213742306232452,
+   "identity": 0.9999999935626984,
+   "grey": 0.8978791140317917,
+   "black": 0.9063039577007294,
+   "mismatch": 0.92012426674366
+  },
+  "material_floor_emb_cos": 0.96006213337183,
+  "anchor": "midpoint between identity (1.0) and mismatch"
+ },
+ "denominator_screen": {
+  "noise16": {
+   "mention_occurrences": 3755,
+   "captions_with_mention": 500,
+   "n": 500,
+   "median_tokens": 114.5,
+   "mean_tokens": 111.278,
+   "n_distinct_texts": 500,
+   "truncation_rate": 0.0,
+   "empty_rate": 0.0,
+   "CHAIR_i": 13.049267643142477,
+   "CHAIR_s": 45.6,
+   "le3_token_rate": 0.0,
+   "top_text_share": 0.002,
+   "DEFINED": true,
+   "USABLE": true,
+   "verdict": "USABLE",
+   "emb_cos": 0.9924591437578202,
+   "MATERIAL": false
+  },
+  "noise32": {
+   "mention_occurrences": 3593,
+   "captions_with_mention": 500,
+   "n": 500,
+   "median_tokens": 111.5,
+   "mean_tokens": 109.02,
+   "n_distinct_texts": 500,
+   "truncation_rate": 0.0,
+   "empty_rate": 0.0,
+   "CHAIR_i": 11.68939604787086,
+   "CHAIR_s": 37.6,
+   "le3_token_rate": 0.0,
+   "top_text_share": 0.002,
+   "DEFINED": true,
+   "USABLE": true,
+   "verdict": "USABLE",
+   "emb_cos": 0.9843563538789749,
+   "MATERIAL": false
+  },
+  "noise64": {
+   "mention_occurrences": 3346,
+   "captions_with_mention": 498,
+   "n": 500,
+   "median_tokens": 101.0,
+   "mean_tokens": 103.322,
+   "n_distinct_texts": 500,
+   "truncation_rate": 0.0,
+   "empty_rate": 0.0,
+   "CHAIR_i": 13.359234907352063,
+   "CHAIR_s": 39.4,
+   "le3_token_rate": 0.0,
+   "top_text_share": 0.002,
+   "DEFINED": true,
+   "USABLE": true,
+   "verdict": "USABLE",
+   "emb_cos": 0.9660489087104798,
+   "MATERIAL": false
+  },
+  "blur4": {
+   "mention_occurrences": 3310,
+   "captions_with_mention": 489,
+   "n": 500,
+   "median_tokens": 103.0,
+   "mean_tokens": 103.294,
+   "n_distinct_texts": 500,
+   "truncation_rate": 0.0,
+   "empty_rate": 0.0,
+   "CHAIR_i": 14.743202416918429,
+   "CHAIR_s": 43.0,
+   "le3_token_rate": 0.0,
+   "top_text_share": 0.002,
+   "DEFINED": true,
+   "USABLE": true,
+   "verdict": "USABLE",
+   "emb_cos": 0.9557860012054443,
+   "MATERIAL": true
+  },
+  "blur16": {
+   "mention_occurrences": 1465,
+   "captions_with_mention": 378,
+   "n": 500,
+   "median_tokens": 77.0,
+   "mean_tokens": 78.598,
+   "n_distinct_texts": 500,
+   "truncation_rate": 0.0,
+   "empty_rate": 0.0,
+   "CHAIR_i": 39.18088737201365,
+   "CHAIR_s": 40.2,
+   "le3_token_rate": 0.0,
+   "top_text_share": 0.002,
+   "DEFINED": true,
+   "USABLE": true,
+   "verdict": "USABLE",
+   "emb_cos": 0.8740106561183929,
+   "MATERIAL": true
+  },
+  "lowres16": {
+   "mention_occurrences": 1441,
+   "captions_with_mention": 405,
+   "n": 500,
+   "median_tokens": 78.0,
+   "mean_tokens": 78.186,
+   "n_distinct_texts": 500,
+   "truncation_rate": 0.0,
+   "empty_rate": 0.0,
+   "CHAIR_i": 43.78903539208883,
+   "CHAIR_s": 42.6,
+   "le3_token_rate": 0.0,
+   "top_text_share": 0.002,
+   "DEFINED": true,
+   "USABLE": true,
+   "verdict": "USABLE",
+   "emb_cos": 0.9105524725914002,
+   "MATERIAL": true
+  },
+  "shuffle24": {
+   "mention_occurrences": 2439,
+   "captions_with_mention": 450,
+   "n": 500,
+   "median_tokens": 101.0,
+   "mean_tokens": 108.346,
+   "n_distinct_texts": 499,
+   "truncation_rate": 0.0,
+   "empty_rate": 0.0,
+   "CHAIR_i": 25.830258302583026,
+   "CHAIR_s": 40.400000000000006,
+   "le3_token_rate": 0.0,
+   "top_text_share": 0.004,
+   "DEFINED": true,
+   "USABLE": true,
+   "verdict": "USABLE",
+   "emb_cos": 0.9213742306232452,
+   "MATERIAL": true
+  },
+  "mismatch": {
+   "mention_occurrences": 3827,
+   "captions_with_mention": 500,
+   "n": 500,
+   "median_tokens": 115.0,
+   "mean_tokens": 112.504,
+   "n_distinct_texts": 500,
+   "truncation_rate": 0.0,
+   "empty_rate": 0.0,
+   "CHAIR_i": 81.7873007577737,
+   "CHAIR_s": 98.8,
+   "le3_token_rate": 0.0,
+   "top_text_share": 0.002,
+   "DEFINED": true,
+   "USABLE": true,
+   "verdict": "USABLE",
+   "emb_cos": 0.92012426674366,
+   "MATERIAL": true
+  },
+  "black": {
+   "mention_occurrences": 0,
+   "captions_with_mention": 0,
+   "n": 500,
+   "median_tokens": 66.0,
+   "mean_tokens": 66.0,
+   "n_distinct_texts": 1,
+   "truncation_rate": 0.0,
+   "empty_rate": 0.0,
+   "CHAIR_i": null,
+   "CHAIR_s": 0.0,
+   "le3_token_rate": 0.0,
+   "top_text_share": 1.0,
+   "DEFINED": false,
+   "USABLE": false,
+   "verdict": "UNDEFINED (0/0)",
+   "emb_cos": 0.9063039577007294,
+   "MATERIAL": true
+  },
+  "grey_published": {
+   "mention_occurrences": 0,
+   "captions_with_mention": 0,
+   "n": 500,
+   "median_tokens": 66.0,
+   "n_distinct_texts": 1,
+   "verdict": "UNDEFINED (0/0)",
+   "emb_cos": null,
+   "MATERIAL": null
+  }
+ },
+ "contrast_at_usable_rungs": {
+  "noise16": {
+   "verdict": "GAIN-SURVIVES-BUT-ABLATION-NOT-MATERIAL",
+   "material_ablation": false,
+   "emb_cos": 0.9924591437578202,
+   "gain_i_rung": {
+    "point": 4.4892145575419455,
+    "ci": [
+     3.091114049307159,
+     5.866926775356879
+    ],
+    "n_boot": 4000
+   },
+   "gain_i_image": {
+    "point": 1.0750217454297655,
+    "ci": [
+     -0.7730921315767635,
+     2.8857552006549025
+    ],
+    "n_boot": 4000
+   },
+   "gain_i_sighted": {
+    "point": 5.564236302971711,
+    "ci": [
+     3.881185937088238,
+     7.175845194117467
+    ],
+    "n_boot": 4000
+   },
+   "dJ_rung": {
+    "point": -0.08550130835856928,
+    "ci": [
+     -0.10310324503314036,
+     -0.06776341217681693
+    ],
+    "n_boot": 4000
+   },
+   "dJ_image": {
+    "point": 0.017156977839323018,
+    "ci": [
+     -0.004828464949913097,
+     0.03878920626621445
+    ],
+    "n_boot": 4000
+   },
+   "levels": {
+    "vanilla": {
+     "H": 0.7735674676524954,
+     "F": 0.009836108288386878,
+     "J": 0.7637313593641085,
+     "dprime": 3.083188714563427,
+     "c": 0.7909472529970687
+    },
+    "pai05": {
+     "H": 0.6836105976586568,
+     "F": 0.00538054665311759,
+     "J": 0.6782300510055392,
+     "dprime": 3.028181923219887,
+     "c": 1.0362716355951598
+    },
+    "CHAIR_i_vanilla": 13.049267643142477,
+    "CHAIR_i_pai05": 8.560053085600531,
+    "CHAIR_s_vanilla": 45.6,
+    "CHAIR_s_pai05": 29.599999999999998
+   },
+   "denominator_caveat": "CHAIR_i's denominator is the arm's own mention set; the primary here is the fixed-unit J"
+  },
+  "noise32": {
+   "verdict": "GAIN-SURVIVES-BUT-ABLATION-NOT-MATERIAL",
+   "material_ablation": false,
+   "emb_cos": 0.9843563538789749,
+   "gain_i_rung": {
+    "point": 3.327107421509961,
+    "ci": [
+     1.9192143568842341,
+     4.80827663371676
+    ],
+    "n_boot": 4000
+   },
+   "gain_i_image": {
+    "point": 2.23712888146175,
+    "ci": [
+     0.35571340569481213,
+     4.057951758294556
+    ],
+    "n_boot": 4000
+   },
+   "gain_i_sighted": {
+    "point": 5.564236302971711,
+    "ci": [
+     3.881185937088238,
+     7.175845194117467
+    ],
+    "n_boot": 4000
+   },
+   "dJ_rung": {
+    "point": -0.08734207935553162,
+    "ci": [
+     -0.10632616464596378,
+     -0.06796818248446647
+    ],
+    "n_boot": 4000
+   },
+   "dJ_image": {
+    "point": 0.018997748836285355,
+    "ci": [
+     -0.005597990706695565,
+     0.04266468255857133
+    ],
+    "n_boot": 4000
+   },
+   "levels": {
+    "vanilla": {
+     "H": 0.7452248921749846,
+     "F": 0.007829802756715912,
+     "J": 0.7373950894182686,
+     "dprime": 3.0762920006713736,
+     "c": 0.8786077868484178
+    },
+    "pai05": {
+     "H": 0.6546518792359828,
+     "F": 0.004598869173245785,
+     "J": 0.650053010062737,
+     "dprime": 3.0025260039391504,
+     "c": 1.1033526126997308
+    },
+    "CHAIR_i_vanilla": 11.68939604787086,
+    "CHAIR_i_pai05": 8.362288626360899,
+    "CHAIR_s_vanilla": 37.6,
+    "CHAIR_s_pai05": 27.0
+   },
+   "denominator_caveat": "CHAIR_i's denominator is the arm's own mention set; the primary here is the fixed-unit J"
+  },
+  "noise64": {
+   "verdict": "GAIN-SURVIVES-BUT-ABLATION-NOT-MATERIAL",
+   "material_ablation": false,
+   "emb_cos": 0.9660489087104798,
+   "gain_i_rung": {
+    "point": 5.002475387801846,
+    "ci": [
+     3.539764714559431,
+     6.4336436657365725
+    ],
+    "n_boot": 4000
+   },
+   "gain_i_image": {
+    "point": 0.5617609151698648,
+    "ci": [
+     -1.4154077127090683,
+     2.5441170611079404
+    ],
+    "n_boot": 4000
+   },
+   "gain_i_sighted": {
+    "point": 5.564236302971711,
+    "ci": [
+     3.881185937088238,
+     7.175845194117467
+    ],
+    "n_boot": 4000
+   },
+   "dJ_rung": {
+    "point": -0.06512567837492389,
+    "ci": [
+     -0.08470899486653095,
+     -0.044992404763844744
+    ],
+    "n_boot": 4000
+   },
+   "dJ_image": {
+    "point": -0.003218652144322376,
+    "ci": [
+     -0.029674140256264237,
+     0.022724374779219885
+    ],
+    "n_boot": 4000
+   },
+   "levels": {
+    "vanilla": {
+     "H": 0.6792975970425139,
+     "F": 0.008116417832668907,
+     "J": 0.671181179209845,
+     "dprime": 2.869373617933789,
+     "c": 0.9689512634429591
+    },
+    "pai05": {
+     "H": 0.6102895871842268,
+     "F": 0.00423408634930561,
+     "J": 0.6060555008349211,
+     "dprime": 2.912883788512495,
+     "c": 1.176368016631847
+    },
+    "CHAIR_i_vanilla": 13.359234907352063,
+    "CHAIR_i_pai05": 8.356759519550216,
+    "CHAIR_s_vanilla": 39.4,
+    "CHAIR_s_pai05": 26.400000000000002
+   },
+   "denominator_caveat": "CHAIR_i's denominator is the arm's own mention set; the primary here is the fixed-unit J"
+  },
+  "blur4": {
+   "verdict": "GAIN-SURVIVES-ABLATION",
+   "material_ablation": true,
+   "emb_cos": 0.9557860012054443,
+   "gain_i_rung": {
+    "point": 4.942283580777541,
+    "ci": [
+     3.1764097824239235,
+     6.6850092250251985
+    ],
+    "n_boot": 4000
+   },
+   "gain_i_image": {
+    "point": 0.6219527221941696,
+    "ci": [
+     -1.8142879196729098,
+     2.939418230051993
+    ],
+    "n_boot": 4000
+   },
+   "gain_i_sighted": {
+    "point": 5.564236302971711,
+    "ci": [
+     3.881185937088238,
+     7.175845194117467
+    ],
+    "n_boot": 4000
+   },
+   "dJ_rung": {
+    "point": -0.06515173429091958,
+    "ci": [
+     -0.08336097297425908,
+     -0.04710443822950856
+    ],
+    "n_boot": 4000
+   },
+   "dJ_image": {
+    "point": -0.003192596228326683,
+    "ci": [
+     -0.026558929451605366,
+     0.02060590781884896
+    ],
+    "n_boot": 4000
+   },
+   "levels": {
+    "vanilla": {
+     "H": 0.655268022181146,
+     "F": 0.008481200656609083,
+     "J": 0.6467868215245369,
+     "dprime": 2.7871043259644317,
+     "c": 0.9939695375816187
+    },
+    "pai05": {
+     "H": 0.5862600123228588,
+     "F": 0.004624925089241512,
+     "J": 0.5816350872336173,
+     "dprime": 2.820613766547454,
+     "c": 1.1923721642220324
+    },
+    "CHAIR_i_vanilla": 14.743202416918429,
+    "CHAIR_i_pai05": 9.800918836140887,
+    "CHAIR_s_vanilla": 43.0,
+    "CHAIR_s_pai05": 27.6
+   },
+   "denominator_caveat": "CHAIR_i's denominator is the arm's own mention set; the primary here is the fixed-unit J"
+  },
+  "blur16": {
+   "verdict": "GAIN-IS-IMAGE-ATTRIBUTABLE",
+   "material_ablation": true,
+   "emb_cos": 0.8740106561183929,
+   "gain_i_rung": {
+    "point": -3.136245666768872,
+    "ci": [
+     -9.075505598663304,
+     2.842444841671276
+    ],
+    "n_boot": 4000
+   },
+   "gain_i_image": {
+    "point": 8.700481969740583,
+    "ci": [
+     2.5542482305489833,
+     14.96014249849144
+    ],
+    "n_boot": 4000
+   },
+   "gain_i_sighted": {
+    "point": 5.564236302971711,
+    "ci": [
+     3.881185937088238,
+     7.175845194117467
+    ],
+    "n_boot": 4000
+   },
+   "dJ_rung": {
+    "point": -0.03984850194617462,
+    "ci": [
+     -0.052846993922816846,
+     -0.026628855118053563
+    ],
+    "n_boot": 4000
+   },
+   "dJ_image": {
+    "point": -0.028495828573071647,
+    "ci": [
+     -0.052086603396767586,
+     -0.005597179734301596
+    ],
+    "n_boot": 4000
+   },
+   "levels": {
+    "vanilla": {
+     "H": 0.21164510166358594,
+     "F": 0.0069960134448526536,
+     "J": 0.2046490882187333,
+     "dprime": 1.6567418724259202,
+     "c": 1.6290970810543013
+    },
+    "pai05": {
+     "H": 0.17036352433764634,
+     "F": 0.005562938065087678,
+     "J": 0.16480058627255867,
+     "dprime": 1.585990521377669,
+     "c": 1.7457249458939934
+    },
+    "CHAIR_i_vanilla": 39.18088737201365,
+    "CHAIR_i_pai05": 42.31713303878252,
+    "CHAIR_s_vanilla": 40.2,
+    "CHAIR_s_pai05": 37.2
+   },
+   "denominator_caveat": "CHAIR_i's denominator is the arm's own mention set; the primary here is the fixed-unit J"
+  },
+  "lowres16": {
+   "verdict": "CANNOT-RESOLVE",
+   "material_ablation": true,
+   "emb_cos": 0.9105524725914002,
+   "gain_i_rung": {
+    "point": -3.973610522308057,
+    "ci": [
+     -7.683433479473835,
+     -0.3175993279244456
+    ],
+    "n_boot": 4000
+   },
+   "gain_i_image": {
+    "point": 9.537846825279768,
+    "ci": [
+     5.507500035142941,
+     13.488861359025963
+    ],
+    "n_boot": 4000
+   },
+   "gain_i_sighted": {
+    "point": 5.564236302971711,
+    "ci": [
+     3.881185937088238,
+     7.175845194117467
+    ],
+    "n_boot": 4000
+   },
+   "dJ_rung": {
+    "point": -0.013086138305669043,
+    "ci": [
+     -0.025912943683305337,
+     -0.0007028115438600002
+    ],
+    "n_boot": 4000
+   },
+   "dJ_image": {
+    "point": -0.05525819221357722,
+    "ci": [
+     -0.07924432855964031,
+     -0.03210921236707696
+    ],
+    "n_boot": 4000
+   },
+   "levels": {
+    "vanilla": {
+     "H": 0.1882316697473814,
+     "F": 0.00702206936084838,
+     "J": 0.18120960038653303,
+     "dprime": 1.571700969998021,
+     "c": 1.67028195793804
+    },
+    "pai05": {
+     "H": 0.17467652495378927,
+     "F": 0.006553062872925297,
+     "J": 0.16812346208086398,
+     "dprime": 1.5450275620502265,
+     "c": 1.7083586811370324
+    },
+    "CHAIR_i_vanilla": 43.78903539208883,
+    "CHAIR_i_pai05": 47.762645914396884,
+    "CHAIR_s_vanilla": 42.6,
+    "CHAIR_s_pai05": 43.0
+   },
+   "denominator_caveat": "CHAIR_i's denominator is the arm's own mention set; the primary here is the fixed-unit J"
+  },
+  "shuffle24": {
+   "verdict": "CANNOT-RESOLVE",
+   "material_ablation": true,
+   "emb_cos": 0.9213742306232452,
+   "gain_i_rung": {
+    "point": 2.326292909648636,
+    "ci": [
+     -0.7189946475879793,
+     5.331458163756595
+    ],
+    "n_boot": 4000
+   },
+   "gain_i_image": {
+    "point": 3.237943393323075,
+    "ci": [
+     -0.19687021800551482,
+     6.670059108152033
+    ],
+    "n_boot": 4000
+   },
+   "gain_i_sighted": {
+    "point": 5.564236302971711,
+    "ci": [
+     3.881185937088238,
+     7.175845194117467
+    ],
+    "n_boot": 4000
+   },
+   "dJ_rung": {
+    "point": -0.06521304516164517,
+    "ci": [
+     -0.0856419729985413,
+     -0.045377557614512815
+    ],
+    "n_boot": 4000
+   },
+   "dJ_image": {
+    "point": -0.003131285357601099,
+    "ci": [
+     -0.02931909682114928,
+     0.022848379898074173
+    ],
+    "n_boot": 4000
+   },
+   "levels": {
+    "vanilla": {
+     "H": 0.3971041281577326,
+     "F": 0.009262878136480888,
+     "J": 0.3878412500212517,
+     "dprime": 2.0940888984549013,
+     "c": 1.3078943559666099
+    },
+    "pai05": {
+     "H": 0.3287122612446087,
+     "F": 0.006084056385002215,
+     "J": 0.3226282048596065,
+     "dprime": 2.0637593102540803,
+     "c": 1.4753514408986939
+    },
+    "CHAIR_i_vanilla": 25.830258302583026,
+    "CHAIR_i_pai05": 23.50396539293439,
+    "CHAIR_s_vanilla": 40.400000000000006,
+    "CHAIR_s_pai05": 31.0
+   },
+   "denominator_caveat": "CHAIR_i's denominator is the arm's own mention set; the primary here is the fixed-unit J"
+  },
+  "mismatch": {
+   "verdict": "GAIN-IS-IMAGE-ATTRIBUTABLE",
+   "material_ablation": true,
+   "emb_cos": 0.92012426674366,
+   "gain_i_rung": {
+    "point": 0.4004394439050998,
+    "ci": [
+     -1.1665553032668323,
+     1.9616231740008812
+    ],
+    "n_boot": 4000
+   },
+   "gain_i_image": {
+    "point": 5.163796859066611,
+    "ci": [
+     2.885008624956107,
+     7.421002149052483
+    ],
+    "n_boot": 4000
+   },
+   "gain_i_sighted": {
+    "point": 5.564236302971711,
+    "ci": [
+     3.881185937088238,
+     7.175845194117467
+    ],
+    "n_boot": 4000
+   },
+   "dJ_rung": {
+    "point": 0.001013146485926264,
+    "ci": [
+     -0.008912321841709094,
+     0.011064344920078475
+    ],
+    "n_boot": 4000
+   },
+   "dJ_image": {
+    "point": -0.06935747700517253,
+    "ci": [
+     -0.0914328084453336,
+     -0.048857323573726456
+    ],
+    "n_boot": 4000
+   },
+   "levels": {
+    "vanilla": {
+     "H": 0.14448552064078865,
+     "F": 0.03696031683993851,
+     "J": 0.10752520380085015,
+     "dprime": 0.7267227192412493,
+     "c": 1.4237429339660717
+    },
+    "pai05": {
+     "H": 0.1377079482439926,
+     "F": 0.029169597957216187,
+     "J": 0.10853835028677641,
+     "dprime": 0.802465394871011,
+     "c": 1.4919077392827718
+    },
+    "CHAIR_i_vanilla": 81.7873007577737,
+    "CHAIR_i_pai05": 81.38686131386861,
+    "CHAIR_s_vanilla": 98.8,
+    "CHAIR_s_pai05": 97.39999999999999
+   },
+   "denominator_caveat": "CHAIR_i's denominator is the arm's own mention set; the primary here is the fixed-unit J"
+  }
+ },
+ "L2_VERDICT": "noise16:GAIN-SURVIVES-BUT-ABLATION-NOT-MATERIAL; noise32:GAIN-SURVIVES-BUT-ABLATION-NOT-MATERIAL; noise64:GAIN-SURVIVES-BUT-ABLATION-NOT-MATERIAL; blur4:GAIN-SURVIVES-ABLATION; blur16:GAIN-IS-IMAGE-ATTRIBUTABLE; lowres16:CANNOT-RESOLVE; shuffle24:CANNOT-RESOLVE; mismatch:GAIN-IS-IMAGE-ATTRIBUTABLE"
+}

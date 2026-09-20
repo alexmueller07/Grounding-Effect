@@ -1,0 +1,35 @@
+{
+ "sentinel": true,
+ "model": "Qwen/Qwen3-VL-8B-Instruct",
+ "revision": "0c351dd01ed87e9c1b53cbc748cba10e6187ff3b",
+ "thresholds": {
+  "n_true_floor": 100,
+  "n_false_floor": 100,
+  "degen_median": 12,
+  "degen_le3": 0.3
+ },
+ "_bootstrap": {
+  "unit": "image, clustered over derangements",
+  "B": 4000,
+  "seed": 20260919,
+  "multiplicity": "PRESERVED -- no set(), no unique()"
+ },
+ "positive_control": {
+  "fam1": {
+   "point": 0.48587082156726635,
+   "published": 0.4859,
+   "dev": 2.9178432733645288e-05,
+   "pass": true,
+   "n_cells": 1500,
+   "n_images": 500
+  },
+  "fam3": {
+   "point": 0.15981241733937193,
+   "published": 0.1598,
+   "dev": 1.241733937193401e-05,
+   "pass": true,
+   "n_cells": 1500,
+   "n_images": 500
+  }
+ }
+}

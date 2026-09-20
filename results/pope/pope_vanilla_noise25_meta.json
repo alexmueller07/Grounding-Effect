@@ -1,0 +1,300 @@
+{
+ "model": "llava-hf/llava-1.5-7b-hf",
+ "prompt_template": "A chat between a curious user and an artificial intelligence assistant. The assistant gives helpful, detailed, and polite answers to the user's questions.USER: <image> <QUESTION> ASSISTANT:",
+ "max_new": 64,
+ "bs": 16,
+ "splits": [
+  "random",
+  "popular",
+  "adversarial"
+ ],
+ "layers": [
+  2,
+  32
+ ],
+ "n_items": 9000,
+ "plan_sha": "84ef6b5fabd875b2dcd22c6d81fa39a984c4215d232c8d16afec0162f1882de0",
+ "plan_batches": 564,
+ "pix_seed": 20260919,
+ "grey_rgb": [
+  127,
+  127,
+  127
+ ],
+ "host": "vgi1",
+ "limit_images": 0,
+ "job_id": "21057",
+ "torch": "2.11.0+cu130",
+ "operator_is_prior_work": "arXiv 2407.21771 Eq.3 (+Eq.4 when gamma!=1)",
+ "prereg": "SPRINT/POPE_PREREG.md",
+ "tag": "pope_vanilla_noise25",
+ "method": "vanilla",
+ "pixarm": "noise25",
+ "alpha": 0.0,
+ "gamma": 1.0,
+ "rowmode": "decode",
+ "n_rows": 9000,
+ "n_truncated": 0,
+ "trunc_rate": 0.0,
+ "mean_tokens": 23.315666666666665,
+ "median_tokens": 23.0,
+ "empty_rate": 0.0,
+ "n_distinct_answers": 4633,
+ "answer_dist": [
+  [
+   "Yes, there is a dining table in the image.",
+   133
+  ],
+  [
+   "Yes, there is a couch in the image.",
+   42
+  ],
+  [
+   "Yes, there is a dog in the image.",
+   40
+  ],
+  [
+   "No, there is no person in the image.",
+   36
+  ],
+  [
+   "Yes, there is a bed in the image.",
+   33
+  ],
+  [
+   "Yes, there is a teddy bear in the image.",
+   31
+  ],
+  [
+   "Yes, there is a tennis racket in the image.",
+   31
+  ],
+  [
+   "Yes, there is a chair in the image.",
+   30
+  ],
+  [
+   "Yes, there is a cat in the image.",
+   27
+  ],
+  [
+   "Yes, there is a pizza in the image.",
+   27
+  ],
+  [
+   "Yes, there is a wine glass in the image.",
+   25
+  ],
+  [
+   "Yes, there is a motorcycle in the image.",
+   24
+  ],
+  [
+   "Yes, there is a bus in the image.",
+   21
+  ],
+  [
+   "Yes, there is a banana in the image.",
+   21
+  ],
+  [
+   "Yes, there is a snowboard in the image.",
+   18
+  ],
+  [
+   "Yes, there is a laptop in the image.",
+   18
+  ],
+  [
+   "Yes, there is a man and a woman in the image.",
+   18
+  ],
+  [
+   "Yes, there is a bicycle in the image.",
+   18
+  ],
+  [
+   "Yes, there is a vase in the image.",
+   15
+  ],
+  [
+   "Yes, there is a spoon in the image.",
+   15
+  ]
+ ],
+ "answer_dist_by_split": {
+  "adversarial": [
+   [
+    "Yes, there is a dining table in the image.",
+    50
+   ],
+   [
+    "No, there is no person in the image.",
+    14
+   ],
+   [
+    "Yes, there is a couch in the image.",
+    14
+   ],
+   [
+    "Yes, there is a dog in the image.",
+    14
+   ],
+   [
+    "Yes, there is a teddy bear in the image.",
+    13
+   ],
+   [
+    "Yes, there is a tennis racket in the image.",
+    11
+   ],
+   [
+    "Yes, there is a bed in the image.",
+    11
+   ],
+   [
+    "Yes, there is a chair in the image.",
+    10
+   ],
+   [
+    "Yes, there is a cat in the image.",
+    9
+   ],
+   [
+    "Yes, there is a pizza in the image.",
+    9
+   ]
+  ],
+  "popular": [
+   [
+    "Yes, there is a dining table in the image.",
+    50
+   ],
+   [
+    "No, there is no person in the image.",
+    14
+   ],
+   [
+    "Yes, there is a couch in the image.",
+    14
+   ],
+   [
+    "Yes, there is a dog in the image.",
+    13
+   ],
+   [
+    "Yes, there is a bed in the image.",
+    11
+   ],
+   [
+    "Yes, there is a chair in the image.",
+    10
+   ],
+   [
+    "Yes, there is a tennis racket in the image.",
+    10
+   ],
+   [
+    "Yes, there is a teddy bear in the image.",
+    9
+   ],
+   [
+    "Yes, there is a cat in the image.",
+    9
+   ],
+   [
+    "Yes, there is a cup in the image.",
+    9
+   ]
+  ],
+  "random": [
+   [
+    "Yes, there is a dining table in the image.",
+    33
+   ],
+   [
+    "Yes, there is a couch in the image.",
+    14
+   ],
+   [
+    "Yes, there is a dog in the image.",
+    13
+   ],
+   [
+    "Yes, there is a bed in the image.",
+    11
+   ],
+   [
+    "Yes, there is a chair in the image.",
+    10
+   ],
+   [
+    "Yes, there is a tennis racket in the image.",
+    10
+   ],
+   [
+    "Yes, there is a teddy bear in the image.",
+    9
+   ],
+   [
+    "Yes, there is a cat in the image.",
+    9
+   ],
+   [
+    "Yes, there is a wine glass in the image.",
+    9
+   ],
+   [
+    "Yes, there is a pizza in the image.",
+    9
+   ]
+  ]
+ },
+ "derangement": null,
+ "mean_img_mass": 0.1697484209910035,
+ "img_mass_by_layer": [
+  0.5219960698844693,
+  0.3877716802641855,
+  0.27798543899511613,
+  0.2549657408967086,
+  0.22323091888258642,
+  0.18779575662251483,
+  0.15430702771066773,
+  0.14493454670441067,
+  0.18245035325381773,
+  0.17509075896220005,
+  0.1741268552628392,
+  0.14777084601157947,
+  0.16090380788800565,
+  0.16448642395383922,
+  0.1831870624888028,
+  0.16632418405819446,
+  0.16135475472778293,
+  0.14350045982299123,
+  0.12273738016737691,
+  0.12106191261228941,
+  0.15290064369955808,
+  0.10319991948756765,
+  0.11140108080778985,
+  0.089712285073408,
+  0.12714002675092811,
+  0.07332836622570424,
+  0.11215901262529776,
+  0.06638504788015329,
+  0.08040901447864289,
+  0.13659417190661666,
+  0.10345553873595617,
+  0.2189890372150756
+ ],
+ "attn_calls": 1284864,
+ "pai_applied_steps": 0,
+ "pai_applied_prefill": 0,
+ "n_edited_first": 0,
+ "mask_present": 0,
+ "causal_repairs": 36096,
+ "nomask_decode": 1248768,
+ "mask_leak": 0,
+ "pixel_arm_desc": "additive Gaussian sigma=25/255, clipped",
+ "pixel_arm_frame": "m336",
+ "secs": 1943.2371125221252
+}

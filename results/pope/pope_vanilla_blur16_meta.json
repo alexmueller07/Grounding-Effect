@@ -1,0 +1,300 @@
+{
+ "model": "llava-hf/llava-1.5-7b-hf",
+ "prompt_template": "A chat between a curious user and an artificial intelligence assistant. The assistant gives helpful, detailed, and polite answers to the user's questions.USER: <image> <QUESTION> ASSISTANT:",
+ "max_new": 64,
+ "bs": 16,
+ "splits": [
+  "random",
+  "popular",
+  "adversarial"
+ ],
+ "layers": [
+  2,
+  32
+ ],
+ "n_items": 9000,
+ "plan_sha": "84ef6b5fabd875b2dcd22c6d81fa39a984c4215d232c8d16afec0162f1882de0",
+ "plan_batches": 564,
+ "pix_seed": 20260919,
+ "grey_rgb": [
+  127,
+  127,
+  127
+ ],
+ "host": "vgi1",
+ "limit_images": 0,
+ "job_id": "21057",
+ "torch": "2.11.0+cu130",
+ "operator_is_prior_work": "arXiv 2407.21771 Eq.3 (+Eq.4 when gamma!=1)",
+ "prereg": "SPRINT/POPE_PREREG.md",
+ "tag": "pope_vanilla_blur16",
+ "method": "vanilla",
+ "pixarm": "blur16",
+ "alpha": 0.0,
+ "gamma": 1.0,
+ "rowmode": "decode",
+ "n_rows": 9000,
+ "n_truncated": 1,
+ "trunc_rate": 0.00011111111111111112,
+ "mean_tokens": 25.211111111111112,
+ "median_tokens": 25.0,
+ "empty_rate": 0.0,
+ "n_distinct_answers": 4553,
+ "answer_dist": [
+  [
+   "Yes, there is a dining table in the image.",
+   191
+  ],
+  [
+   "Yes, there is a couch in the image.",
+   58
+  ],
+  [
+   "Yes, there is a car in the image, and it is parked in a parking lot.",
+   39
+  ],
+  [
+   "Yes, there is a truck in the image.",
+   37
+  ],
+  [
+   "Yes, there is a car in the image.",
+   36
+  ],
+  [
+   "Yes, there is an orange in the image.",
+   31
+  ],
+  [
+   "Yes, there is a TV in the image, and it is turned on.",
+   31
+  ],
+  [
+   "Yes, there is a laptop in the image.",
+   30
+  ],
+  [
+   "Yes, there is a person in the image.",
+   29
+  ],
+  [
+   "Yes, there is a chair in the image.",
+   26
+  ],
+  [
+   "Yes, there is a person in the image, and they are wearing a white shirt.",
+   24
+  ],
+  [
+   "Yes, there is a person in the image, and they are wearing a black shirt.",
+   24
+  ],
+  [
+   "Yes, there is a person in the image, and they are wearing a blue shirt.",
+   24
+  ],
+  [
+   "Yes, there is a bed in the image.",
+   22
+  ],
+  [
+   "Yes, there is a TV in the image.",
+   18
+  ],
+  [
+   "Yes, there is a person in the image, and they are wearing a red shirt.",
+   16
+  ],
+  [
+   "No, there is no person in the image. It is a picture of a grassy field with no people visible.",
+   15
+  ],
+  [
+   "Yes, there is a motorcycle in the image.",
+   15
+  ],
+  [
+   "Yes, there is a person in the image, and they are sitting at a table.",
+   15
+  ],
+  [
+   "Yes, there is a car in the image, and it is blurry.",
+   15
+  ]
+ ],
+ "answer_dist_by_split": {
+  "adversarial": [
+   [
+    "Yes, there is a dining table in the image.",
+    73
+   ],
+   [
+    "Yes, there is a couch in the image.",
+    24
+   ],
+   [
+    "Yes, there is a truck in the image.",
+    20
+   ],
+   [
+    "Yes, there is a car in the image, and it is parked in a parking lot.",
+    15
+   ],
+   [
+    "Yes, there is a TV in the image, and it is turned on.",
+    13
+   ],
+   [
+    "Yes, there is a car in the image.",
+    13
+   ],
+   [
+    "Yes, there is a laptop in the image.",
+    10
+   ],
+   [
+    "Yes, there is a person in the image.",
+    10
+   ],
+   [
+    "Yes, there is an orange in the image.",
+    9
+   ],
+   [
+    "Yes, there is a chair in the image.",
+    8
+   ]
+  ],
+  "popular": [
+   [
+    "Yes, there is a dining table in the image.",
+    85
+   ],
+   [
+    "Yes, there is a car in the image, and it is parked in a parking lot.",
+    17
+   ],
+   [
+    "Yes, there is a car in the image.",
+    17
+   ],
+   [
+    "Yes, there is a couch in the image.",
+    15
+   ],
+   [
+    "Yes, there is a chair in the image.",
+    13
+   ],
+   [
+    "Yes, there is a laptop in the image.",
+    10
+   ],
+   [
+    "Yes, there is a person in the image.",
+    10
+   ],
+   [
+    "Yes, there is an orange in the image.",
+    9
+   ],
+   [
+    "Yes, there is a TV in the image, and it is turned on.",
+    9
+   ],
+   [
+    "Yes, there is a person in the image, and they are wearing a white shirt.",
+    8
+   ]
+  ],
+  "random": [
+   [
+    "Yes, there is a dining table in the image.",
+    33
+   ],
+   [
+    "Yes, there is a couch in the image.",
+    19
+   ],
+   [
+    "Yes, there is an orange in the image.",
+    13
+   ],
+   [
+    "Yes, there is a laptop in the image.",
+    10
+   ],
+   [
+    "Yes, there is a truck in the image.",
+    9
+   ],
+   [
+    "Yes, there is a TV in the image, and it is turned on.",
+    9
+   ],
+   [
+    "Yes, there is a person in the image.",
+    9
+   ],
+   [
+    "Yes, there is a person in the image, and they are wearing a white shirt.",
+    8
+   ],
+   [
+    "Yes, there is a bed in the image.",
+    8
+   ],
+   [
+    "Yes, there is a person in the image, and they are wearing a black shirt.",
+    8
+   ]
+  ]
+ },
+ "derangement": null,
+ "mean_img_mass": 0.16101578956262932,
+ "img_mass_by_layer": [
+  0.5366170695381807,
+  0.3522095961879331,
+  0.250238373928459,
+  0.23446354079753795,
+  0.19895246112388923,
+  0.16298591130221565,
+  0.13718531061465858,
+  0.12968598059147385,
+  0.16173690360647144,
+  0.15790407961987435,
+  0.16733578909584818,
+  0.15075117644213193,
+  0.14772677728047606,
+  0.16227261328422432,
+  0.18182466282172405,
+  0.16714138017161517,
+  0.16539423564013014,
+  0.1518961045336216,
+  0.11646253219310274,
+  0.11174618942887647,
+  0.14459587741933816,
+  0.09778196130819777,
+  0.10811142562657383,
+  0.08364409451366317,
+  0.11434265000230455,
+  0.06934609887659127,
+  0.10351785191777327,
+  0.06269309367878852,
+  0.07420743750870651,
+  0.1348482269053975,
+  0.09796154068399829,
+  0.2173222542496015
+ ],
+ "attn_calls": 1326656,
+ "pai_applied_steps": 0,
+ "pai_applied_prefill": 0,
+ "n_edited_first": 0,
+ "mask_present": 0,
+ "causal_repairs": 36096,
+ "nomask_decode": 1290560,
+ "mask_leak": 0,
+ "pixel_arm_desc": "Gaussian blur radius 16 px at 336",
+ "pixel_arm_frame": "m336",
+ "secs": 1980.8521180152893
+}

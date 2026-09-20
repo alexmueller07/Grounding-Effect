@@ -1,0 +1,52 @@
+{
+ "sentinel": true,
+ "rung": "black",
+ "tag": "lad_f1_black",
+ "model": "llava-hf/llava-1.5-7b-hf",
+ "smoke": false,
+ "host": "vgi1",
+ "job_id": "21123",
+ "max_new_cont": 384,
+ "bs": 8,
+ "rows": 3000,
+ "kder": 3,
+ "n_cells": 1500,
+ "per_arm_rows": {
+  "cap1_black": 1500,
+  "cap5_black": 1500
+ },
+ "prefix_drift": 0,
+ "batch_order_identical": true,
+ "gate_rung_applied": {
+  "rows_changed": 8,
+  "rows": 8,
+  "cross_image_distinct": 0,
+  "pairs": 3
+ },
+ "rung_cache": {
+  "rung": "black",
+  "n_calls": 3000,
+  "n_distinct": 500,
+  "determinism_rechecks": 26,
+  "determinism_equal": 26
+ },
+ "mismatch": null,
+ "prereg": "SPRINT/LADDER_PREREG.md @ f186bcf",
+ "per_arm": {
+  "cap1_black": {
+   "mean_cont_len": 111.806,
+   "median_cont_len": 17.0,
+   "at_max_384": 0.26,
+   "empty_cont_rate": 0.04666666666666667,
+   "n_distinct_texts": 1289
+  },
+  "cap5_black": {
+   "mean_cont_len": 284.00866666666667,
+   "median_cont_len": 384.0,
+   "at_max_384": 0.7206666666666667,
+   "empty_cont_rate": 0.006,
+   "n_distinct_texts": 1402
+  }
+ },
+ "secs": 4381.3
+}

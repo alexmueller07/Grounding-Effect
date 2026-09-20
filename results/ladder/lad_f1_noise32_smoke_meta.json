@@ -1,0 +1,51 @@
+{
+ "sentinel": true,
+ "rung": "noise32",
+ "tag": "lad_f1_noise32_smoke",
+ "model": "llava-hf/llava-1.5-7b-hf",
+ "smoke": true,
+ "host": "vgi1",
+ "job_id": "21026",
+ "max_new_cont": 384,
+ "bs": 8,
+ "rows": 32,
+ "kder": 1,
+ "n_cells": 16,
+ "per_arm_rows": {
+  "cap1_noise32": 16,
+  "cap5_noise32": 16
+ },
+ "prefix_drift": 0,
+ "batch_order_identical": false,
+ "gate_rung_applied": {
+  "rows_changed": 8,
+  "rows": 8,
+  "cross_image_distinct": 3,
+  "pairs": 3
+ },
+ "rung_cache": {
+  "rung": "noise32",
+  "n_calls": 32,
+  "n_distinct": 16,
+  "determinism_rechecks": 0,
+  "determinism_equal": 0
+ },
+ "prereg": "SPRINT/LADDER_PREREG.md @ f186bcf",
+ "per_arm": {
+  "cap1_noise32": {
+   "mean_cont_len": 297.5,
+   "median_cont_len": 384.0,
+   "at_max_384": 0.75,
+   "empty_cont_rate": 0.0,
+   "n_distinct_texts": 16
+  },
+  "cap5_noise32": {
+   "mean_cont_len": 339.6875,
+   "median_cont_len": 384.0,
+   "at_max_384": 0.875,
+   "empty_cont_rate": 0.0,
+   "n_distinct_texts": 16
+  }
+ },
+ "secs": 49.2
+}

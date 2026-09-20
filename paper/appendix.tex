@@ -1,0 +1,2380 @@
+\section{Experimental details}
+\label{app:setup}
+
+This appendix supplies everything needed to check the measurements in the main text: the stimulus
+construction, the scorer, the unit definition, the interval estimator, the integrity gates, the
+complete tables behind every figure, the signal-detection derivation the diagnosis rests on, and the
+pre-registration record with its decision rules. Figure~\ref{fig:concept} summarises the design.
+
+\begin{figure}[htb]
+\begin{center}
+\includegraphics[width=0.72\textwidth]{fig_concept.pdf}
+\end{center}
+\caption{The design. The sighted and blind rows differ in the image alone; prefix token ids are
+bit-identical, so the difference between the two rises is attributable to replacing the image with a
+uniform grey field. On \textsc{LLaVA-1.5-7B} that difference is $-0.016$.}
+\label{fig:concept}
+\end{figure}
+
+\subsection{Models, decoding and prompt}
+\label{app:modelspec}
+
+Four checkpoints are used; the first two carry every primary number. The first architecture is
+\texttt{llava-1.5-7b-hf} in bfloat16 on a single consumer GPU. The second is
+\texttt{llava-onevision-qwen2-0.5b-ov-hf}, run with its own tokenizer and its own chat template. It
+differs in language-model family (Qwen2), vision tower (SigLIP), training recipe and resolution
+scheme (anyres), and is $7.90\times$ smaller by parameter count. Where the two disagree, the
+disagreement is reported rather than pooled.
+
+The two further models were each run under their own registration. \textsc{Qwen2.5-VL-7B} is
+\texttt{Qwen/Qwen2.5-VL-7B-Instruct} in bfloat16 with its own chat template; its cut, chosen by a
+registered census rule before any generation, is $f = 0.230$ (mean prefix $40.7$ tokens) on all
+$500$ images. \textsc{Kosmos-2} is \texttt{microsoft/kosmos-2-patch14-224} in float32, its
+checkpoint's own precision. It has no chat template, so its registered prompt is its trained task
+string without the grounding marker, \texttt{Describe this image in detail:}, which keeps its output
+in plain prose; its census cut is $f = 0.460$ (mean prefix $36.1$ tokens) on $473$ images, after $27$
+whose free-running caption was under $32$ tokens were excluded by the registered rule. Both use the
+same stimulus assembly, scorer, blinding constant and bootstrap as the first two; their unit counts
+and the full census tables are in the released registration records.
+
+Decoding is greedy throughout (\texttt{do\_sample=False}), with no sampling parameters of any kind.
+Free-running captions use \texttt{max\_new\_tokens} $=256$; continuations from a supplied prefix use
+$384$ in the two-point measurement on the first architecture, with a $192$-token reconstruction of the
+same measurement reported alongside it (Appendix~\ref{app:regime}). Greedy decoding is load-bearing rather than convenient:
+because decoding is deterministic, the model's own free-running caption \emph{is} its own
+continuation from its own prefix at any cut, so the cut position is matched exactly rather than
+approximately.
+
+The prompt is the LLaVA-1.5 v1 conversation format, verbatim, unchanged across every condition:
+
+\begingroup\small\begin{verbatim}
+A chat between a curious human and an artificial intelligence assistant. The
+assistant gives helpful, detailed, and polite answers to the human's questions.
+USER: <image>
+Please describe this image in detail. ASSISTANT:
+\end{verbatim}\endgroup
+
+\noindent with one space after the system string and a newline after \texttt{<image>}. Image
+preprocessing is the stock LLaVA-1.5 processor, CLIP ViT-L/14-336, with no overrides. Generation is
+batched with left padding, batch $16$ for captions and $8$ for continuations.
+
+The second architecture differs in one respect that matters for correctness rather than for style.
+Under its anyres tiling the prompt length varies per image, from $2{,}088$ to $3{,}714$ tokens, so
+the processor itself left-pads; Appendix~\ref{app:gates} gives the gate that catches a hand-rebuilt
+attention mask attending to that padding.
+
+\subsection{Images}
+\label{app:images}
+
+All images are COCO \texttt{val2017}. An image is eligible if it has at least one instance
+annotation, at least one human caption and a readable file. Eligible ids are sorted, $500$ are drawn
+without replacement with \texttt{default\_rng(20260817)}, and the draw is re-sorted by image id. The
+identical $500$ images are used by every \textsc{LLaVA} condition in the two-point measurement;
+\textsc{Kosmos-2} uses $473$ of them (Appendix~\ref{app:modelspec}), the dose grid $499$, and the
+generation-regime control a larger sample of $3{,}500$ that nests these $500$. Images whose free-running caption
+is shorter than $32$ tokens are excluded from the prefixed conditions; none of the $500$ fell below
+this floor, and the observed minimum is $55$ tokens.
+
+One analysis --- the generation-regime control of Appendix~\ref{app:regime} --- extends the sample to
+$3{,}500$ images with the original $500$ nested inside, giving $10{,}500$ cells and $21{,}000$ rows.
+
+\subsection{Stimulus construction}
+\label{app:stimulus}
+
+For image $i$, let $L_i$ be the token length of the model's own greedy caption; the cut is
+$c_i(f) = \lfloor f \cdot L_i \rfloor$. The primary cut is $f = 0.5$ on the first architecture, where $c_i(0.5)$ has mean $58.24$ tokens;
+the two-point measurement there caps each cell's budget further at the token length of a Localized
+Narratives description of the first source image, so the realised budget has mean $44.6$ (sd $13.7$,
+range $12$--$87$). On the second architecture $f = 0.21$, with mean prefix length $50.272$ tokens. Prefix length is keyed to the image rather than to the condition, so it is identical across
+conditions at each cut by construction and the contrast is never a length contrast.
+
+The two conditions of the primary contrast differ in exactly one property of the prefix:
+
+\begin{itemize}
+\itemsep0em
+\item \texttt{cap1} --- five human COCO captions of \textbf{one} other image.
+\item \texttt{cap5} --- five human COCO captions of \textbf{five} different other images.
+\end{itemize}
+
+Both are built by the same procedure --- strip terminal periods, shuffle under a per-image seed, join
+with \texttt{". "}, tokenize, and slice the token id list to the budget --- except that the one-scene
+prefixes use the doubling step described next and the five-scene prefixes do not need it (their
+doubling rate is zero by construction). The dose grid rebuilds the one-scene condition without doubling
+and lands at $+0.1947$ against $+0.1881$ (Appendix~\ref{app:dose}). Four properties of
+that assembler are worth stating precisely, because each has been described loosely elsewhere. If the
+joined string tokenizes shorter than the budget it is concatenated to itself verbatim and re-checked,
+with a doubling bound of seven; the loop exits on the bound as well as on the budget, so a prefix can
+come out shorter than the target. Truncation is a slice of the token id list, so it never cuts inside
+a token, but because the tokenizer is subword the boundary can fall mid-word and routinely falls
+mid-sentence. The assembler never sees the image: it takes captions, a length and a seed. And the
+prefix ids are spliced after the prompt rather than re-encoded with it, so the model is shown a token
+sequence that was never produced by tokenizing the full string.
+
+Each image contributes three cells, one per derangement of the partner assignment, giving $1{,}500$
+cells over $500$ images in each condition.
+
+\paragraph{Realised rather than nominal dose.} The token budget truncates, so the model does not see
+all five assembled units. Across the whole dose grid, units-as-assembled is $5.000$ at every grid
+point while units-as-seen is flat at $2.671$--$2.697$; what moves is scenes-as-seen, which rises
+$0.999 \rightarrow 1.718 \rightarrow 2.131 \rightarrow 2.414 \rightarrow 2.671$. The manipulation is
+described as five-and-five throughout because that is what is held fixed; realised figures are stated
+wherever the contrast is quantified.
+
+\paragraph{The dose grid's assembler.} The five-point grid varies the number of distinct source
+scenes $S \in \{1,\dots,5\}$ while holding five caption units at every grid point, under quotas
+$[5] / [3,2] / [2,2,1] / [2,1,1,1] / [1,1,1,1,1]$, with one assembler throughout, the same per-cell
+budget, the same join seed, and zero doubling by construction. Its census kept $1{,}361$ of $1{,}500$
+cells across $499$ images ($f_{\mathrm{keep}} = 0.907$).
+
+\paragraph{The blind conditions.} \texttt{cap1g} and \texttt{cap5g} run the identical pipeline with
+the target image replaced by a flat mid-grey rectangle at the target's own pixel dimensions, and with
+prefix token ids held bit-identical to the corresponding sighted condition. The image-attributable
+component is $\dSight = \dPrim - \dBlind$, an algebraic identity in its components; what is empirical
+is its magnitude.
+
+\subsection{Object extraction and ground truth}
+\label{app:gt}
+
+The scorer is a faithful port of the CHAIR object scorer. The 80-category synonym table is used
+verbatim, including its double-word merges (\texttt{sports ball}, \texttt{hot dog},
+\texttt{baby <animal>} to \texttt{<animal>}, \texttt{passenger jet} to \texttt{jet}, \texttt{bow tie}
+to \texttt{tie}) and the canonical toilet-seat rule. The ground-truth object set $G(i)$ is the union
+of image $i$'s segmentation category names and every object mined from that image's human captions
+with the same extractor. An object is \emph{in the image} iff its canonical node lies in $G(i)$.
+
+Two portability deviations from the reference implementation are applied identically to every
+condition, so their first-order bias cancels in every contrast reported: a regex word tokenizer
+(\texttt{[a-z]+} over lowercased text, retaining character offsets) replaces the NLTK tokenizer, and
+a rule-based singularizer replaces \texttt{pattern.singularize}. Absolute rates are therefore not
+comparable to published CHAIR numbers on these conditions; only within-paper contrasts are.
+Appendix~\ref{app:mitig-port} bounds what the two substitutions actually touch at the standard
+free-captioning protocol, where the same port reproduces published levels closely; that is one
+configuration and does not widen this caveat.
+
+The union construction is deliberately permissive, which makes \rateF{} conservative: a permissive
+$G(i)$ can only move objects out of the false class. It also has a consequence that determines the
+endpoint choice. A prefix built from an image's own human captions consists of members of $G(i)$ by
+construction, so a prefix-copied mention is arithmetically incapable of being scored as a
+hallucination. Measured across the grounded conditions of both architectures, $10{,}608$ copied
+mentions produced exactly $0$ hallucinations. A per-mention hallucination rate is therefore
+structurally undefined on such prefixes, which is why the endpoint below classifies \emph{prefix}
+objects and compares carry-forward rates within a condition.
+
+\paragraph{Three constructions.} Every number in the paper is scored under the union. Two further
+constructions are used for the sensitivity analysis of Appendix~\ref{app:gtsens}: segmentation-only
+($G(i)$ restricted to instance-annotation category names) and caption-only ($G(i)$ restricted to
+objects mined from the human captions). The estimator is unmodified across the three; only the
+ground-truth dictionary is swapped, and the switch asserts its own union branch equal to the
+published $G(i)$ per image.
+
+\subsection{The endpoint and its units}
+\label{app:endpoint}
+
+For each (image, condition) pair we extract the object types named in the prefix, $P$, and in the
+continuation, $C$. The unit is the pair (image, object type in $P$), deduplicated within a
+condition-image, so an object named five times in the prefix contributes exactly one unit, and
+carry-forward is the binary event that the type appears anywhere in the continuation. That
+deduplication makes the measurement immune to repetition loops in the continuation; it does not
+address repetition in the prefix, which is measured directly on the prefix string.
+
+Pooled over units, \rateT{} and \rateF{} are the carry-forward rates for prefix objects in and not in
+$G(i)$, and $\mathrm{gap} = \rateT - \rateF$. Table~\ref{tab:units} gives the realised unit counts.
+Because the unit set is fixed by the prefix, and the blind conditions hold prefix token ids
+bit-identical, the blind conditions carry the same unit counts as their sighted counterparts by
+construction.
+
+\begin{table}[htb]
+\caption{Unit counts per condition. A unit is one (image, prefix object type) pair, deduplicated
+within a condition-image. The blind conditions share these counts by construction.}
+\label{tab:units}
+\begin{center}
+\small
+\begin{tabular}{llrrr}
+\toprule
+architecture & condition & true units & false units & cells \\
+\midrule
+\textsc{LLaVA-1.5-7B} & one scene (\texttt{cap1}) & 528 & 2{,}332 & 1{,}500 \\
+\textsc{LLaVA-1.5-7B} & five scenes (\texttt{cap5}) & 892 & 4{,}988 & 1{,}500 \\
+\textsc{LLaVA-OV-0.5B} & one scene (\texttt{cap1}) & 554 & 2{,}452 & 1{,}500 \\
+\textsc{LLaVA-OV-0.5B} & five scenes (\texttt{cap5}) & 1{,}020 & 6{,}308 & 1{,}500 \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{table}
+
+The gap is not pre-registered. It was adopted after CHAIR and the per-mention rate were found
+defective on these conditions, for the reason given in Appendix~\ref{app:gt}; this is recorded in
+Appendix~\ref{app:prereg} among the specification elements selected in the presence of data.
+
+\subsection{Interval estimation}
+\label{app:boot}
+
+All intervals are paired image-level bootstraps clustered on the image. A replicate resamples the
+image ids with replacement, carries \emph{all} of that image's cells into the replicate together,
+recomputes both conditions on the resampled set, and the interval is the $2.5$/$97.5$ percentile
+range over replicates. Clustering is required rather than optional, because each image contributes
+several rows and resampling rows would understate the interval. Multiplicity is preserved --- an
+image drawn three times counts three times --- and the resample size is asserted equal to $n$ on
+every replicate.
+
+$B = 8000$ for pooled estimates and $B = 4000$ elsewhere. The two-point measurement uses
+\texttt{default\_rng(20260830)}; the blind-baseline and signal-detection analyses use seed $20260912$ at
+$B = 4000$. Alternate-seed replications are reported for every primary contrast
+(Appendix~\ref{app:seeds}).
+
+\subsection{Integrity gates}
+\label{app:gates}
+
+Six gates run before any number is reported. All are pass/abort rather than advisory.
+
+\paragraph{Verification gate.} No pipeline may report a new quantity unless it first reproduces
+previously published per-condition rates to within $5\times10^{-3}$. Realised margins: the blind
+analysis's positive control reproduced the published $\dPrim$ to $2.9\times10^{-5}$ and
+$1.8\times10^{-5}$ on the two architectures; the signal-detection analysis reproduced the unit counts of
+Table~\ref{tab:units} exactly with rate deviations of $0.0$ on all four conditions, and reproduced
+the published $\Delta$ intervals to $3.3\times10^{-5}$ and $2.5\times10^{-5}$.
+
+\paragraph{Mask-validity gate.} The free-running condition comes straight from the processor, while
+the prefixed conditions append prefix token ids and rebuild the batch --- and its attention mask ---
+by hand. An error in that hand-built mask would corrupt only the prefixed conditions, and would
+manufacture an effect that is large, clean, internally consistent and entirely spurious; nothing in
+the resulting numbers would look wrong. The gate is a longest-common-prefix check of the rebuilt
+encoding against the processor's own, with a known expected value of $51$, and a batch that fails it
+aborts the condition rather than emitting numbers. The risk is acute under the second architecture's
+anyres tiling, where the processor itself left-pads.
+
+\paragraph{Attention gate.} Registered, and required to pass before any decision cell may fire. It
+compares object recall from the model's own free caption with a real image against the same with flat
+grey: $0.839$ and $0.781$ on the two architectures against $0.000$ grey, with an identical-caption
+rate of $0.000$ and mean caption length $116.98$ real against $73.01$ grey on the first architecture.
+The grey condition produces different, shorter, object-free captions rather than no captions.
+
+\paragraph{Construction and prefix-identity gates.} Every published prefix is rebuilt from its source
+captions under its per-row seed and compared bit-for-bit; realised drift is $0$ of $3{,}000$. Census
+checksum drift is $0$. Per-architecture integrity gates on the blind-baseline analysis pass at $1500/1500$ on all
+six checks (four conditions present, budget, prefix identity, five-scene zero doubling, cap, self).
+
+\paragraph{Budget and cell-count gates.} Fatal assertions on budget mismatch, cap exceedance,
+incomplete cells and cell count against the frozen census; none fired on any reported run.
+
+\paragraph{Bootstrap multiplicity assertion.} Active in every analysis reported here
+(Appendix~\ref{app:boot}, and see Appendix~\ref{app:bootcheck}).
+
+\section{Additional robustness analyses}
+\label{app:robust}
+
+\begin{figure}[htb]
+\begin{center}
+\includegraphics[width=0.92\textwidth]{fig_robustness.pdf}
+\end{center}
+\caption{The image-attributable component on the two \textsc{LLaVA}-lineage architectures under every
+rule in Table~\ref{tab:trunc}, against the $\pm 0.10$ reference margin, which is a reporting choice rather
+than a registered bound. One interval, the second architecture's with empty continuations removed,
+extends beyond the margin.}
+\label{fig:robustness}
+\end{figure}
+
+
+\begin{figure}[htb]
+\begin{center}
+\includegraphics[width=0.55\textwidth]{fig_dose.pdf}
+\end{center}
+\caption{Increments in $J$ along the realised distinct-scene ladder on the first architecture. The
+fourth step exceeds the third, so the curve is front-loaded rather than saturating. Distinct-type
+count and mentions-per-type track the manipulation with the same precision, so the ladder is graded
+in a quantity that co-varies with source-scene count rather than isolating it.}
+\label{fig:dose}
+\end{figure}
+
+
+Every analysis in this section tests the same quantity: $\dSight = \dPrim - \dBlind$, the part of the
+contrast attributable to the image. Figure~\ref{fig:robustness} plots a subset of these rows; the full
+set is here, and Figure~\ref{fig:dose} shows the dose-response grid the contrast sits on.
+
+\subsection{Ground-truth construction}
+\label{app:gtsens}
+
+The null does not depend on how the ground truth was built. Re-scoring all four conditions
+under segmentation-only and caption-only definitions, with the estimator unmodified and only the
+ground-truth dictionary swapped, gives Table~\ref{tab:gtsens}.
+
+\begin{table}[htb]
+\caption{The contrast under three independent ground-truth constructions. The six $\dSight$ point
+estimates lie between $-0.042$ and $-0.016$, and in all six $\dBlind$ exceeds $\dPrim$; intervals are
+shown only for the union construction (Table~\ref{tab:trunc}).}
+\label{tab:gtsens}
+\begin{center}
+\small
+\begin{tabular}{llrrr}
+\toprule
+architecture & quantity & union & segmentation only & captions only \\
+\midrule
+\textsc{LLaVA-1.5-7B}  & $\dPrim$ & $+0.4859$ & $+0.5015$ & $+0.4848$ \\
+\textsc{LLaVA-1.5-7B}  & $\dBlind$ & $+0.5019$ & $+0.5172$ & $+0.5126$ \\
+\textsc{LLaVA-1.5-7B}  & $\dSight$ & $-0.0160$ & $-0.0156$ & $-0.0279$ \\
+\midrule
+\textsc{LLaVA-OV-0.5B} & $\dPrim$ & $+0.3780$ & $+0.3682$ & $+0.3743$ \\
+\textsc{LLaVA-OV-0.5B} & $\dBlind$ & $+0.4128$ & $+0.4101$ & $+0.4129$ \\
+\textsc{LLaVA-OV-0.5B} & $\dSight$ & $-0.0348$ & $-0.0420$ & $-0.0386$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{table}
+
+The largest pairwise spread in $\dPrim$ across the three constructions is $0.0167$, which is $3.4\%$
+of the effect and roughly a seventh of any one interval's width, and the two architectures' shifts
+point in opposite directions --- the signature of noise at this scale rather than of a systematic
+construction bias. The arithmetic reason is that reclassification is small and balanced across
+conditions: dropping the caption-mined half moves $91$ of $8{,}740$ units ($1.04\%$) on the first
+architecture and $109$ of $10{,}334$ ($1.06\%$) on the second, affecting $6.4\%$ of union-true units
+in \emph{both} conditions on the first architecture and $7.4\%$ and $6.7\%$ on the second. A
+construction that reclassified the two conditions at different rates is what would move a contrast
+mechanically, and this one does not.
+
+The union row was cross-checked against a second, independently written scorer with its own bootstrap
+seed, which returns $0.48587082$ / $0.50151970$ / $0.48475570$ against this analysis's $0.485871$ /
+$0.5015$ / $0.4848$.
+
+Two constraints travel with this block. That analysis's own decision cell on the segmentation-only runs is
+mechanical rather than substantive --- its gate compares the recomputed contrast against a
+union-anchored reference, which a segmentation-only run legitimately misses --- and the six paired
+cross-construction differences are point estimates without intervals
+(Appendix~\ref{app:repro-limits}). They say how far the constructions agree, not how confidently.
+
+\subsection{Truncation and length-matching rules}
+\label{app:trunc}
+
+``Length-matched $\dSight$'' names more than one estimand, and the distinction is consequential, so
+every rule we ran is reported. Let $L$ be the per-cell truncation length at which continuations are
+re-scored. A \emph{within-condition} rule sets $L$ separately inside the sighted and the blind halves;
+a \emph{cross-condition} rule sets one $L$ per cell and applies it to both halves, so the sighted and
+blind continuations are evaluated at the same length. Only the cross-condition rule is length-matched
+in the sense the phrase implies.
+
+\begin{table}[htb]
+\caption{$\dSight$ under each truncation and matching rule. Every interval on the two \textsc{LLaVA}
+architectures contains zero. The full ladder was run only on those two; for the other two we give the
+registered primary, and for \textsc{Kosmos-2} the length-matched form as well. That match is within
+each condition only: blind continuations on \textsc{Kosmos-2} run about $1.7$ times longer than sighted
+ones, no sighted-against-blind match was run, and the design cannot separate the image from length. The two
+\textsc{Kosmos-2} intervals exclude zero. Rows for the two \textsc{LLaVA} architectures come from the
+registration run; the last three, and Table~\ref{tab:blind}, come from the run that measured all four
+architectures together. Point estimates agree between the runs; interval endpoints differ in the
+third decimal because the bootstrap seeds differ, and both runs are released.}
+\label{tab:trunc}
+\begin{center}
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{llll}
+\toprule
+architecture & rule & $\dSight$ & 95\% CI \\
+\midrule
+\textsc{LLaVA-1.5-7B} & raw, no truncation match (registered primary) & $-0.0160$ & \civ{-0.0708}{+0.0400} \\
+\textsc{LLaVA-1.5-7B} & within-condition, two-condition $L$ & $-0.0124$ & \civ{-0.0673}{+0.0427} \\
+\textsc{LLaVA-1.5-7B} & cross-condition $L$ & $+0.0223$ & \civ{-0.0190}{+0.0665} \\
+\textsc{LLaVA-1.5-7B} & empty continuations removed & $-0.0045$ & \civ{-0.0614}{+0.0536} \\
+\textsc{LLaVA-1.5-7B} & type-matched (mention-rate control) & $+0.0019$ & \civ{-0.0488}{+0.0516} \\
+\midrule
+\textsc{LLaVA-OV-0.5B} & raw, no truncation match (registered primary) & $-0.0348$ & \civ{-0.0905}{+0.0192} \\
+\textsc{LLaVA-OV-0.5B} & within-condition, two-condition $L$ & $+0.0426$ & \civ{-0.0041}{+0.0891} \\
+\textsc{LLaVA-OV-0.5B} & empty continuations removed & $-0.0557$ & \civ{-0.1172}{+0.0053} \\
+\textsc{LLaVA-OV-0.5B} & type-matched (mention-rate control) & $-0.0413$ & \civ{-0.0895}{+0.0040} \\
+\midrule
+\textsc{Qwen2.5-VL-7B} & raw, no truncation match (registered primary) & $+0.0157$ & \civ{-0.0226}{+0.0552} \\
+\textsc{Kosmos-2} & raw, no truncation match (registered primary) & $-0.1028$ & \civ{-0.1677}{-0.0360} \\
+\textsc{Kosmos-2} & length-matched & $-0.0873$ & \civ{-0.1502}{-0.0250} \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{table}
+
+The four truncation rules are the raw (unmatched) rule, the
+within-condition rule, the cross-condition rule and the empty-continuation rule; the type-matched row
+is a matching rule rather than a truncation rule and is discussed in Appendix~\ref{app:mrate}.
+
+The empty-continuation rows run in opposite directions on the two architectures --- closer to zero on
+the first, further from it on the second, and containing zero in both --- so the empty-rate asymmetry
+between conditions does not explain the null in either direction.
+
+\paragraph{A fifth rule, and why it is not in the table.} A replication analysis computed a
+within-condition length match in which $L$ is minimised over \emph{four} conditions, two of which are
+not in the contrast, and reports $+0.0395$ \civ{+0.0050}{+0.0754}. We report it here because it is in
+the released artefacts and because it is the one length-matched estimate that excludes zero. It
+should not be read as a truncation rule for this contrast, for a reason that is checkable
+arithmetically. Under that rule the truncation depth is itself a function of the manipulation being
+contrasted: removing the image shortens continuations, so the blind half is truncated on $43.7\%$ of
+cells against the sighted half's $23.6\%$. The differential shrinkage is $0.1020 - 0.0667 = 0.0353$,
+against an observed discrepancy of $+0.0395 - (+0.0042) = +0.0353$, where $+0.0042$
+\civ{-0.0335}{+0.0427} is that analysis's cells recomputed under the registered two-condition rule.
+The cross-condition version on those cells reads $-0.0140$ \civ{-0.0452}{+0.0172}, the
+narrowest of the three. The registered raw primary is untouched by any of this, and the two analyses
+agree on it ($-0.0160$ and $-0.0104$).
+
+\subsection{The mention-rate control}
+\label{app:mrate}
+
+The strongest competing explanation for the blind null is that a shift in overall mention rate,
+rather than blinding, drives it. The threat is real: the one-scene to five-scene increase in mention
+count is substantially larger in the blind condition than in the sighted one, by $-12.68$
+\civ{-14.77}{-10.56} on the first architecture.
+
+The pre-registered control holds distinct object \emph{types} fixed rather than mentions, because
+carry-forward is set membership and cannot depend on multiplicity. The stimulus census makes the
+distinction concrete: the first architecture averages $26.59$ mentions across only $1.515$ types, so
+most mentions are re-namings that cannot change any carry outcome. Type-matched, the null holds on
+both architectures (Table~\ref{tab:trunc}, last row of each block).
+
+\begin{table}[htb]
+\caption{The adversarial re-analysis. The registered verdict passes on all fourteen powered blocks on
+the second architecture and fails on five of sixteen powered blocks on the first --- four
+mention-count strata in the positive direction and one type-matched block in the negative direction;
+both architectures are reported.}
+\label{tab:mrate}
+\begin{center}
+\small
+\begin{tabular}{lll}
+\toprule
+block & estimate & reading \\
+\midrule
+type-matched, \textsc{LLaVA-1.5-7B} & $+0.0019$ \civ{-0.0488}{+0.0516} & passes \\
+type-matched, \textsc{LLaVA-OV-0.5B} & $-0.0413$ \civ{-0.0895}{+0.0040} & passes \\
+mention-count strata, \textsc{LLaVA-1.5-7B} & $+0.093$ to $+0.107$, four blocks & \textbf{fails} \\
+type-matched block ($\tau = 2$), \textsc{LLaVA-1.5-7B} & $-0.0688$ \civ{-0.1343}{-0.0057} & \textbf{fails} \\
+all fourteen powered blocks, \textsc{LLaVA-OV-0.5B} & --- & passes \\
+repeat-mention probe, \textsc{LLaVA-1.5-7B} & $+0.1144$ \civ{+0.0519}{+0.1734} & diagnostic \\
+conditioning on types directly & $+0.002$ & diagnostic \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{table}
+
+Four mention-count-stratified blocks on the first architecture come out positive, in the direction
+pre-specified as adverse. We report the failure rather than amend the rule, and we report the
+diagnostic that indicates why it occurs. Stratifying on repeat mentions alone --- the quantity
+$\mathrm{mentions} - \mathrm{types}$, which by construction cannot change any carry outcome ---
+reproduces the effect more strongly ($+0.1144$) than the mention-count stratification does, while
+conditioning on types directly gives $+0.002$. A variable incapable of affecting the endpoint
+therefore reproduces the effect better than the variable of interest, which is what one expects if
+the stratifier is a proxy for something else. It is: every mention stratum above roughly sixteen on
+the first architecture is entirely cap-truncated, so high mention count there marks ``reached the
+token cap and looped'' rather than verbosity.
+
+\paragraph{The smallest ratio across strata.} Across all adequately powered blocks, the smallest point
+estimate of $\dBlind / \dPrim$ is $0.7333$ on the first architecture and $0.9074$ on the second. These
+are minima of point estimates, not confidence bounds; the ratio on the full sample is $1.033$
+\civ{0.922}{1.155}. What we claim is that the image-attributable component of the gap is null at our
+power --- not that the image adds nothing detectable,
+which Appendix~\ref{app:dprime-table} shows directly to be false.
+
+\subsection{One block that runs in our favour and is unexplained}
+\label{app:oddblock}
+
+A type-restricted block on the first architecture returns $\dSight = -0.0688$
+\civ{-0.1343}{-0.0057} and is systematic rather than sampling noise: it sits at the $0.27$th
+percentile of same-size random subsets of the same cells. The repeat-mention probe does not reproduce
+it, no truncation account explains it, and the second architecture shows nothing comparable (the
+corresponding block sits at the $55.5$th percentile). A negative $\dSight$ means the image acts in a
+direction nobody predicted, and it flatters the conclusion of this paper, which is a reason for more
+suspicion rather than less. The cells this block excludes --- those in which the five-caption prefix raised the count of distinct
+types sharply --- return $\dSight = +0.1264$ \civ{+0.0143}{+0.2432}, so the pooled null combines
+subgroups of opposite sign; this split was examined after the fact. Both halves are defined by a
+post-treatment quantity, so neither half is a causal contrast and no re-weighting of these data will settle it; resolving it
+requires a design that manipulates prefix type-content directly.
+
+\subsection{Generation regime}
+\label{app:regime}
+
+The five-scene condition generates longer continuations and reaches the generation cap more often
+($\mathrm{at\_max}$ $0.679$ against the one-scene condition's $0.447$), so a control that removes
+truncation from the comparison is necessary. Requiring that \emph{neither} condition reach the cap
+keeps $21.5\%$ of cells at $500$ images ($323$ of $1{,}500$) and drops the true-unit count to $75$
+against a registered floor of $100$; the contrast is then $+0.4667$ \civ{+0.3129}{+0.6134} and
+underpowered by its own rule. Raising the cap from $192$ to $384$ tokens does not fix this ---
+truncation barely moves ($\mathrm{at\_max}$ $0.448 / 0.677$ at $384$ against $0.447 / 0.679$ at
+$192$). Adding images does.
+
+\begin{table}[htb]
+\caption{The generation-regime control at power: the contrast measured only on cells in which neither
+condition reached the generation cap, at $3{,}500$ images.}
+\label{tab:regime}
+\begin{center}
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{llll}
+\toprule
+estimate & $\Delta$ & 95\% CI & width \\
+\midrule
+both conditions uncapped, $3{,}500$ images (primary) & $+0.3460$ & \civ{+0.2849}{+0.4058} & $0.1209$ \\
+the same, length-matched & $+0.1999$ & \civ{+0.1462}{+0.2524} & $0.1062$ \\
+the same, $192$-token reconstruction & $+0.3460$ & \civ{+0.2849}{+0.4058} & $0.1209$ \\
+the same, alternate bootstrap seed & $+0.3460$ & \civ{+0.2876}{+0.4050} & $0.1174$ \\
+composition control, base-rate tertiles & $+0.1994$ & \civ{+0.1059}{+0.2897} & $0.1838$ \\
+composition control, shared object types & $+0.3496$ & \civ{+0.2923}{+0.4168} & $0.1245$ \\
+all cells, raw, $3{,}500$ images & $+0.4719$ & \civ{+0.4507}{+0.4928} & $0.0421$ \\
+all cells, length-matched, $3{,}500$ images & $+0.3679$ & \civ{+0.3478}{+0.3872} & $0.0394$ \\
+original $500$ images only, both uncapped (descriptive) & $+0.4663$ & \civ{+0.3139}{+0.6124} & $0.2985$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{table}
+
+The control passes: interval width $0.1209$ against a registered ceiling of $0.130$, true units
+$466 / 914$ against a floor of $100$, on $2{,}089$ of $10{,}500$ cells. The uncapped subset is
+short-continuation by construction (mean $28.9$ tokens in the one-scene condition against $40.3$ in
+the five-scene condition), so a positive verdict says the effect exists \emph{within} the
+regime-matched population and no more.
+
+Two facts are reported against our interest. The confirmatory estimate is $26\%$ below the
+underpowered $500$-image estimate that motivated running it, and the confirmatory interval
+\emph{excludes} that point estimate while the underpowered interval comfortably contains the
+confirmatory one. An arithmetic decomposition of the reported unit counts puts the $3{,}000$
+extension images alone at $+0.3237$; that figure carries no interval and fires no decision cell, and
+is given because it makes the shrinkage concrete. The frozen original stimulus set replicates cleanly
+alongside it: the original all-cells contrast of $+0.4859$ reproduces at $+0.4877$
+\civ{+0.4298}{+0.5434} on the regenerated cells, and the regenerated uncapped subset gives $+0.4663$
+on $321$ cells at $76$ true units against the original's $+0.4667$ on $323$ cells at $75$.
+
+The same control is unevaluated on the second architecture, where the uncapped subset reaches $90$
+true units on $287$ of $1{,}500$ cells against the same floor of $100$. It points the same way as
+that architecture's primary ($+0.2830$) and may not be read as support. The dose grid's own regime
+control is likewise unevaluated: truncation rises monotonically with the dose
+($\mathrm{at\_max}$ $0.436 \rightarrow 0.655$, Spearman $\rho = +1.0$), and the registered
+all-uncapped control reaches $150$ cells with true-unit counts between $29$ and $72$ against a floor
+of $100$.
+
+\subsection{Seeds and reconstructions}
+\label{app:seeds}
+
+\begin{table}[htb]
+\caption{Alternate-seed and alternate-budget replications of the primary contrasts.}
+\label{tab:seeds}
+\begin{center}
+\small
+\begin{tabular}{lll}
+\toprule
+quantity & estimate & 95\% CI \\
+\midrule
+$\dPrim$, \textsc{LLaVA-OV-0.5B}, alternate bootstrap seed & $+0.3780$ & \civ{+0.3233}{+0.4352} \\
+regime control, alternate bootstrap seed & $+0.3460$ & \civ{+0.2876}{+0.4050} \\
+regime control, $192$-token reconstruction & $+0.3460$ & \civ{+0.2849}{+0.4058} \\
+forced-choice contrast, alternate bootstrap seed & $-0.0095$ & \civ{-0.0312}{+0.0118} \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{table}
+
+\section{Signal-detection derivation}
+\label{app:sdt}
+
+\begin{figure}[htb]
+\begin{center}
+\includegraphics[width=0.92\textwidth]{fig_sdt.pdf}
+\end{center}
+\caption{Signal-detection decomposition on \textsc{LLaVA-1.5-7B}. Sensitivity rises with scene count
+whether or not the image is present; the criterion moves mainly when it is.}
+\label{fig:sdt}
+\end{figure}
+
+
+This section derives the relationship the main text relies on, and states the assumptions it needs;
+Figure~\ref{fig:sdt} shows the operating points the derivation is evaluated at.
+Write $H = \rateT$ for the carry-forward rate on prefix objects present in the image and
+$F = \rateF$ for the rate on absent ones. Let $\Phi$ be the standard normal distribution function,
+$\varphi$ its density, and $Z = \Phi^{-1}$.
+
+\subsection{The reparameterisation}
+
+The three summaries are
+\begin{align}
+J &= H - F, \label{eq:appJ}\\
+d' &= Z(H) - Z(F), \label{eq:dprime}\\
+c &= -\tfrac{1}{2}\left[ Z(H) + Z(F) \right]. \label{eq:crit}
+\end{align}
+Equations~\ref{eq:dprime}--\ref{eq:crit} invert exactly:
+\begin{equation}
+Z(H) = \tfrac{d'}{2} - c, \qquad Z(F) = -\tfrac{d'}{2} - c,
+\end{equation}
+so that
+\begin{equation}
+H = \Phi\!\left(\tfrac{d'}{2} - c\right), \qquad
+F = \Phi\!\left(-\tfrac{d'}{2} - c\right), \qquad
+J(d',c) = \Phi\!\left(\tfrac{d'}{2} - c\right) - \Phi\!\left(-\tfrac{d'}{2} - c\right).
+\label{eq:Jdc}
+\end{equation}
+The map $(H,F) \mapsto (d',c)$ is a bijection from $(0,1)^2$ onto $\mathbb{R}^2$: two observed rates,
+two parameters. On a single operating point the equal-variance Gaussian model is therefore
+\emph{saturated}. Nothing is estimated beyond the two rates, and $d'$ and $c$ are re-expressions of
+them rather than fits --- a point we return to in Appendix~\ref{app:sdt-assumptions}, because it cuts
+both ways.
+
+\subsection{$J$ is not invariant to the criterion}
+\label{app:sdt-noninvariance}
+
+Differentiating \eqref{eq:Jdc} in $c$ at fixed $d'$, and using the symmetry of $\varphi$,
+\begin{equation}
+\frac{\partial J}{\partial c}
+ = \varphi\!\left(\tfrac{d'}{2} + c\right) - \varphi\!\left(\tfrac{d'}{2} - c\right)
+ = -\frac{2}{\sqrt{2\pi}}\,
+   \exp\!\left(-\frac{d'^2/4 + c^2}{2}\right) \sinh\!\left(\frac{c\,d'}{2}\right).
+\label{eq:appdJdc}
+\end{equation}
+This vanishes if and only if $c\,d' = 0$. For $d' > 0$ it is strictly negative for $c > 0$ and
+strictly positive for $c < 0$, so at fixed $d'$ the statistic $J$ increases in $c$ on $c < 0$,
+decreases on $c > 0$, and attains a unique interior maximum at $c = 0$:
+\begin{equation}
+J^{*}(d') \;=\; \max_{c}\, J(d',c) \;=\; 2\Phi\!\left(\tfrac{d'}{2}\right) - 1,
+\qquad\text{so}\qquad
+J(d',c) \le 2\Phi\!\left(\tfrac{d'}{2}\right) - 1
+\label{eq:Jmax}
+\end{equation}
+with equality if and only if $c = 0$. The right-hand side of \eqref{eq:Jmax} is Youden's index of the
+equal-variance Gaussian \textsc{roc} with separation $d'$.
+
+Equation~\ref{eq:Jmax} is the precise sense in which a present-minus-absent rate both is and is not
+criterion-free. Youden's index, as a summary of an \textsc{roc} \emph{curve}, is criterion-free by
+definition: it is the maximum over operating points, and a maximum does not depend on where on the
+curve one happens to sit. A present-minus-absent rate measured at a single, uncontrolled operating
+point equals that maximum only when the operating point happens to be unbiased, and otherwise
+under-reports it by an amount that is itself a function of the criterion. Free generation supplies no
+mechanism that pins the operating point at $c = 0$, and Appendix~\ref{app:dprime-table} shows that in
+our data it is not pinned there.
+
+The local behaviour explains why the confusion is durable. Since $\varphi'(x) = -x\varphi(x)$,
+\begin{equation}
+\left.\frac{\partial^2 J}{\partial c^2}\right|_{c=0} = -\,d'\,\varphi\!\left(\tfrac{d'}{2}\right),
+\qquad\text{hence}\qquad
+J(d',c) \;=\; 2\Phi\!\left(\tfrac{d'}{2}\right) - 1
+ \;-\; \tfrac{1}{2}\, d'\, \varphi\!\left(\tfrac{d'}{2}\right) c^{2} \;+\; O(c^{4}).
+\label{eq:expand}
+\end{equation}
+The leading criterion dependence is quadratic, not linear. A criterion shift confined to a
+neighbourhood of the unbiased point costs $J$ only at second order, which is why the statistic is
+routinely described as bias-corrected. A criterion shift between two points that are not symmetric
+about zero moves $J$ at first order, with the slope given by \eqref{eq:appdJdc}.
+
+\subsection{The conditions under which it would be invariant}
+\label{app:sdt-conditions}
+
+From \eqref{eq:appdJdc}, $J$ is \emph{exactly} invariant to the criterion in three cases and no others.
+
+\begin{enumerate}
+\itemsep0em
+\item $d' = 0$, where $J \equiv 0$ for every $c$. This is the degenerate case, not a useful one.
+\item $c$ held fixed across the compared conditions. Then $\Delta J$ is a function of $\Delta d'$ and
+of the common $c$ alone. This is the condition an experiment can actually arrange, and arranging it
+is what a response-rate control does.
+\item Criteria symmetric about the unbiased point, $c_2 = -c_1$, since $J$ is even in $c$ at fixed
+$d'$.
+\end{enumerate}
+
+\noindent It is \emph{approximately} invariant whenever
+$\tfrac{1}{2}d'\varphi(d'/2)\,c^2$ falls below the resolution of interest. The coefficient
+$d'\varphi(d'/2)$ rises from $0.193$ at $d' = 0.5$ to $0.484$ at $d' = 2.0$. At $d' = 1.5$, exact
+evaluation of \eqref{eq:Jdc} gives a cost of $0.0023$ in $J$ for a criterion displacement of
+$|c| = 0.1$ and $0.054$ for $|c| = 0.5$.
+
+\paragraph{The complementary exact statement, which needs no distributional assumption.} On the rate
+scale, if both rates receive a common additive shift $\delta$, then $J$ is exactly unchanged while
+$d'$ is not, unless $H = F$. On the probit scale the roles reverse: a pure criterion move at fixed
+$d'$ is a common additive shift of $Z(H)$ and $Z(F)$, under which $d'$ is exactly unchanged while $J$
+is not, unless $c = 0$. The two summaries are exactly invariant to different perturbations, and
+neither is invariant to the other's. Which of those two invariances an evaluation wants is a
+substantive choice about what the evaluation is for; reporting only $J$ makes that choice silently.
+
+\subsection{Where the equal-variance Gaussian assumption is and is not warranted}
+\label{app:sdt-assumptions}
+
+The assumption is warranted in three respects and unwarranted in four, and we state both halves
+because the derivation above is only as good as the model it sits in.
+
+\paragraph{Warranted.} \emph{(i) Nothing is fitted.} On one operating point the map of
+\eqref{eq:Jdc} is a bijection, so $d'$ and $c$ consume exactly the information in $H$ and $F$. Every
+statement above is checkable directly from the two rates, and the values in
+Table~\ref{tab:sdt-audit} are verified to be so. \emph{(ii) No boundary pathology.} Rates are
+log-linear corrected, $(\mathrm{hits}+0.5)/(n_{\mathrm{signal}}+1)$, applied unconditionally to every
+condition so that none is selectively corrected; no boundary-rate events were recorded, so no $Z$ is
+evaluated at an endpoint. \emph{(iii) The qualitative conclusion is link-free.} Under a logit link
+the same two contrasts read $+0.4207$ \civ{+0.1498}{+0.6911} on the discriminability coordinate and
+$+0.6953$ \civ{+0.5448}{+0.8478} on the criterion coordinate, so sign and exclusion of zero are not
+probit artefacts. More generally, the argument of Appendix~\ref{app:sdt-conditions} needs only that
+the reparameterisation separate a discriminability coordinate from a propensity coordinate; the
+Gaussian choice fixes which coordinates, not whether the confound exists.
+
+\paragraph{Not warranted.} \emph{(i) There is no z-\textsc{roc}.} Equal variance is testable only
+with several criterion points per condition. A binary carry outcome at one operating point supplies a
+single $(H,F)$ pair, so the model is saturated and the equal-variance assumption carries no degree of
+freedom against which it could fail. Unequal variance would change the numerical values of $d'$ and
+$c$; it would not change the fact that $J$ depends on both. \emph{(ii) There is no explicit decision
+threshold.} Carry-forward is not a thresholded judgement on a latent evidence axis. It is an emergent
+property of autoregressive generation: whether a type named in the prefix reappears anywhere in a
+continuation produced under a fixed token budget. The latent-variable story is a description of two
+rates, not a mechanism claim, and should not be read as one. \emph{(iii) Units within an image are
+not independent.} Object types drawn from one prefix compete for one continuation and one token
+budget. Deduplication removes repetition \emph{within} a continuation but not this competition. The
+intervals respect the dependence, since they cluster on the image
+(Appendix~\ref{app:boot}); the Gaussian model's unit-level independence does not. \emph{(iv) The
+budget binds.} With $\mathrm{at\_max}$ of $0.447$ and $0.679$ in the two conditions of the first
+architecture, a large fraction of continuations end at the cap, so a unit's carry probability depends
+on how many other units compete for the remaining budget. A capacity constraint of that kind is not
+representable as a threshold on a per-unit evidence variable, and it cannot be absorbed into either
+$d'$ or $c$.
+
+Finally, the cancellation of a response-propensity shift out of $J$ is \emph{exact} only under an
+additive shift of both rates, and only \emph{approximate} under an equal-variance Gaussian model of
+the same shift. The same qualification attaches to the component analysis of
+Appendix~\ref{app:dprime-table}.
+
+\subsection{Operating points in signal-detection coordinates}
+\label{app:zroc}
+
+\begin{figure}[htb]
+\begin{center}
+\includegraphics[width=0.88\textwidth]{fig_zroc.pdf}
+\end{center}
+\caption{Operating points in $z$-coordinates. Dotted lines hold $d' = z(H) - z(F)$ constant, so height
+above the chance diagonal is separation and movement parallel to it is a change of threshold.
+\textbf{(a)} The scene-count rise on \textsc{LLaVA-1.5-7B}, from one scene (open) to five (filled),
+moves away from the diagonal almost as far without the image as with it (post hoc for these
+conditions). \textbf{(b)} PAI on standard CHAIR moves almost parallel to the diagonal: on this probit
+scale the threshold changes and separation does not, although a logit separation measure does rise
+(Section~\ref{sec:mitigation}).}
+\label{fig:zroc}
+\end{figure}
+
+\subsection{Numerical audit at the reported operating points}
+\label{app:sdt-audit}
+
+Table~\ref{tab:sdt-audit} evaluates \eqref{eq:Jdc}, \eqref{eq:appdJdc} and \eqref{eq:Jmax} at the
+per-condition $d'$ and $c$ reported for the first architecture, and compares the result against the
+independently measured gap. The reconstruction is not a new measurement, but the identity
+\eqref{eq:Jdc} applied to values reported elsewhere in this paper, and it is included because a
+reviewer can and should check it.
+
+\begin{table}[htb]
+\caption{Reconstruction of the measured gap from the reported $d'$ and $c$ on \textsc{LLaVA-1.5-7B},
+via $J(d',c) = \Phi(d'/2 - c) - \Phi(-d'/2 - c)$. Residuals are at the resolution of the
+four-decimal $d'$ and $c$ inputs. $J^{*}$ is the criterion-free Youden index at the same $d'$.}
+\label{tab:sdt-audit}
+\begin{center}
+\footnotesize
+\setlength{\tabcolsep}{3.5pt}
+\begin{tabular}{lrrrrrrr}
+\toprule
+condition & $d'$ & $c$ & $J(d',c)$ & meas.\ gap & residual & $J^{*}(d')$ & $\partial J/\partial c$ \\
+\midrule
+sighted, one scene   & $+0.4861$ & $-0.2130$ & $+0.1878$ & $+0.18814$ & $-0.00033$ & $+0.1920$ & $+0.039$ \\
+sighted, five scenes & $+2.0183$ & $+0.2371$ & $+0.6736$ & $+0.67401$ & $-0.00038$ & $+0.6871$ & $-0.113$ \\
+blind, one scene     & $-0.0549$ & $+0.0532$ & $-0.0219$ & $-0.02191$ & $+0.00004$ & $-0.0219$ & $+0.001$ \\
+blind, five scenes   & $+1.2918$ & $+0.0975$ & $+0.4797$ & $+0.47997$ & $-0.00032$ & $+0.4817$ & $-0.041$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{table}
+
+Three things follow, and the third is the one that matters.
+
+First, the reconstruction reproduces all four measured gaps to within $4\times10^{-4}$, which is the
+resolution of the quoted inputs. The signal-detection and gap analyses are therefore describing
+the same four cells, and the reader may treat $(d', c)$ and $(\rateT, \rateF)$ as interchangeable
+coordinates on this data.
+
+Second, the operating points are close to, but not at, the unbiased point. The measured gap falls
+short of the criterion-free Youden index $J^{*}$ by $0.0039$, $0.0131$, $0.0000$ and $0.0017$ in the
+table's row order (for the blind one-scene cell, where $d' < 0$, $J^{*}$ is the most negative value
+attainable rather than the largest), so at these operating points $J$ under-reports the discriminability available at the
+same $d'$, by an amount that is itself a function of the criterion. This is the second-order regime
+of \eqref{eq:expand}.
+
+Third, decomposing $\dSight$. Evaluating \eqref{eq:Jdc} with the reported $d'$ values but $c$ set to
+zero in all four cells gives contrasts of $+0.4951$ sighted and $+0.5036$ blind, so
+$\dSight = -0.0085$ on the discriminability coordinate alone; the criterion terms supply the
+remaining $-0.0075$ of the reported $-0.0160$. On these data the \emph{movement} of the gap is
+therefore carried predominantly by $d'$, and the criterion coordinate contributes about $0.007$ to a
+contrast of $0.486$. This sharpens the diagnosis rather than softening it. The
+criterion moves substantially in the sighted conditions, from $-0.213$ to $+0.237$, and barely at all
+in the blind ones, from $+0.053$ to $+0.098$, and the image-attributable component of the criterion
+contrast is $+0.4057$ \civ{+0.3157}{+0.4957} --- \emph{larger} than the image-attributable component
+of discriminability, $+0.1855$ \civ{+0.0252}{+0.3463}. Both of those image effects are invisible in
+the gap: the criterion effect because $J$ is stationary in $c$ near the unbiased point
+(\eqref{eq:expand}), and the discriminability effect because the map $d' \mapsto 2\Phi(d'/2)-1$ is
+concave, its slope $\varphi(d'/2)$ falling from $0.387$ at $d' = 0.5$ to $0.242$ at $d' = 2.0$, so
+the same increment in $d'$ buys less gap at the higher $d'$ at which the sighted conditions sit. An
+endpoint that is stationary in one coordinate by construction and compressive in the other is not a
+measure of either.
+
+\section{Additional model results}
+\label{app:models}
+
+
+\begin{table}[htb]
+\caption{The rise with and without the image, for all four architectures run. The blind rise is
+positive in every case. The image-attributable component lies within $\pm 0.10$ on the first three and
+excludes zero on \textsc{Kosmos-2}, where removing the image \emph{increases} the rise.
+$^{\dagger}$\textsc{Qwen2.5-VL-7B} produces a median continuation of four tokens (five on its blind
+one-scene arm), which leaves a carry-forward endpoint almost nothing to register. Its registration
+states that it does not constitute a replication, and the main text does not count it. We did not
+verify that this length reflects the model rather than our prompt and chat template for it, so we do
+not interpret the row.}
+\label{tab:blind}
+\begin{center}
+\begin{tabular}{lrrl}
+\multicolumn{1}{c}{\bf ARCHITECTURE} &\multicolumn{1}{c}{\bf SIGHTED $\dPrim$}
+&\multicolumn{1}{c}{\bf BLIND $\dBlind$} &\multicolumn{1}{c}{\bf $\dSight$}
+\\ \hline \\
+\textsc{LLaVA-1.5-7B} & $+0.4859$ & $+0.5019$ & $-0.0160$ \civ{-0.0701}{+0.0399} \\
+\textsc{LLaVA-OV-0.5B} & $+0.3780$ & $+0.4128$ & $-0.0348$ \civ{-0.0906}{+0.0179} \\
+\textsc{Qwen2.5-VL-7B}$^{\dagger}$ & $+0.1598$ & $+0.1441$ & $+0.0157$ \civ{-0.0226}{+0.0552} \\
+\textsc{Kosmos-2} & $+0.2148$ & $+0.3176$ & $\mathbf{-0.1028}$ \civ{-0.1677}{-0.0360} \\
+\end{tabular}
+\end{center}
+\end{table}
+
+
+\subsection{Per-condition rates and contrasts}
+\label{app:percond}
+
+\begin{table}[htb]
+\caption{Per-condition carry-forward rates and gaps. Unit counts are in Table~\ref{tab:units}; the
+blind conditions share them by construction.}
+\label{tab:percond}
+\begin{center}
+\small
+\begin{tabular}{lllll}
+\toprule
+architecture & condition & \rateT{} & \rateF{} & gap \\
+\midrule
+\textsc{LLaVA-1.5-7B} & sighted, one scene & $0.6761$ & $0.4880$ & $+0.1881$ \civ{+0.1416}{+0.2362} \\
+\textsc{LLaVA-1.5-7B} & sighted, five scenes & $0.7803$ & $0.1063$ & $+0.6740$ \civ{+0.6410}{+0.7072} \\
+\textsc{LLaVA-1.5-7B} & blind, one scene & $0.4678$ & $0.4897$ & $-0.0219$ \\
+\textsc{LLaVA-1.5-7B} & blind, five scenes & $0.7085$ & $0.2285$ & $+0.4800$ \civ{+0.4441}{+0.5148} \\
+\midrule
+\textsc{LLaVA-OV-0.5B} & sighted, one scene & $0.5578$ & $0.5171$ & $+0.0406$ \\
+\textsc{LLaVA-OV-0.5B} & sighted, five scenes & $0.5471$ & $0.1284$ & $+0.4187$ \\
+\textsc{LLaVA-OV-0.5B} & blind, one scene & $0.2058$ & $0.3230$ & $-0.1172$ \\
+\textsc{LLaVA-OV-0.5B} & blind, five scenes & $0.3922$ & $0.0965$ & $+0.2956$ \civ{+0.2632}{+0.3271} \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{table}
+
+A model that cannot see the image at all posts a large positive gap: $+0.4800$ and $+0.2956$ in the
+five-scene blind conditions of the two architectures. Table~\ref{tab:contrasts} gives the contrasts
+and their pre-registered controls.
+
+\begin{table}[htb]
+\caption{The primary contrast and its controls on both architectures. The two point estimates differ
+($+0.4859$ against $+0.3780$), but their raw intervals overlap narrowly, as do the length-matched
+ones.}
+\label{tab:contrasts}
+\begin{center}
+\small
+\begin{tabular}{lll}
+\toprule
+contrast & $\Delta$ & 95\% CI \\
+\midrule
+\multicolumn{3}{l}{\textsc{LLaVA-1.5-7B}} \\
+\quad primary, raw & $+0.4859$ & \civ{+0.4283}{+0.5417} \\
+\quad co-primary, length-matched & $+0.3558$ & \civ{+0.3045}{+0.4082} \\
+\quad composition control, base-rate tertiles & $+0.3327$ & \civ{+0.2212}{+0.4367} \\
+\quad composition control, shared object types & $+0.4696$ & \civ{+0.4153}{+0.5261} \\
+\quad blind & $+0.5019$ & \civ{+0.4441}{+0.5565} \\
+\quad $\dBlind / \dPrim$ & $1.033$ & \civ{0.922}{1.155} \\
+\midrule
+\multicolumn{3}{l}{\textsc{LLaVA-OV-0.5B}} \\
+\quad primary, raw & $+0.3780$ & \civ{+0.3213}{+0.4333} \\
+\quad co-primary, length-matched & $+0.2871$ & \civ{+0.2375}{+0.3365} \\
+\quad object-type-matched & $+0.3655$ & \civ{+0.3129}{+0.4276} \\
+\quad doubled prefixes removed & $+0.3733$ & \civ{+0.3162}{+0.4310} \\
+\quad empty continuations removed & $+0.3905$ & \civ{+0.3311}{+0.4478} \\
+\quad blind & $+0.4128$ & \civ{+0.3609}{+0.4640} \\
+\quad $\dBlind / \dPrim$ & $1.092$ & \civ{0.954}{1.265} \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{table}
+
+\paragraph{The doubling check.} The assembler of Appendix~\ref{app:stimulus} reaches its budget by
+self-concatenation, and on the second architecture the budget is close to twice what five COCO
+captions fill, so the one-scene condition's prefixes are frequently doubled text while the five-scene
+condition's are not. Doubling is detected on the prefix string itself --- whether its leading half
+reappears verbatim, plus an $8$-gram distinctness floor --- rather than inferred from the assembler's
+counter. Removing every doubled prefix leaves the contrast at $+0.3733$ \civ{+0.3162}{+0.4310}
+against a raw $+0.3780$ \civ{+0.3213}{+0.4333}, so the second architecture's result is not a
+duplication artefact.
+
+\paragraph{Why the composition controls are load-bearing.} Five source scenes contribute roughly
+twice the prefix objects of one: a mean of $3.92$ distinct object types against $1.91$ on the first
+architecture. Length matching is likewise not optional, because the five-scene condition generates
+longer text and reaches the cap far more often ($\mathrm{at\_max}$ $0.679$ against $0.447$); it costs
+$27\%$ of the effect and threatens neither its sign nor its power.
+
+\paragraph{What the composition controls do not fix.} Every composition control in this paper matches
+on the object \emph{set}, and the set operation discards per-occurrence counts, so these controls fix
+which object types appear and never how often each is stated. Measured on the frozen prefixes
+themselves, with no model in the loop (Table~\ref{tab:census}), total object mentions are nearly
+conserved across the two conditions while the count of distinct types roughly doubles, so mentions
+per type falls reciprocally. That quantity is unmatched in every contrast above, and it is part of
+the reason the contrast is named by its manipulation rather than by a mechanism.
+
+\begin{table}[htb]
+\caption{Stimulus-side census on the frozen prefixes of the first architecture, $1{,}500$ cells, no
+model in the loop.}
+\label{tab:census}
+\begin{center}
+\small
+\begin{tabular}{lrr}
+\toprule
+per prefix & one scene & five scenes \\
+\midrule
+total object mentions & $4.933$ & $4.829$ \\
+distinct object types & $1.907$ & $3.920$ \\
+mentions per type & $2.623$ & $1.248$ \\
+fraction of prefixes containing a restated type & $0.902$ & $0.539$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{table}
+
+\subsection{The image's contribution within each condition}
+\label{app:withincond}
+
+The blind null concerns the \emph{change} in the image's contribution between conditions, not whether
+the image contributes. Table~\ref{tab:withincond} gives the contribution itself: sighted minus blind
+$J$ within each condition, from the same run and bootstrap ($B = 4000$) as Table~\ref{tab:dprime}.
+It is large and excludes zero in all four cells, which shows the design detects image effects of this
+size; it is nearly equal across conditions, which is why $\dSight$ is null. The image's contribution to
+$d'$ also excludes zero in every cell (Table~\ref{tab:dprime}) but is \emph{not} equal across
+conditions, and the image's contributions to \rateT{} and \rateF{} separately differ by condition and
+offset in $J$ (Table~\ref{tab:report}).
+
+\begin{table}[htb]
+\caption{The image's contribution to $J$ within each condition: sighted minus blind, with $95\%$
+clustered bootstrap intervals. $\dSight$ is the five-scene row minus the one-scene row.}
+\label{tab:withincond}
+\begin{center}
+\small
+\begin{tabular}{llll}
+\toprule
+architecture & condition & sighted $-$ blind & 95\% CI \\
+\midrule
+\textsc{LLaVA-1.5-7B}  & one scene   & $+0.2100$ & \civ{+0.1635}{+0.2584} \\
+\textsc{LLaVA-1.5-7B}  & five scenes & $+0.1940$ & \civ{+0.1591}{+0.2316} \\
+\textsc{LLaVA-OV-0.5B} & one scene   & $+0.1579$ & \civ{+0.1119}{+0.2041} \\
+\textsc{LLaVA-OV-0.5B} & five scenes & $+0.1230$ & \civ{+0.0921}{+0.1538} \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{table}
+
+\subsection{Which half of the gap moves}
+\label{app:halves}
+
+\begin{table}[htb]
+\caption{Decomposition of the contrast into its two rates, at matched length on the first
+architecture. Each row is the five-scene value minus the one-scene value.}
+\label{tab:halves}
+\begin{center}
+\small
+\begin{tabular}{lll}
+\toprule
+half & $\Delta$ & 95\% CI \\
+\midrule
+\rateT{} & $-0.0301$ & \civ{-0.0760}{+0.0153} \\
+\rateF{} & $-0.3859$ & \civ{-0.4086}{-0.3650} \\
+log-odds interaction & $+2.2065$ & \civ{+1.9565}{+2.4609} \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{table}
+
+At matched length the false-object carry-forward rate falls from $0.463$ to $0.077$ --- a factor of
+six --- while the true-object rate does not move at a resolution this design can detect. In raw,
+unmatched data the first architecture's \rateT{} also rises ($0.6761 \rightarrow 0.7803$), so on that
+architecture both halves move before length is held fixed and only the false-object half survives
+holding it fixed. On the second architecture only the false-object half moves in raw data and matched
+alike: \rateT{} is flat across conditions ($0.5578$ against $0.5471$) and \rateF{} collapses
+$0.5171 \rightarrow 0.1284$, a factor of $4.03$ against the first architecture's raw $4.59$. One
+consequence is worth isolating: because the second architecture's true-object half does not move, its
+one-scene gap is $+0.0406$, so given five captions that all describe the same wrong scene the smaller
+model carries true and false prefix objects forward at essentially the same rate.
+
+\subsection{Sensitivity by condition}
+\label{app:dprime-table}
+
+\begin{table}[htb]
+\caption{Sensitivity $d'$ by condition, sighted against blind. The rightmost column is the paired
+difference within a condition; all four rows exclude zero, so the image is being used in every
+condition measured. This decomposition is available on the two \textsc{LLaVA} architectures only;
+the image-attributable component of $d'$ for all four architectures is given in the text below.}
+\label{tab:dprime}
+\begin{center}
+\small
+\begin{tabular}{lllll}
+\toprule
+architecture & condition & $d'$ sighted & $d'$ blind & sighted $-$ blind \\
+\midrule
+\textsc{LLaVA-1.5-7B}  & one scene   & $+0.486$ & $-0.055$ & $+0.54$ \civ{+0.42}{+0.67} \\
+\textsc{LLaVA-1.5-7B}  & five scenes & $+2.018$ & $+1.292$ & $+0.73$ \civ{+0.61}{+0.85} \\
+\textsc{LLaVA-OV-0.5B} & one scene   & $+0.102$ & $-0.360$ & $+0.46$ \civ{+0.33}{+0.61} \\
+\textsc{LLaVA-OV-0.5B} & five scenes & $+1.252$ & $+1.028$ & $+0.22$ \civ{+0.14}{+0.31} \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{table}
+
+Blinding costs the model real discriminability in every condition, and on the first architecture's
+one-scene condition it costs all of it: blind $d' = -0.055$ \civ{-0.171}{+0.063} contains zero, while
+the blind five-scene condition reaches $d' = +1.2918$ \civ{+1.1865}{+1.3984}. Any reading of this
+paper as a claim that the model ignores the image is contradicted by this table.
+
+The contrast is a different matter. The one-scene to five-scene increase in $d'$ on the first
+architecture is $+1.5322$ \civ{+1.36}{+1.70} sighted and $+1.3467$ \civ{+1.19}{+1.50} blind, so the
+image-attributable component is $+0.1855$ \civ{+0.0252}{+0.3463} on the first architecture and
+$-0.2382$ \civ{-0.400}{-0.082} on the second. Both exclude zero, in opposite directions, and adding
+the two further architectures, including \textsc{Qwen2.5-VL-7B}, which the main text does not
+interpret, splits them two--two rather than resolving them. Measured together in
+a single run, the four components are $+0.1855$ \civ{+0.0271}{+0.3481}, $-0.2382$
+\civ{-0.4021}{-0.0847}, $+0.2761$ \civ{+0.1160}{+0.4467} and $-0.1881$ \civ{-0.3598}{-0.0098};
+every interval excludes zero and the sign is not stable across architectures. The first two differ
+from the values above in the third decimal of their interval endpoints because that run used a
+different bootstrap seed; the point estimates are identical and both runs are released. The
+criterion behaves as described in Appendix~\ref{app:sdt-audit}: on the first architecture $c$ moves
+$-0.213 \rightarrow +0.237$ sighted and $+0.053 \rightarrow +0.098$ blind, an image-attributable
+component of $+0.4057$ \civ{+0.3157}{+0.4957}.
+
+Two deflations belong beside this table rather than in a footnote. Because
+$c = -\tfrac{1}{2}[Z(\rateT) + Z(\rateF)]$, the criterion result is substantially a re-expression of
+the two carry rates already reported: the image-attributable components of both rate contrasts are negative and of comparable size
+($-0.1366$ \civ{-0.1898}{-0.0824} and $-0.1206$ \civ{-0.1459}{-0.0953} on the first architecture;
+$-0.1971$ \civ{-0.2512}{-0.1444} and $-0.1623$ \civ{-0.1856}{-0.1397} on the second), and two
+comparable falls \emph{are} a criterion rise. And neither $d'$ nor $c$ appears in the pre-registration
+governing these conditions; both are post-hoc for them, while the registered primary remains the gap.
+The main text's central claim --- that the rise in the gap does not need the image --- rests on the
+registered primary; its signal-detection reading is post hoc and is labelled as such there.
+
+Note also that $\dSight \equiv d_{\rateT}^{\mathrm{sight}} - d_{\rateF}^{\mathrm{sight}}$ is an
+algebraic identity, not a check: the gap is itself a difference, so expanding both sides in the eight
+underlying rates yields the same eight terms and the equality holds for any data whatsoever. It was
+verified numerically only to confirm that it \emph{is} the identity (residuals $5.6\times10^{-17}$
+and $2.8\times10^{-17}$). The empirical content is that each component is large and excludes zero,
+and that the two components are close in magnitude. Nothing forces that closeness; had the image
+moved \rateT{} by $0.14$ and \rateF{} by $0.02$, the gap would have registered a large visual effect.
+
+\subsection{The dose-response grid}
+\label{app:dose}
+
+\begin{table}[htb]
+\caption{The five-point scene-count grid, holding five caption units at every point. Rank correlation
+with realised distinct-scene count is $\rho_S = +1.0000$ \civ{+0.900}{+1.000}.}
+\label{tab:dose}
+\begin{center}
+\small
+\begin{tabular}{lrrrrr}
+\toprule
+ & $S{=}1$ & $S{=}2$ & $S{=}3$ & $S{=}4$ & $S{=}5$ \\
+\midrule
+gap & $+0.1947$ & $+0.4739$ & $+0.5919$ & $+0.6290$ & $+0.6738$ \\
+\rateT{} & $0.6674$ & $0.7335$ & $0.7759$ & $0.7770$ & $0.7808$ \\
+\rateF{} & $0.4727$ & $0.2596$ & $0.1840$ & $0.1480$ & $0.1069$ \\
+true units & $454$ & $638$ & $723$ & $731$ & $780$ \\
+$\mathrm{at\_max}$ & $0.436$ & $0.569$ & $0.636$ & $0.642$ & $0.655$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{table}
+
+The endpoint contrast is $+0.4791$ \civ{+0.4197}{+0.5391}, interval width $0.1194$ against a
+registered ceiling of $0.130$. The profile is strictly increasing and all four adjacent steps exclude
+zero, at $+0.2792$, $+0.1180$, $+0.0372$ and $+0.0448$: the largest single step carries $58.3\%$ of
+the total rise, just under the $60\%$ the readout had fixed in advance as the boundary of the
+threshold cell, and the fourth step exceeds the third, so the curve is front-loaded rather than
+saturating. Recorded against our interest: the length-matched profile keeps the same sign ($+0.3210$)
+and remains strictly increasing, but its largest step carries $60.1\%$ of its rise, just over the
+same boundary the raw profile sits just under. No registered cell depends on it.
+
+Two positive controls were available at no cost and both held. The $S{=}5$ condition rebuilds
+bit-for-bit against the five-scene condition of the two-point measurement ($1361/1361$ cells identical), and
+$S{=}1$ lands at $+0.1947$ against the two-point measurement's $+0.1881$ despite being built by a different
+assembler with no doubling loop, which closes the objection that the two-point contrast is an
+artefact of assembler asymmetry between its conditions. Of the three registered co-primaries, two
+are monotone ($+0.502$, $+0.481$); the base-rate-tertile co-primary returned a width of $0.2295$
+against its ceiling and is recorded as no-data, and it halves the endpoint to $+0.249$, so part of
+the magnitude of the two-point contrast is attributable to object base-rate composition rather than
+to dose. We do not quote the endpoint without that qualification.
+
+\paragraph{Why the curve cannot name the variable.} At a fixed token budget the grid makes an
+identity exact. Total object mentions per prefix is conserved across the whole grid
+($4.687 \rightarrow 4.576$, Spearman $\rho = -0.9$ \civ{-1.0}{+0.4}), as is the false-object subset
+($3.640 \rightarrow 3.607$), while the count of distinct object types doubles
+($1.847 \rightarrow 3.761$, $\rho = +1.0$ \civ{+1.0}{+1.0}). Mentions per type therefore falls
+reciprocally ($2.582 \rightarrow 1.232$, $\rho = -1.0$ \civ{-1.0}{-1.0}) and the product of the two
+stays near-constant ($4.77$ against $4.63$). Distinct-type count and mentions-per-type track $S$ with
+identical precision, so no statistic computable on this grid separates them. This diagnostic was
+added after the grid's pre-registration was committed, fires no decision cell, and is reported as a
+limitation rather than as a result.
+
+The registered eight-unit extension was not run, on a mechanical branch rather than a judgement call:
+eight units buys units-as-seen $2.671 \rightarrow 2.702$ and scenes-as-seen $+0.031$, against gates
+of $5.0$ and $0.5$.
+
+\subsection{The forced-choice register}
+\label{app:register}
+
+The identical manipulation was re-posed on the identical units as a binary existence probe, in which
+the object is supplied by the question rather than selected by the model:
+$37{,}910$ answers over $3{,}000$ rows, $1{,}500$ cells, $500$ images and $79$ object types, with an
+unparseable-answer rate of $0.0000$ in all eight conditions.
+
+\begin{table}[htb]
+\caption{The scene-count contrast in a forced-choice register, on the same units as the generative
+contrast.}
+\label{tab:register}
+\begin{center}
+\small
+\begin{tabular}{lll}
+\toprule
+quantity & estimate & 95\% CI \\
+\midrule
+scene-count contrast, forced choice & $-0.0095$ & \civ{-0.0314}{+0.0124} \\
+scene-count contrast, free generation, same units & $+0.4859$ & \civ{+0.4283}{+0.5417} \\
+difference of differences & $+0.4954$ & \civ{+0.4393}{+0.5517} \\
+log-odds co-primary, generative & $+2.6116$ & \civ{+2.3160}{+2.9007} \\
+log-odds co-primary, forced choice & $-0.0034$ & \civ{-0.6688}{+0.5951} \\
+probe with no prefix, gap & $+0.8334$ & \civ{+0.8012}{+0.8656} \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{table}
+
+Three checks close the obvious escape routes, and two of them close ours. The probe works: with no
+prefix the gap is $+0.8334$, four times the registered instrument floor, and a single wrong-scene
+prefix multiplies the false-positive rate from $0.0217$ to roughly $0.88$ --- about $40\times$ ---
+identically in both conditions, so the register carries the context pathology itself at full
+strength. The registered compression flag did not fire, and the ceiling-free log-odds co-primary agrees with
+the raw one; a later analysis nonetheless found this binary probe saturated once any prefix is present
+(Appendix~\ref{app:unsat}), so these checks do not rule out a ceiling. And it is not a ground-truth artefact:
+re-derived under segmentation-only and caption-only definitions the cell is invariant, with the
+largest pairwise spread in the forced-choice contrast at $0.0116$ and neither paired difference
+excluding zero. The realised interval width is $0.0438$ against a pre-registered ceiling of $0.150$,
+so the null is $3.4\times$ narrower than the design required rather than a failure of power.
+
+One qualification, recorded because it narrows the claim. An exploratory re-read of the same rows
+finds the forced-choice readout is, once any prefix exists, close to a deterministic function of
+prefix membership: naming an object in the context moves the false-positive rate from
+$0.022$ to $0.871$ --- the pooled yes-rate itself runs $0.095$ to $0.895$ --- and nothing else we
+varied moves it further. The register bound may therefore be bounded to
+this probe as much as to forced choice in general. Establishing which would require a probe whose
+no-prefix and with-prefix yes-rates are comparable --- a closed set including unmentioned distractors,
+or a readout that is not thresholded. Both were built and run, and Appendix~\ref{app:unsat} reports
+them: the closed set saturates further rather than less, and the graded readout, which is
+demonstrably not pinned, returns the same null.
+
+\subsection{The base-rate reference}
+\label{app:noprefix}
+
+With no prefix at all, $90.3\%$ (first architecture) and $85.0\%$ (second) of the objects scored as
+``true'' already appear in the model's own unprompted caption, giving a no-prefix gap of $+0.871$ and
+$+0.816$. Most of \rateT{} is therefore available without reading the prefix, which is the base-rate
+enrichment that an earlier pre-registration predicted in writing, and it is the reason
+the true-object half has little room to move.
+
+\section{Pre-registration and deviations}
+\label{app:prereg}
+\subsection{Summary of registered analyses}
+\label{app:registry}
+
+Table~\ref{tab:registry} lists every pre-registered analysis reported in this paper, one row per
+registration, with its registered primary, its outcome and where it is reported. Decision rules,
+amendments and full outcomes are given in the entries below and in the sections cited.
+
+\begin{table}[htbp]
+\caption{Registered analyses reported in this paper and their outcomes. Small capitals are registered
+labels as printed where each analysis is reported; other outcomes use the wording of that section.
+Rows are grouped by topic and do not follow the numbering of Appendix~\ref{app:prereg-detail}.}
+\label{tab:registry}
+\begin{center}
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}p{0.17\linewidth}p{0.305\linewidth}p{0.345\linewidth}p{0.12\linewidth}@{}}
+\toprule
+\raggedright analysis & \raggedright registered primary & \raggedright outcome &
+\raggedright reported in \tabularnewline
+\midrule
+\raggedright 1.\ Scene count, \textsc{LLaVA-1.5-7B} &
+\raggedright five-scene minus one-scene gap; length-matched co-primary; composition and regime controls &
+\raggedright positive; both composition controls hold; regime control underpowered (row 7) &
+\raggedright App.~\ref{app:percond}, \ref{app:regime} \tabularnewline\addlinespace[1pt]
+\raggedright 2.\ Scene count, \textsc{LLaVA-OV-0.5B} &
+\raggedright the same contrast, evaluated independently &
+\raggedright positive; point estimate below row 1's, intervals overlapping narrowly; regime control unevaluated &
+\raggedright App.~\ref{app:percond}, \ref{app:regime} \tabularnewline\addlinespace[1pt]
+\raggedright 3.\ Blind baseline, both \textsc{LLaVA} &
+\raggedright $\dSight$ per architecture, behind an attention gate &
+\raggedright registered cell fired on both; $\dSight$ null on both; zero-gap flag \textsc{fails} &
+\raggedright Sec.~\ref{sec:blind}; App.~\ref{app:models} \tabularnewline\addlinespace[1pt]
+\raggedright 4.\ Contrast and blind arms, \textsc{Qwen2.5-VL-7B} &
+\raggedright scene-count contrast with blind arms, behind an attention gate &
+\raggedright \textsc{image-inert}, outranking \textsc{replicates}; not counted as a replication &
+\raggedright Sec.~\ref{sec:blind}; App.~\ref{app:models} \tabularnewline\addlinespace[1pt]
+\raggedright 5.\ Contrast and blind arms, \textsc{Kosmos-2} &
+\raggedright the same, with $\dSight$ as headline; five-condition stop gate; image-inert cell requires a null at power &
+\raggedright stop gate \textsc{degenerate-continuations} as registered, amended before any endpoint;
+readout mechanically \textsc{replicates}, licence disclaimed; $\dSight$ excludes zero downward &
+\raggedright Sec.~\ref{sec:blind}; App.~\ref{app:models} \tabularnewline
+\midrule
+\raggedright 6.\ Dose grid &
+\raggedright rank correlation and endpoint contrast over one to five scenes &
+\raggedright monotone; base-rate-tertile co-primary no-data; eight-unit branch not run &
+\raggedright App.~\ref{app:dose} \tabularnewline\addlinespace[1pt]
+\raggedright 7.\ Regime control at power &
+\raggedright contrast on cells where neither condition reached the cap, on an enlarged sample &
+\raggedright positive; below the underpowered estimate that motivated it &
+\raggedright App.~\ref{app:regime} \tabularnewline\addlinespace[1pt]
+\raggedright 8.\ Mention-rate control &
+\raggedright $\dSight$ at fixed distinct object types, blockwise; adverse direction pre-specified &
+\raggedright type-matched estimate null on both; rule passes on \textsc{LLaVA-OV-0.5B} and fails on \textsc{LLaVA-1.5-7B} &
+\raggedright App.~\ref{app:mrate}, \ref{app:oddblock} \tabularnewline
+\midrule
+\raggedright 9.\ Repetition &
+\raggedright stated-once against repetition-retained prefixes at a fixed object set; reading conditional on $\rho$ &
+\raggedright unresolved on the width rule; repetition reading cannot fire; one manipulation gate failed &
+\raggedright Sec.~\ref{sec:limits}; App.~\ref{app:prereg} \tabularnewline\addlinespace[1pt]
+\raggedright 10.\ Agreement &
+\raggedright contradicting one-scene condition against its anchor, with an edit-matched control &
+\raggedright no-data; edit control null; type-count confound found afterwards &
+\raggedright App.~\ref{app:prereg-detail} \tabularnewline\addlinespace[1pt]
+\raggedright 11.\ Natural prose &
+\raggedright the same manipulation on natural-prose units; units-seen gate &
+\raggedright \textsc{construct-specific} (with \textsc{unit-count-unmatched}): null at power, unit-standardised control also null; lead result specific to assembled captions &
+\raggedright Sec.~\ref{sec:exp1}; App.~\ref{app:prereg-detail} \tabularnewline
+\midrule
+\raggedright 12.\ Second register &
+\raggedright the same contrast as a forced-choice existence probe on the same units &
+\raggedright bounded, at power &
+\raggedright Sec.~\ref{sec:forced}; App.~\ref{app:register} \tabularnewline\addlinespace[1pt]
+\raggedright 13.\ De-saturated forced choice &
+\raggedright select an off-ceiling probe on arm-pooled calibration, then measure it; graded readout reported in every branch &
+\raggedright \textsc{still-saturated}; contrast not computed; graded evidence post-hoc &
+\raggedright Sec.~\ref{sec:forced}; App.~\ref{app:unsat-gate} \tabularnewline\addlinespace[1pt]
+\raggedright 14.\ Distractor units &
+\raggedright the contrast on objects the prefix never names; binary and graded readouts gated separately &
+\raggedright \textsc{distractor-saturated} (binary primary over its ceiling); graded co-primary null but not accepted as confirmation under the registration's acceptance rule &
+\raggedright Sec.~\ref{sec:forced}; App.~\ref{app:unsat-scope} \tabularnewline
+\midrule
+\raggedright 15.\ \textsc{pai}, standard CHAIR &
+\raggedright decomposition, blinding and truncation-curve components; positive-control and liveness gates &
+\raggedright \textsc{cannot-resolve} at the prescribed $\alpha$: \textsc{link-sensitive}, \textsc{blind-denominator-too-thin}, \textsc{cannot-resolve} &
+\raggedright Sec.~\ref{sec:mitigation}; App.~\ref{app:mitig-verdict} \tabularnewline\addlinespace[1pt]
+\raggedright 16.\ \textsc{vcd}, standard CHAIR &
+\raggedright separate registration; within-harness positive control; mode-matched baselines &
+\raggedright \textsc{no-gain}; \textsc{no-gain-to-decompose} on all three arms &
+\raggedright Sec.~\ref{sec:mitigation}; App.~\ref{app:mitig-vcd} \tabularnewline
+\bottomrule
+\end{tabular}
+\end{center}
+\end{table}
+
+Seven departures from the registrations bear on how the table is read.
+
+\begin{itemize}
+\itemsep0.2em
+\item The \textsc{Kosmos-2} stop gate returned \textsc{degenerate-continuations} under its
+registered thresholds; two thresholds were amended before any endpoint for that model existed, and
+both rules are released (the stop-gate disclosure in Appendix~\ref{app:prereg-detail}; Section~\ref{sec:blind}).
+\item The second mitigation method was dropped from the first method's registration by
+Amendment~1 and then run under a separate registration with a within-harness positive control; two
+of the reasons Amendment~1 gave were corrected before that lane generated anything
+(Appendix~\ref{app:mitig-vcd}).
+\item On \textsc{LLaVA-1.5-7B}, four mention-count strata of the mention-rate control show a
+positive component, the direction pre-specified as adverse, and the rule was not amended
+(Appendix~\ref{app:mrate}).
+\item One rung of the registered type-matching ladder on \textsc{LLaVA-1.5-7B} shows a negative
+component whose interval excludes zero, and it is unexplained (Appendix~\ref{app:oddblock}).
+\item The natural-prose registration's reading required retitling the paper once the lead result
+proved specific to assembled captions; the title was kept, on the judgement that it makes no claim
+about the construction (Appendix~\ref{app:prereg-detail}).
+\item The gap endpoint and the aggregation across cuts were adopted in the presence of data, and
+$d'$ and $c$ are post-hoc for the conditions they decompose (Appendix~\ref{app:endpoint};
+Section~\ref{sec:decomp}).
+\item In the distractor-unit analysis, the first scoring run reported the non-verdict
+\textsc{distractor-saturated} as its headline; a later selector change reported the graded
+co-primary's \textsc{distractor-null-confirmed} instead. Every number is identical between the two
+runs. Because the registration accepts a null only when the binary gates pass, the paper reports the
+registered cell as \textsc{distractor-saturated} and the graded null as supporting evidence. Both result
+files are kept (Appendix~\ref{app:unsat}).
+\end{itemize}
+
+
+\subsection{Registered analyses in detail}
+\label{app:prereg-detail}
+
+Each entry below states the decision rule as it was fixed before the data it governs existed, and
+then the realised outcome. Pre-registrations are released with the paper, with their amendments.
+Every amendment was committed before the run whose endpoint it governs. One requires a sharper
+statement: the fourth architecture's feasibility gate was amended after that gate's own probe had
+reported its failures, though before any endpoint existed and on calibration against already-frozen
+earlier families. We treat correcting a mis-specified feasibility gate before any endpoint exists as
+admissible, and relaxing a readout threshold after a result as not; the entry below gives both rules
+and both outcomes so a reader can weigh the distinction independently.
+
+\begin{enumerate}
+\itemsep0.35em
+
+\item \textbf{Blind and no-prefix baselines.}
+\emph{Rule:} $\dSight = \dPrim - \dBlind$ is the primary, evaluated on each architecture
+independently, with a $0.14$ interval-width ceiling, a floor of $100$ true units, an attention gate
+that must pass before any decision cell may fire, and a standing flag on the
+assertion that a model which does not consult the image has a gap of zero.
+\emph{Outcome:} the registered cell fired independently on both architectures. $\dBlind$ $+0.5019$
+\civ{+0.4441}{+0.5565} and $+0.4128$ \civ{+0.3609}{+0.4640}; $\dSight$ $-0.0160$
+\civ{-0.0708}{+0.0400} and $-0.0348$ \civ{-0.0905}{+0.0192}, both null; $\dBlind/\dPrim$ $1.033$
+\civ{0.922}{1.155} and $1.092$ \civ{0.954}{1.265}. The attention gate passed. The standing flag reads
+\textsc{fails} on both architectures. This is the control that was registered as a confirmation and
+returned a refutation.
+
+\item \textbf{Scene-count dose grid.}
+\emph{Rule:} five caption units at every grid point, $S \in \{1,\dots,5\}$, decision cells fixed in
+advance with a $0.13$ interval-width ceiling and a $0.60$ step-fraction boundary separating a graded
+reading from a threshold reading.
+\emph{Outcome:} monotone. $\rho_S = +1.0000$ \civ{+0.900}{+1.000}; endpoint $+0.4791$
+\civ{+0.4197}{+0.5391} at width $0.1194$; all four adjacent steps exclude zero; largest step $58.3\%$
+of the rise. Two of three co-primaries concur; the base-rate-tertile co-primary returned no-data at
+width $0.2295$ and halves the endpoint to $+0.249$. The registered eight-unit branch was not run on a
+mechanical gate (Appendix~\ref{app:dose}).
+
+\item \textbf{Generation-regime control, promoted to primary and run at power.}
+\emph{Rule:} the contrast restricted to cells in which neither condition reached the generation cap
+is the primary; sample raised to $3{,}500$ images with the original $500$ nested inside; the floor of
+$100$ true units and the $0.13$ width ceiling carried over unchanged; a sensitivity analysis on the
+original $500$ pre-declared as descriptive and expected to be underpowered.
+\emph{Outcome:} positive. $+0.3460$ \civ{+0.2849}{+0.4058} at width $0.1209$, true units $466/914$,
+on $2{,}089$ of $10{,}500$ cells; length divergence flag did not fire; both composition controls
+remain positive inside the regime-matched subset. Magnitude fires no cell in either direction under
+this rule, and the confirmatory estimate is $26\%$ below the underpowered estimate that motivated the
+run (Appendix~\ref{app:regime}).
+
+\item \textbf{Second-register test.}
+\emph{Rule:} two decision cells --- the contrast crosses the register, or it is bounded to the
+generative one --- both pre-committed, together with the \emph{reading} of the bounded cell: that it
+appears in the abstract and that every claim in the paper scopes to generative registers. Interval
+ceiling $0.150$; floor on true units.
+\emph{Outcome:} bounded, at power and by a wide margin. $-0.0095$ \civ{-0.0314}{+0.0124} at width
+$0.0438$, true units $528/892$; difference of differences $+0.4954$ \civ{+0.4393}{+0.5517}. The
+compression flag did not fire; the cell is invariant across all three ground-truth constructions. The
+pre-committed reading is executed (Appendix~\ref{app:register}).
+
+\item \textbf{Mention-rate control.}
+\emph{Rule:} a control holding distinct object types fixed, with the adverse direction pre-specified,
+evaluated blockwise.
+\emph{Outcome:} the type-matched estimate is null on both architectures. The second architecture
+passes on all fourteen powered blocks; the first fails on five of sixteen: four mention-count strata
+in the pre-specified adverse direction, and one type-matched block in the opposite direction. The failure is reported and the rule was not amended
+(Appendix~\ref{app:mrate}).
+
+\item \textbf{Repetition, at a fixed object set.}
+\emph{Rule:} a condition in which each prefix object type is stated once against one in which
+repetition is retained, at an exactly matched prefix-object set, plus a model-free condition, three
+manipulation gates and a $0.13$ width ceiling; the reading that repetition is the carrier was made
+conditional in advance on the lower bound of $\rho = \Delta_{\mathrm{rep}}/\Delta_{\mathrm{total}}$
+reaching $0.5$.
+\emph{Outcome:} unresolved on the width rule --- $+0.1181$ \civ{+0.0397}{+0.1957} at width $0.1559$
+over the ceiling, with the true-unit floor cleared threefold. The conditional fixed in advance is
+what settles the question: $\rho = 0.230$ \civ{0.075}{0.389}, the whole interval below $0.5$, so the
+repetition reading could not have fired even at full width-power. Two manipulation gates passed and
+one failed; by that pre-registration's own manipulation-check clause the failure makes the affected
+control uninterpretable, and it is excluded from every decision cell rather than quoted.
+
+\item \textbf{Agreement, at a fixed scene count.}
+\emph{Rule:} four conditions in one generation job --- a contradicting one-scene condition, an
+edit-matched agreeing control, and both anchors --- with decision cells, subsets and a $0.13$
+primary-only width ceiling fixed in advance, and a precedence rule making an underpowered member of
+a pair decide the cell.
+\emph{Outcome:} no-data. The primary is $+0.2418$ \civ{+0.1663}{+0.3194} at width $0.1531$, short of
+the ceiling by $0.0231$, while clearing the true-unit floor more than fourfold. Excluding zero was
+not treated as a result and the ceiling was not relaxed. The edit control is null
+($-0.0334$ \civ{-0.1034}{+0.0390}), so the edit is a genuine no-op. A confound the pre-registration
+did not anticipate was found afterwards and is reported against that registration: the contradicting condition
+carries $4.232$ distinct prefix object types against the one-scene condition's $2.022$, so the
+primary bundles an agreement change with a type-count change, and composition controls that match
+object sets do not remove it.
+
+\item \textbf{Natural prose at matched scene count.}
+\emph{Rule:} the same manipulation on natural-prose units (Localized Narratives descriptions) rather
+than assembled COCO captions, at
+a matched budget, with a gate on units-seen and a pre-committed consequence if it fails.
+\emph{Outcome:} primary null at power --- $+0.0062$ \civ{-0.0368}{+0.0515} at width $0.0883$ against
+a $0.14$ ceiling, true units $560/640$ --- with every co-primary and specification agreeing, including
+the regime-restricted estimate ($+0.0076$ \civ{-0.0366}{+0.0543}). The units-seen gate failed ($1.577$
+against $1.062$), so the registered prefix \textsc{unit-count-unmatched} applies and the
+unit-standardised control is required; it is also null ($-0.0547$ \civ{-0.1398}{+0.0286}) and fires the
+same cell. The registered cell is therefore \textsc{construct-specific}, whose pre-committed reading is
+that the paper's lead result is specific to the assembled-caption construction; the main text states
+this (Section~\ref{sec:exp1}), together with the earlier registered five-source natural-prose run, which
+returned \textsc{negative-at-power} on its contrast defined as single-source minus five-source
+($-0.0750$ \civ{-0.1299}{-0.0185}; length-matched $-0.0222$ \civ{-0.0719}{+0.0301}), that is, five
+non-redundant sources scored higher (gap $+0.4407$ \civ{+0.3971}{+0.4838}). The same registration
+recorded before the data that its manipulation realises about half the headline's dose ($1.0$ against
+about $2.0$ scenes touched, rather than $1.0$ against $2.83$), so its null is weaker evidence than a null
+at full dose. The same reading also required that
+the paper be retitled; we judged that the present title, which makes no claim about the construction,
+meets its intent. Both natural-prose conditions sit at gap $+0.4221$ and $+0.4283$,
+against the assembled one-scene anchor's $+0.188$; natural-prose continuations rarely reach the token
+budget, so passage construction and generation regime are confounded in that comparison.
+
+\item \textbf{Two further architectures with different visual interfaces.}
+\emph{Rules:} two separate registrations, with different rules. The \textsc{Qwen2.5-VL-7B}
+registration was committed after a checkpoint fetch and a plumbing smoke test but before any score was
+computed; its \textsc{image-inert} cell fires when $\dBlind$'s lower bound is above zero and
+$\dSight$'s interval contains zero, with no power requirement. The \textsc{Kosmos-2} registration was
+committed before any artefact for that model existed, with decision cells for replication,
+non-replication, reversal and image-inertness, five stop-gate conditions and an attention gate; its
+image-inert cell requires $\dSight$ to be null \emph{at power} against a ceiling derived for that
+contrast, routing a too-wide interval to no-data.
+\emph{Outcome:} run on two architectures outside the \textsc{LLaVA} lineage.
+\textsc{Qwen2.5-VL-7B} returns an image-attributable component of $+0.016$ $[-0.023, +0.055]$, inside
+the reference margin. Its registration fires \textsc{image-inert} under the rule fixed at its \S6.1 ---
+$\Delta_{\text{blind}}$'s lower bound above zero and $\Delta_{\text{sight}}$ containing zero --- and
+that cell outranks the \textsc{replicates} the primary alone would have produced, with the registration
+recording that it must not be written as a third-architecture replication. Its median continuation of
+four tokens is a \emph{post-hoc} confound, not a registered condition: no length floor appears in
+that registration, and the campaign record declines to formalise one because any threshold excluding
+this model would also reject \textsc{LLaVA-OV}. \textsc{Kosmos-2} returns $-0.103$
+$[-0.168, -0.036]$, which excludes zero and falls outside the reference margin. Its \S6.2 readout
+mechanically fires \textsc{replicates}, but that readout keyed reversal to the primary's sign rather
+than the headline estimand's, so its licence text is false for these data and the registration disclaims it;
+the substantive finding is that $\Delta_{\text{sight}}$ excludes zero \emph{downward}. Its stop gate is treated in the
+stop-gate disclosure immediately below. The fourth architecture is reported in the main text; the third is
+named there but not interpreted, and its numbers are here and in Appendix~\ref{app:models}.
+
+\emph{Stop-gate disclosure for the fourth architecture.} Under the rule as registered, the stop gate
+returned \textsc{degenerate-continuations} and the generation reported above would not have run. Two
+of five conditions failed: a units-inside floor ($2.665$ against a floor of $3.0$) and a degeneracy
+ceiling ($0.383$ in the worst arm against a ceiling of $0.20$). Both thresholds were amended, in a
+dated amendment committed before any endpoint for that architecture existed --- no ground truth was
+loaded, no object extracted and no gap computed at that point --- and the justification was
+calibration against the already-frozen earlier families. Measured on those: the units floor also
+rejects the first architecture at $2.832$ and the third at $2.987$, and the degeneracy ceiling also
+rejects the first architecture's arms at $0.678$ and $0.715$ and the second's at $0.535$ and $0.653$.
+Both thresholds therefore reject this paper's own lead result. The clause that fired was
+additionally found to be tracking the rate at which generation reached the token cap rather than
+collapse: its two hazard sub-clauses fired zero times in all four arms. We regard correcting a
+mis-specified feasibility gate before any endpoint exists as admissible and relaxing a readout
+threshold after a result as not, but that distinction is ours, and both the original rule and the
+amended one are released with the paper. The registered readout for this architecture is a further
+complication we do not paper over: its rule keyed reversal to the primary's sign rather than the
+headline estimand's, so it mechanically fires \textsc{replicates} while the estimand it was meant to
+govern excludes zero downward. The registration disclaims that licence text; we report the estimand. It also tightens a rule the \textsc{Qwen2.5-VL-7B} registration used: that earlier
+registration fired an image-inert cell on an interval that merely contained zero, with no power
+requirement. That does not change the reported result, whose realised width of $0.0780$ would pass
+the tighter ceiling.
+
+\item \textbf{A published mitigation method, decomposed on standard CHAIR.}
+\emph{Rule:} three components fixed before any generation --- a decomposition component with a
+$\pm 0.15$ equivalence margin on $\Delta d'$ and a logit companion required to agree with it, a
+blinding component with a thin-denominator guard on the blind arm, and a truncation-curve component
+with a $\pm 0.03$ margin on the matched-\rateF{} hit rate --- together with a positive control on
+published vanilla CHAIR levels that had to pass before any contrast was read, and a blocking gate
+requiring the intervention to be demonstrably live.
+\emph{Outcome:} \textsc{cannot-resolve} at the $\alpha$ the method's own paper prescribes for this
+model. The positive control and every blocking gate passed. The decomposition component returns
+\textsc{link-sensitive}, because the probit and logit companions disagree; the blinding component
+returns \textsc{blind-denominator-too-thin}, the guard firing exactly as written; and the truncation
+component returns \textsc{cannot-resolve} on an interval that straddles its margin, which is an
+underpowered result and not a pass. Two amendments are on the record, each committed before the
+endpoint it could have touched. \textbf{Amendment~1} dropped a second candidate method from
+\emph{this} lane, on the grounds that it has no published CHAIR evaluation to reproduce and that its
+released code cannot be run greedily, which is the mode this lane's other arms use. That method was
+subsequently run under a separate registration, with a within-harness positive control in place of an
+external one and with both decoding modes run against mode-matched baselines
+(Appendix~\ref{app:mitig-vcd}). Amendment~1's \emph{conclusion} --- that the arm did not belong in
+this lane --- stands. Two of the reasons it gave were found to be inaccurate on re-verification and
+are corrected in Appendix~\ref{app:mitig-vcd}, before any generation for that lane existed.
+\textbf{Amendment~2}
+derived the degenerate-corner constant of the log-linear correction and added a
+permuted-ground-truth secondary after the blind arm was seen to degenerate. That secondary cuts
+against the reading it was added under, and is reported at full strength
+(Appendix~\ref{app:mitig-blind}).
+
+\item \textbf{A de-saturated forced-choice readout.}
+\emph{Rule:} a two-stage design --- calibrate candidate probes on an $80$-image subset that writes
+\emph{only} arm-pooled quantities, so the scene-count contrast is not computable at selection time;
+select on pooled \rateF{} alone; then measure the selected probe --- with three off-ceiling
+conditions fixed in advance (\rateF{} $\in [0.20, 0.80]$, \rateT{} $\le 0.90$, yes-rate
+$\in [0.15, 0.85]$), an instrument gate requiring the selected probe to show a no-prefix gap of at
+least $+0.2$, and a standing requirement that the graded readout of the published prompt be reported
+in every branch whatever the selection returns.
+\emph{Outcome:} \textsc{still-saturated}. Every candidate probe failed all three off-ceiling
+conditions, including the closed candidate set built specifically to de-saturate, which saturated
+further rather than less, to a yes-rate of $1.0000$. Under the registered rule the selected probe's
+contrast was therefore not computed and not interpreted, and that is enforced in the scorer rather
+than by intention. The standing diagnostic still reports: the graded readout of the published prompt
+gives $+0.0008$ \civ{-0.0142}{+0.0166}. Because the ceiling gate is defined on the binary rate and
+fired, the interior-mass evidence that the graded readout is genuinely unpinned is \emph{post-hoc},
+and is labelled as such wherever it appears (Appendix~\ref{app:unsat}).
+
+\end{enumerate}
+
+\paragraph{A scoring error that the registration's own gate caught, and what it changed.} The
+two-alternative variant of the de-saturation design counterbalances which side the unit object is
+presented on. Its first scoring pass scored the raw ``answered A'' rate instead of ``chose the unit
+object'', which that registration defines explicitly. The effect was to turn the readout into
+something close to a coin flip, which is exactly why it appeared to be off ceiling --- pooled
+yes-rate $0.5581$ --- and also why the registered instrument gate fired on it: its no-prefix gap was
+$-0.3185$ \civ{-0.3602}{-0.2752} against a floor of $+0.2$, anti-diagnostic, because under the wrong
+orientation ``answered A'' is pinned near the coin for true units while for false units it follows
+the model's side bias. The gate did exactly the job it exists to do. The side is a deterministic
+function of the image, the derangement index and the object, so the correction is a re-scoring at
+the identical seed with no regeneration, and the superseded scoring is retained in the released
+record.
+
+Stated against our own interest: the selection stage ran on the mis-oriented statistic, so the
+two-alternative variant was selected as the only in-band candidate. Correctly oriented, that variant's
+\rateF{} is about $0.93$, so no candidate would have been in band, the no-candidate-in-band flag
+would have raised, and the primary would instead have been the ``answer only from the image''
+variant with the two-alternative variant as its fallback. The registered cell is
+\textsc{still-saturated} either way, because both sit outside the band
+(Table~\ref{tab:unsatceiling}), so the conclusion is invariant to the selection error --- but the selection itself was made on a wrong number, and that
+is recorded here rather than quietly repaired. One further deviation belongs with it: the scorer
+evaluates the ceiling gate before the instrument gate, while the registration orders the instrument
+gate first. Both fail for that variant, so the outcome, no verdict, is the same under either
+ordering.
+
+\paragraph{Outcomes against interest.} Four registered tests returned against the hypothesis they
+were attached to and were honoured as written: the blind baseline, which refuted the paper's own lead
+reading; the mention-rate control, which records a failure on five of sixteen powered blocks on the first
+architecture;
+the repetition conditional, which could only ever have gone against the reading it was attached to;
+and the natural-prose condition, whose null is reported at full strength. One control confirmed the
+quantity it was built to test and simultaneously shrank the estimate that motivated building it, and
+both halves are reported. Two registered analyses failed a width ceiling that was not relaxed after
+the fact. Two later registrations returned non-affirmative outcomes and are reported at their
+registered strength rather than reframed: the mitigation decomposition returns
+\textsc{cannot-resolve} on its combined primary, and the de-saturation design returns no verdict
+because its own ceiling gate fired.
+
+\paragraph{What was not pre-registered, and is marked as such.} Three elements of the specification
+were selected in the presence of data and are labelled wherever they appear. The gap endpoint itself
+was adopted after CHAIR and a per-mention hallucination rate were found structurally defective on
+these conditions (Appendix~\ref{app:gt}). The aggregation across cuts was likewise not pre-specified.
+And $d'$ and $c$ are post-hoc for these conditions: the pre-registration governing them names neither
+statistic, its registered primary is the gap, and the gap is null. The main text's central claim rests
+on the registered primary; its signal-detection reading is post hoc and labelled as such.
+
+\paragraph{Operational choices fixed before data but not by an external document.} The
+clean/errorful classification rule, the pairing and density-matching rule, the monotonicity
+threshold, and the sentence-boundary construction were left open by the candidate specification and
+set by us before the data existed. They are pre-data but not pre-specified, and are distinguished
+from the registered rules above.
+
+\section{Reproducibility}
+\label{app:repro}
+
+\subsection{What can be checked, and how}
+
+Every pre-registration is released with the paper, together with its dated amendments and its
+resolution. The machine-readable result artefacts are released with their integrity metadata, and
+with a script that re-derives every table cell in this paper from them and fails on disagreement. The
+analysis runs on \textsc{cpu} from the released artefacts, so every number in this paper can be
+checked without a \textsc{gpu} or the original checkpoints. Regenerating the stimuli and the
+generations requires a single consumer \textsc{gpu} and the four public checkpoints of
+Appendix~\ref{app:modelspec}.
+
+The verification gate of Appendix~\ref{app:gates} is the operative reproducibility instrument rather
+than a formality: no analysis in this paper reports a new quantity until it has first reproduced
+previously published per-condition rates to within $5\times10^{-3}$, and the realised margins are
+three to four orders of magnitude inside that tolerance.
+
+\subsection{Bootstrap implementation check}
+\label{app:bootcheck}
+
+All reported intervals were recomputed with image-level paired resampling with replacement,
+multiplicity preserved and resample size asserted on every replicate. An implementation error
+affecting a subset of auxiliary intervals was identified during verification, and all affected
+estimates were recomputed under the registered procedure; no primary conclusion changed. The
+multiplicity assertion described in Appendix~\ref{app:boot} is the standing check that closes this
+class of defect, and it is active in every analysis reported here.
+
+\subsection{Known limits of the released record}
+\label{app:repro-limits}
+
+We list these rather than leave them to be discovered.
+
+\begin{itemize}
+\itemsep0em
+\item \textbf{Intervals on the cross-construction differences were not retrieved.} The six paired
+differences between ground-truth constructions in Table~\ref{tab:gtsens} are quoted as point
+estimates. Each is a difference of independently intervalled estimates, which is what it is, but the
+paired intervals themselves were computed and not retrieved. Nothing in the reported null depends on
+them.
+\item \textbf{The inference library version is not pinned.} Three behaviours we rely on are
+version-sensitive: attention-interface registration, the dtype argument at checkpoint load, and
+processor-side image-token expansion. The COCO file hashes of the downloaded images are not recorded.
+\item \textbf{One numerical-realisation caveat.} Greedy decoding in bfloat16 admits near-ties, so a
+rebuild under a different batch composition can differ on a small number of tokens. Measured on the
+regenerated stimulus set, this moves the primary contrast from $+0.4859$ to $+0.4877$, which bounds
+the effect for these conditions.
+\item \textbf{The exploratory re-reads of Appendix~\ref{app:register} are not pre-registered and fire
+no decision cell.} Their degeneracy threshold and scoring window are inherited rather than registered
+as endpoints, their windowed and whole-continuation versions disagree materially, and their
+stratifications carry no intervals and no multiplicity correction.
+\end{itemize}
+
+\subsection{Reporting conventions}
+
+Intervals are $95\%$ percentile bootstrap intervals throughout, written \civ{\mathrm{lower}}{\mathrm{upper}}
+next to the point estimate. A contrast is written as the five-scene value minus the one-scene value,
+so a positive contrast means the gap is larger when the prefix's five captions describe five scenes.
+The image-attributable component is written $\dSight = \dPrim - \dBlind$, so a positive value means
+the sighted contrast exceeds the blind one. Rates are fractions in $[0,1]$; the literature commonly
+quotes the same quantities as percentages.
+
+\section{Decomposing published methods on standard CHAIR}
+\label{app:mitig}
+
+\begin{figure}[t]
+\begin{center}
+\includegraphics[width=0.88\textwidth]{fig_hf.pdf}
+\end{center}
+\caption{What the scalar score hides, on standard CHAIR: PAI's $\mathrm{CHAIR}_i$ improvement comes
+from naming fewer objects of \emph{both} kinds. Numbers from Table~\ref{tab:pai}.}
+\label{fig:hf}
+\end{figure}
+
+
+Section~\ref{sec:mitigation} applies the decomposition of Section~\ref{sec:theory} to a published
+training-free mitigation method scored with standard CHAIR on free COCO captioning, rather than to
+this paper's own prefix endpoint, and reports that a second method had no gain to decompose. Sections~\ref{app:mitig-arms}--\ref{app:mitig-verdict} cover the
+first method: the arms and decoding, the CHAIR port and its validation, the construction of $H$, $F$,
+$J$, $d'$ and $c$, the integrity gates, the full decomposition with intervals, the link-sensitivity
+analysis, and the degeneracy of the blind arm. Appendix~\ref{app:mitig-vcd} covers the second,
+including why it was dropped from the first lane's registration and then run under its own.
+
+The pre-registered primary returns \textsc{cannot-resolve}. It is a conjunction of three components
+fixed before any of these data existed, none of which returned an affirmative outcome
+(Appendix~\ref{app:mitig-verdict}). What survives every instrument is weaker than a resolved
+endpoint, and is the decomposition reading Section~\ref{sec:mitigation} takes from \emph{this}
+method (it also reports the permuted-ground-truth secondary of Appendix~\ref{app:mitig-blind}): the
+change in $J$ is \emph{dominated} by the criterion, with a small separation component that cannot be
+excluded.
+
+\subsection{Method, arms and decoding}
+\label{app:mitig-arms}
+
+The method is PAI \citep{pai}, a training-free intervention that amplifies attention to the image
+tokens during decoding, reimplemented here as an attention hook and gated as described in
+Appendix~\ref{app:mitig-gates}. The model is the first architecture of
+Appendix~\ref{app:modelspec}, \texttt{llava-1.5-7b-hf} in bfloat16 on a single consumer GPU.
+Decoding is greedy (\texttt{do\_sample=False}) at the $512$-token budget and under the prompt that
+the method's own published protocol prescribes for COCO captioning, not this paper's prefix prompt.
+
+Six arms are run on the same $500$ images:
+
+\begin{itemize}
+\itemsep0em
+\item \texttt{vanilla}: no intervention ($\alpha = 0.0$).
+\item \texttt{pai02}: $\alpha = 0.2$, $\gamma = 1.1$ --- the value shipped as the released
+repository's default and used by its documented commands.
+\item \texttt{pai05}: $\alpha = 0.5$, $\gamma = 1.1$ --- the value the method's paper prescribes for
+this model, and the only arm with a published CHAIR effect to decompose.
+\item \texttt{vanilla\_blind}, \texttt{pai02\_blind}, \texttt{pai05\_blind}: the identical three arms
+with the image replaced by a flat mid-grey $(127,127,127)$ rectangle at each image's own pixel
+dimensions, the same blinding constant used throughout this paper.
+\end{itemize}
+
+Images are $500$ COCO \texttt{val2017} images. This is a documented deviation from the published
+protocol, which draws from \texttt{val2014} under its own fixed seed; it is one of three deviations
+fixed in advance, the others being the \texttt{llava-hf} checkpoint port rather than the original
+release, and the CHAIR port of Appendix~\ref{app:mitig-port}.
+
+Intervals are paired image-level bootstraps clustered on the image and paired across arms,
+$B = 8000$, with resample size asserted on every replicate as in Appendix~\ref{app:boot}. A
+\emph{gain} is written so that a positive value means CHAIR fell: $\mathrm{CHAIR}(\texttt{vanilla})
+- \mathrm{CHAIR}(\text{method})$. Every other contrast is written method minus \texttt{vanilla}.
+
+\subsection{The CHAIR port, its positive control, and what its deviations touch}
+\label{app:mitig-port}
+
+The scorer is the port of Appendix~\ref{app:gt}: the $80$-category synonym table verbatim, with a
+regex \texttt{[a-z]+} word tokenizer substituted for the NLTK tokenizer and a rule-based
+singularizer substituted for \texttt{pattern.singularize}.
+
+\paragraph{A direct cross-check against the reference scorer was not run, and is recorded as no-data
+rather than as a clean check.} The reference implementation depends on the \texttt{pattern} package and
+several NLTK corpora that were unavailable in the analysis environment. The two analyses
+below therefore \emph{bound} the deviation from the other side; they do not verify the port against
+its reference.
+
+\paragraph{Positive control.} Three published \textsc{LLaVA-1.5-7B} vanilla CHAIR values at this
+protocol agree closely: $46.2 / 13.8$ and $46.6 / 13.4$ \citep{pai}, and $46.4$ \citep{vista}. The
+tolerance registered in advance was $\mathrm{CHAIR}_s \in [36.2, 56.2]$ and
+$\mathrm{CHAIR}_i \in [9.8, 17.8]$. Measured: $\mathrm{CHAIR}_s = 45.00$ and
+$\mathrm{CHAIR}_i = 12.78$, so the largest deviation from any published value is $1.6$ points of
+$\mathrm{CHAIR}_s$ and $1.0$ of $\mathrm{CHAIR}_i$, far inside the registered band. A second
+registered component required the $\alpha = 0.5$ effect on $\mathrm{CHAIR}_s$ to reach at least
+$10.0$ with its interval excluding zero; measured $+16.00$ \civ{+11.20}{+20.80}. Both components
+pass. Truncation at the token budget is $0.000$ on the vanilla arm, so the generation-budget
+confound is absent by measurement rather than by assumption.
+
+Passing this control licenses one claim and no more: \emph{the harness measures something that
+behaves like CHAIR at the published level}. It does not license treating absolute rates from this
+port as equal to the reference implementation's to the decimal.
+
+\paragraph{What the two substitutions actually touch.} Of the $3{,}827$ category-mention occurrences
+in the vanilla arm, $686$ ($17.9\%$) reach a mention only through the rule-based singularizer, so
+that substitution is doing real work. Disabling it entirely --- a bound, not a plausible alternative
+scorer --- moves $\mathrm{CHAIR}_i$ by $0.156$ and $\mathrm{CHAIR}_s$ by $0.000$; changing
+hyphen and apostrophe handling moves them by $0.228$ and $0.000$.
+
+\begin{table}[htb]
+\caption{Bounding the CHAIR port's two substitutions on the vanilla arm. \texttt{nosing} disables
+singularization entirely; \texttt{hyphen} changes hyphen and apostrophe handling. Neither is offered
+as an alternative scorer; both bound how many decisions the substitutions can touch.}
+\label{tab:mdport}
+\begin{center}
+\small
+\begin{tabular}{lrrr}
+\toprule
+scorer variant & $\mathrm{CHAIR}_s$ & $\mathrm{CHAIR}_i$ & mention occurrences \\
+\midrule
+\texttt{base} & $45.00$ & $12.78$ & $3{,}827$ \\
+\texttt{hyphen} & $45.00$ & $13.01$ & $3{,}760$ \\
+\texttt{nosing} & $45.00$ & $12.93$ & $3{,}804$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{table}
+
+\subsection{How $H$, $F$, $J$, $d'$ and $c$ are formed}
+\label{app:mitig-rates}
+
+The scored unit is the (image, COCO category) pair: $500$ images $\times$ $80$ categories
+$= 40{,}000$ units per arm. A unit is \emph{mentioned} if the arm's caption names that category
+under the scorer above, and \emph{present} if the category lies in the image's ground-truth set
+$G(i)$, built by the union construction of Appendix~\ref{app:gt}. Pooled over images, $H$ is the
+mention rate over present units and $F$ the mention rate over absent units. The three reported
+coordinates follow exactly as in Appendix~\ref{app:sdt}, on those same two rates and with nothing
+fitted:
+\[
+J = H - F, \qquad d' = Z(H) - Z(F), \qquad c = -\tfrac{1}{2}\left[Z(H) + Z(F)\right].
+\]
+The standard CHAIR statistics come from the same mention records: $\mathrm{CHAIR}_s$ is the
+proportion of captions containing at least one absent category, and $\mathrm{CHAIR}_i$ the
+proportion of category-mention occurrences that are absent.
+
+Rates entering $Z(\cdot)$ carry a log-linear (add-one-half) correction. On the three sighted arms
+its effect on $d'$ is at most $0.0013$ and the registered materiality flag does not fire. On an arm
+that mentions nothing it is the entire quantity, which is why the blind rows of
+Table~\ref{tab:mdlevels} carry no $d'$ or $c$; Appendix~\ref{app:mitig-blind} gives that case.
+
+\begin{table}[htb]
+\caption{Per-arm levels. $\alpha$ is the intervention strength; $\gamma = 1.1$ on both intervened
+arms. $\mathrm{CHAIR}_i$ is undefined on the blind arms because its denominator is empty, and their
+$d'$ and $c$ are arithmetic of the log-linear correction rather than measurements, so both are
+omitted here (Appendix~\ref{app:mitig-blind}). Blind $H$, $F$ and $J$ are raw rates: no caption names any
+of the $80$ categories (the log-linear correction would print $0.0003$ for $H$).}
+\label{tab:mdlevels}
+\begin{center}
+\small
+\begin{tabular}{lrrrrrrrr}
+\toprule
+arm & $\alpha$ & $\mathrm{CHAIR}_s$ & $\mathrm{CHAIR}_i$ & $H$ & $F$ & $J$ & $d'$ & $c$ \\
+\midrule
+\texttt{vanilla} & $0.0$ & $45.00$ & $12.78$ & $0.7816$ & $0.0100$ & $+0.7716$ & $+3.1032$ & $+0.7741$ \\
+\texttt{pai02} & $0.2$ & $48.40$ & $13.04$ & $0.7951$ & $0.0107$ & $+0.7845$ & $+3.1263$ & $+0.7388$ \\
+\texttt{pai05} & $0.5$ & $29.00$ & $7.21$ & $0.7083$ & $0.0050$ & $+0.7032$ & $+3.1212$ & $+1.0123$ \\
+\midrule
+\texttt{vanilla\_blind} & $0.0$ & $0.00$ & undef. & $0.0000$ & $0.0000$ & $0.0000$ & --- & --- \\
+\texttt{pai02\_blind} & $0.2$ & $0.00$ & undef. & $0.0000$ & $0.0000$ & $0.0000$ & --- & --- \\
+\texttt{pai05\_blind} & $0.5$ & $0.00$ & undef. & $0.0000$ & $0.0000$ & $0.0000$ & --- & --- \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{table}
+
+\begin{table}[htb]
+\caption{Generation profile of the same six arms. Columns are mean generated tokens, truncation
+rate at the budget, mean category-mention occurrences per caption, mean distinct categories named
+per caption, distinct-8-gram fraction, and mean image-attention mass during decoding. The
+intervention is live in the blind arms too:
+image-attention mass rises with $\alpha$ there as it does in the sighted arms, so the blind
+degeneracy of Appendix~\ref{app:mitig-blind} is not a dead hook.}
+\label{tab:mdprofile}
+\begin{center}
+\small
+\begin{tabular}{lrrrrrr}
+\toprule
+arm & tokens & trunc. & mentions & distinct & 8-gram & attn.\ mass \\
+\midrule
+\texttt{vanilla} & $112.5$ & $0.000$ & $7.654$ & $3.304$ & $0.9990$ & $0.1108$ \\
+\texttt{pai02} & $114.2$ & $0.000$ & $7.714$ & $3.398$ & $0.9990$ & $0.1459$ \\
+\texttt{pai05} & $128.4$ & $0.016$ & $9.316$ & $2.684$ & $0.9440$ & $0.2412$ \\
+\midrule
+\texttt{vanilla\_blind} & $66.0$ & $0.000$ & $0.000$ & $0.000$ & $1.0000$ & $0.0777$ \\
+\texttt{pai02\_blind} & $61.0$ & $0.000$ & $0.000$ & $0.000$ & $1.0000$ & $0.1152$ \\
+\texttt{pai05\_blind} & $70.0$ & $0.000$ & $0.000$ & $0.000$ & $0.9048$ & $0.2076$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{table}
+
+A registered informativeness guard would have fired had the intervened arm bought its CHAIR gain by
+saying less. It does not fire: at $\alpha = 0.5$ captions are \emph{longer} ($112.5 \rightarrow
+128.4$ tokens) and carry \emph{more} category-mention occurrences ($7.654 \rightarrow 9.316$), while
+the number of distinct categories named falls ($3.304 \rightarrow 2.684$) and repetition rises
+(distinct-8-gram $0.9990 \rightarrow 0.9440$; $95$th-percentile maximum token run $2 \rightarrow
+3$).
+
+\subsection{Integrity gates}
+\label{app:mitig-gates}
+
+Gates were run at the full $512$-token budget on $16$ images before the endpoint arms. Every
+blocking gate passed. The gate that matters most for reading anything below is the liveness gate:
+without it, a decomposition of ``the intervention'' could be a decomposition of nothing.
+
+\begin{table}[htb]
+\caption{Integrity gates for the decomposition. All blocking gates passed. The liveness gate is the
+one that establishes the intervention is actually changing the computation; it gates
+\emph{this} reimplementation and makes no claim about any released implementation.}
+\label{tab:mdgates}
+\begin{center}
+\small
+\begin{tabular}{p{0.21\textwidth}p{0.70\textwidth}}
+\toprule
+gate & result \\
+\midrule
+signal-detection instrument & Pass. Round-trip $(d',c) \rightarrow (H,F) \rightarrow (d',c)$ worst
+absolute error $1.7\times10^{-14}$; $Z(0.975)$ exact; the degenerate corners return the constants
+derived in advance ($+0.609175$ measured against $+0.609175$ expected). \\
+intervention liveness (blocking) & Pass. Determinism control ($\alpha = 0$ run twice) differs on a
+fraction $0.0000$ of captions. $\alpha = 0$ against $\alpha = 0.5$ differs on $1.0000$, and
+$\alpha = 0$ against $\alpha = 0.2$ on $1.0000$, against a floor of $0.90$. Mean first divergence at
+token $12.1$. Image-attention mass is monotone in $\alpha$: $0.1066 < 0.1411 < 0.2380$. Attention
+edits executed: $0$ at $\alpha = 0$, $547$ at $\alpha = 0.2$, $665$ at $\alpha = 0.5$. \\
+causality & Pass. Residual post-softmax mass on strictly-future keys is exactly $0.0$ when the
+kernel is handed no attention mask. \\
+decode loop & Pass. $0/16$ mismatches against the library's own greedy generation through the same
+kernel at $512$ tokens. \\
+kernel & $0/16$ mismatches against the stock attention implementation. Reported, not blocking: all
+arms share the same kernel, so a reduction-order difference is common to every arm and cancels in
+the paired contrasts. \\
+copy drift & Pass. $0$ mismatches against the already-gated generator at $\alpha = 0.0$ and
+$\alpha = 0.5$. \\
+image block & Pass. Every row carries exactly $576$ image tokens. \\
+blind arm & Pass. The blind pixel tensor is bit-identical across all images, and $16/16$ blind
+captions differ from their sighted counterparts. \\
+mask leak & $0$. Across $376{,}033$ attention calls the interface was handed an explicit mask $0$
+times and the causal repair fired $2{,}689$ times, so the repair is load-bearing. \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{table}
+
+Arm liveness at full scale confirms the same thing on the endpoint run: the fraction of captions
+differing is $0.998$ between \texttt{vanilla} and \texttt{pai02} and $1.000$ for every other arm
+pair, including each sighted arm against its blind counterpart and the blind arms against each
+other.
+
+\subsection{The decomposition}
+\label{app:mitig-decomp}
+
+\begin{table}[htb]
+\caption{The full decomposition, each quantity as method minus \texttt{vanilla} with a $95\%$
+interval, except the two CHAIR gains, which are written so that positive means CHAIR fell.
+``criterion only'' and ``separation only'' are the counterfactual changes in $J$ obtained by moving
+$c$ alone and $d'$ alone through Equation~\ref{eq:Jdc}. The matched-$F$ row uses the truncation
+curve of Table~\ref{tab:mdcurve}; it is undefined at $\alpha = 0.2$, whose $F$ of $0.0107$ exceeds
+the largest $F$ vanilla attains at any token budget ($0.0100$).}
+\label{tab:mddecomp}
+\begin{center}
+\small
+\begin{tabular}{lll}
+\toprule
+quantity & $\alpha = 0.5$ (paper-prescribed) & $\alpha = 0.2$ (repository default) \\
+\midrule
+$\mathrm{CHAIR}_i$ gain & $+5.56$ \civ{+3.88}{+7.10} & $-0.26$ \civ{-1.42}{+0.91} \\
+$\mathrm{CHAIR}_s$ gain & $+16.00$ \civ{+11.20}{+20.80} & $-3.40$ \civ{-7.20}{+0.40} \\
+\midrule
+$\Delta H$ & $-0.0733$ \civ{-0.0922}{-0.0534} & $+0.0136$ \civ{+0.0000}{+0.0270} \\
+$\Delta F$ & $-0.0050$ \civ{-0.0061}{-0.0039} & $+0.0007$ \civ{-0.0003}{+0.0016} \\
+$\Delta J$ & $-0.0683$ \civ{-0.0871}{-0.0486} & $+0.0129$ \civ{-0.0008}{+0.0264} \\
+$\Delta d'$ (probit separation) & $+0.0181$ \civ{-0.0577}{+0.0938} & $+0.0231$ \civ{-0.0374}{+0.0822} \\
+$\Delta c$ (threshold) & $+0.2383$ \civ{+0.1955}{+0.2807} & $-0.0353$ \civ{-0.0636}{-0.0070} \\
+$\Delta \log\mathrm{OR}$ (logit separation) & $+0.3037$ \civ{+0.1349}{+0.4761} & $+0.0176$ \civ{-0.1135}{+0.1453} \\
+$\Delta H$ at matched $F$ & $+0.0245$ \civ{-0.0037}{+0.0511} & undefined \\
+\midrule
+$\Delta J$, criterion only & $-0.0716$ \civ{-0.0844}{-0.0583} & $+0.0093$ \civ{+0.0018}{+0.0168} \\
+$\Delta J$, separation only & $+0.0029$ \civ{-0.0092}{+0.0150} & $+0.0037$ \civ{-0.0060}{+0.0132} \\
+\midrule
+$\mathrm{CHAIR}_i$ gain, blind & undefined & undefined \\
+sighted gain minus blind gain & undefined & undefined \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{table}
+
+Three readings follow, and the order matters.
+
+\paragraph{At the repository default there is no gain to decompose.} $\Delta\mathrm{CHAIR}_i$ is
+$-0.26$ \civ{-1.42}{+0.91} and $\mathrm{CHAIR}_s$ moves the wrong way, $45.00 \rightarrow 48.40$.
+The registered outcome for that arm is \textsc{no-gain-to-decompose}, and nothing is decomposed from
+it. The two settings are far apart on this benchmark: $\mathrm{CHAIR}_s$ is $48.40$ at the
+repository default and $29.00$ at the value the method's own paper prescribes for this model,
+against a vanilla $45.00$.
+
+\paragraph{At the paper-prescribed $\alpha$, CHAIR and $J$ move in opposite directions.}
+$\mathrm{CHAIR}_i$ improves by $5.56$ and $\mathrm{CHAIR}_s$ by $16.00$, while
+$J = H - F$ gets slightly \emph{worse}, $\Delta J = -0.0683$ \civ{-0.0871}{-0.0486}, and $d'$ does
+not move. Both rates fall, $H$ by $0.0733$ and $F$ by $0.0050$.
+
+\paragraph{The change in $J$ is dominated by the criterion, and a small separation component cannot
+be excluded.} Counterfactually moving only $c$ reproduces $-0.0716$ \civ{-0.0844}{-0.0583}; moving
+only $d'$ gives $+0.0029$ \civ{-0.0092}{+0.0150}. The criterion term is about $25$ times the
+separation term in magnitude. That is the whole of what this measurement establishes about the
+split. It is \emph{not} the stronger statement that the gain lives in $c$ and not in $d'$: all three
+separation instruments have a positive point estimate, and Appendix~\ref{app:mitig-link} shows why
+they cannot be collapsed into one verdict.
+
+\paragraph{The matched-$F$ instrument.} Truncating the vanilla arm's own captions at a shorter token
+budget lowers mention propensity without changing the model, the image or the decoding, so it traces
+a purely criterion-driven trajectory through $(F, H)$ against which a method can be placed.
+Table~\ref{tab:mdcurve} gives it. Reading $H$ off that curve at the intervened arm's own $F$ and
+subtracting gives $\Delta H$ at matched $F = +0.0245$ \civ{-0.0037}{+0.0511}, against an equivalence
+margin of $\pm 0.03$ fixed in advance --- the interval straddles the margin, so the registered
+outcome is \textsc{cannot-resolve}, which is an underpowered result and not a pass. On the same
+construction, vanilla truncated to the token budget at which its false-alarm rate matches the
+intervened arm's gives $\mathrm{CHAIR}_i = 8.04$ \civ{6.91}{9.27} against the intervened arm's
+$7.21$, a difference of $-0.83$ \civ{-1.80}{+0.38}. The asymmetry in how that is read was fixed in
+advance: lying \emph{on} this curve is strong evidence of a criterion move, while lying
+\emph{above} it is weaker evidence of a discrimination gain, because a method can sit on a better
+but still purely criterion-driven trajectory.
+
+\begin{table}[htb]
+\caption{The vanilla arm's own truncation curve: the same captions scored at shorter token budgets.
+$F$ is monotone in the window. This is the instrument behind the matched-$F$ row of
+Table~\ref{tab:mddecomp}.}
+\label{tab:mdcurve}
+\begin{center}
+\small
+\begin{tabular}{rrrrrr}
+\toprule
+window (tokens) & $F$ & $H$ & $\mathrm{CHAIR}_s$ & $\mathrm{CHAIR}_i$ & mentions/cap. \\
+\midrule
+$8$ & $0.0001$ & $0.1925$ & $0.8$ & $1.23$ & $0.65$ \\
+$16$ & $0.0004$ & $0.3620$ & $3.2$ & $2.61$ & $1.30$ \\
+$24$ & $0.0008$ & $0.4482$ & $6.2$ & $3.24$ & $1.98$ \\
+$32$ & $0.0011$ & $0.4988$ & $8.6$ & $3.73$ & $2.52$ \\
+$48$ & $0.0019$ & $0.5696$ & $13.0$ & $4.81$ & $3.58$ \\
+$64$ & $0.0031$ & $0.6275$ & $20.2$ & $5.87$ & $4.60$ \\
+$96$ & $0.0069$ & $0.7384$ & $36.8$ & $10.15$ & $6.44$ \\
+$128$ & $0.0096$ & $0.7754$ & $44.0$ & $12.55$ & $7.43$ \\
+$192$ & $0.0100$ & $0.7816$ & $45.0$ & $12.78$ & $7.65$ \\
+$256$ & $0.0100$ & $0.7816$ & $45.0$ & $12.78$ & $7.65$ \\
+$384$ & $0.0100$ & $0.7816$ & $45.0$ & $12.78$ & $7.65$ \\
+$512$ & $0.0100$ & $0.7816$ & $45.0$ & $12.78$ & $7.65$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{table}
+
+\subsection{Link sensitivity, and the mechanical reason the links disagree}
+\label{app:mitig-link}
+
+The three separation instruments all have a positive point estimate at $\alpha = 0.5$; they differ
+only in whether the interval clears zero. Writing ``two of three say the separation did not change''
+would overstate the evidence, so we do not.
+
+\begin{table}[htb]
+\caption{The three separation instruments at $\alpha = 0.5$, with $\Delta d' = \Delta Z(H) - \Delta
+Z(F)$ and $\Delta \log\mathrm{OR}$ its logit companion. One clean null, one positive, and one
+inconclusive that leans in the same direction as the positive one. The matched-$F$ contrast is
+uninformative, not affirmative.}
+\label{tab:mdlink}
+\begin{center}
+\small
+\begin{tabular}{llp{0.26\textwidth}}
+\toprule
+instrument & $\Delta$ separation & reads as \\
+\midrule
+probit, $\Delta d'$ & $+0.0181$ \civ{-0.0577}{+0.0938} & contains $0$; the whole interval sits inside the registered $\pm 0.15$ margin \\
+logit, $\Delta \log\mathrm{OR}$ & $+0.3037$ \civ{+0.1349}{+0.4761} & excludes $0$ \\
+matched-$F$, $\Delta H$ & $+0.0245$ \civ{-0.0037}{+0.0511} & contains $0$, leaning positive \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{table}
+
+\paragraph{Why they disagree.} Both rates fell: $H$ from $0.7816$ to $0.7083$ and $F$ from $0.0100$
+to $0.0050$. Whether that is ``the same latent move in both'' depends entirely on how the link
+stretches a probability into latent units, and the probit and the logit stretch very differently at
+these two operating points. Evaluated at the midpoint of the two arms' rates:
+
+\begin{table}[htb]
+\caption{Local stretch of the two links, $\mathrm{d}(\text{link})/\mathrm{d}p$, evaluated at the
+midpoint of the two arms' rates. The logit amplifies movement at the low rate relative to movement
+at the mid rate by a further factor of about $1.6$ compared with the probit.}
+\label{tab:mdstretch}
+\begin{center}
+\small
+\begin{tabular}{lrrr}
+\toprule
+operating rate & probit & logit & ratio \\
+\midrule
+$\bar{H} = 0.745$ & $3.11$ & $5.26$ & $1.69$ \\
+$\bar{F} = 0.0075$ & $48.12$ & $133.81$ & $2.78$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{table}
+
+Because $2.78 / 1.69 \approx 1.64$, the same pair of proportional falls decomposes differently under
+the two links:
+\[
+\Delta Z(H) = -0.2292, \qquad \Delta Z(F) = -0.2473,
+\]
+against, with $L(p) = \log\{p/(1-p)\}$,
+\[
+\Delta L(H) = -0.3880, \qquad \Delta L(F) = -0.6917.
+\]
+Under the probit the two shifts are nearly equal, so $d'$ is unchanged; under the logit $F$ falls
+far more than $H$, so separation rises.
+
+\paragraph{This is not a units artefact.} Dividing $\Delta \log\mathrm{OR}$ by the usual mid-scale
+ratio of $1.70$ gives $+0.1787$ \civ{+0.0793}{+0.2800}, which still excludes zero and still exits the
+$\pm 0.15$ margin at the top. So on a logistic evidence model there is a small but real separation
+gain, and on a Gaussian one there is none. At a \emph{single} operating point these two readings are
+observationally equivalent: the same $(H, F)$ pair is consistent with both, and nothing in this
+design distinguishes them. Only a multi-point ROC, obtained by sweeping a decoding knob, identifies
+the latent distribution, and no such sweep was run here.
+
+Two properties of this flag were fixed in advance and are recorded rather than buried. The
+equivalence margin on $\Delta d'$ is $\pm 0.15$, a judgement call; a reader who thinks the right
+margin is $0.05$ should read the interval rather than the label, which is why every interval is
+printed. And the logit companion is applied at the same \emph{numeric} margin as the probit one,
+which is stricter on the logit scale by roughly a factor of $1.7$, so the link-sensitivity flag
+fires more readily than a scale-matched margin would.
+
+\subsection{The blind arm degenerates, and why that is a property of the endpoint}
+\label{app:mitig-blind}
+
+The blind arm was registered and run, and it does not yield a contrast.
+
+Across all $500$ images the blind vanilla arm emits a single distinct caption, and that caption
+mentions none of the $80$ COCO categories: mean category-mention occurrences $0.00$, with $0/500$
+captions containing any. It is not a truncation or a decoding failure --- mean length is $66$
+tokens, so the model talks at length, about nothing in the category vocabulary --- and it is not a
+dead intervention, since image-attention mass still rises monotonically with $\alpha$ across the
+blind arms (Table~\ref{tab:mdprofile}) and every blind arm pair differs on $100\%$ of captions.
+
+Two statistics break, and they break differently. $\mathrm{CHAIR}_i$'s denominator \emph{is} the
+model's own mention set, which here is empty, so $\mathrm{CHAIR}_i$ is $0/0$ and genuinely
+undefined. $\mathrm{CHAIR}_s$ is defined and equals $0.00$: no caption contains a hallucinated
+object because no caption contains an object at all. One statistic is undefined; the other is
+floored. Both are uninformative, and every blind contrast in Table~\ref{tab:mddecomp} is therefore
+reported as undefined rather than as a null.
+
+\paragraph{The blind arms' $d'$ and $c$ are correction artefact, not measurement.} With zero
+mentions both rates collapse to the log-linear correction's $0.5/(n+1)$, and because the present and
+absent classes have very different sizes the correction manufactures a spurious positive
+separation --- $d' = +0.781$ and $c = +3.815$ on all three blind arms, identically. That constant
+was derived from the correction before any generation existed and the instrument gate of
+Table~\ref{tab:mdgates} asserts the corresponding degenerate corner. It is never reported as a
+measurement, and it must not be confused with the permuted-ground-truth value below, which is
+numerically close and conceptually unrelated.
+
+\paragraph{The underlying property is an endogenous denominator, and it bites before degeneracy
+does.} The difficulty is not only that the support can empty. It is that CHAIR's denominator is a
+function of the arm: even a blind arm that still named objects would give a $\mathrm{CHAIR}_i$
+computed over a \emph{different} item set from the sighted arm, so the sighted-blind contrast would
+conflate a change in rate with a change in composition. Total collapse is the extreme case of a
+confound present whenever the ablation moves mention counts at all. An endpoint whose candidate set
+is supplied externally --- as this paper's prefix endpoint is --- does not carry that exposure, which
+is why the blind control of Section~\ref{sec:blind} was runnable there.
+
+\paragraph{Scope.} This is one model against one ablation. A different model may well name objects
+under a grey field, and a weaker ablation --- noise, blur, shuffled patches --- would likely leave
+the support non-empty. The defensible claim is that \emph{this} ablation degenerates on \emph{this}
+model and that any self-selected-support endpoint is exposed to that failure, not that CHAIR cannot
+be blinded in general. Swapping to a different ablation after seeing the registered one degenerate
+was available and was not done.
+
+\paragraph{The secondary that blinds the evaluation instead, and which cuts against us.} Because
+blinding the generation degenerates, a secondary was added that blinds the \emph{evaluation}: each
+already-generated sighted caption is scored against a different image's ground truth, over $20$
+fixed-point-free derangements averaged inside each bootstrap replicate. It was fixed with its own
+decision rule before it was computed, costs no generation, and is never promoted over a primary. It
+returns \textsc{gain-is-image-specific}: the $\alpha = 0.5$ arm's $\mathrm{CHAIR}_i$ advantage under
+permuted ground truth is $+0.22$ \civ{-0.94}{+1.33}, so scoring the same captions against the wrong
+image removes the advantage. The gain is therefore tied to this image's content even though it buys
+no measurable $\Delta d'$. Independently, vanilla's own $d'$ falls from $+3.1032$ on true ground
+truth to $+0.7432$ under permutation: a caption naming common objects achieves $d' \approx 0.74$
+with no reference to the image at all, which is category base-rate bookkeeping rather than
+grounding. This secondary answers ``is the gain image-specific?'', which is adjacent to but not the
+same as ``does the gain survive blinding?'', and it does not license any statement about the latter.
+
+\subsection{Registered outcomes, and what this measurement cannot decide}
+\label{app:mitig-verdict}
+
+\begin{table}[htb]
+\caption{The three registered components and the combined outcome, per arm. The combined primary is
+\textsc{cannot-resolve} at the paper-prescribed $\alpha$. Anyone reading this as a confirmation is
+misreading it.}
+\label{tab:mdverdict}
+\begin{center}
+\small
+\begin{tabular}{lll}
+\toprule
+registered component & $\alpha = 0.5$ & $\alpha = 0.2$ \\
+\midrule
+decomposition & \textsc{link-sensitive} & \textsc{no-gain-to-decompose} \\
+blinding & \textsc{blind-denominator-too-thin} & \textsc{blind-denominator-too-thin} \\
+truncation curve & \textsc{cannot-resolve} & \textsc{extrapolation} \\
+\midrule
+combined & \textsc{cannot-resolve} & \textsc{no-gain-to-decompose} \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{table}
+
+The following hold whichever way the measurement came out and were fixed before the verdict.
+
+\begin{itemize}
+\itemsep0em
+\item \textbf{It cannot show that any published CHAIR number is wrong.} It measures a
+reimplementation of one method in this harness on this $500$-image draw. The published numbers were
+produced on a different checkpoint port, a different image list and a different CHAIR
+implementation.
+\item \textbf{It cannot say what any released implementation does.} The liveness gate establishes
+that $\alpha$ is live \emph{here}. If a released hook were inert and this one responds, those are
+two different facts and are not conflated.
+\item \textbf{One operating point per arm is not an ROC.} $d'$ from a single $(H, F)$ pair assumes
+equal-variance Gaussian evidence. The logit companion tests sensitivity to that assumption and the
+truncation curve is an assumption-light cross-check, but neither turns one point into a curve.
+\item \textbf{Two intervention strengths of one method, one model, one prompt, one decoding mode.}
+The second method, and the second decoding mode, are Appendix~\ref{app:mitig-vcd}.
+Nothing here generalises to every training-free method, and Section~\ref{sec:mitigation} does not
+say it does.
+\end{itemize}
+
+\subsection{The second method, and why it is here when the parent lane dropped it}
+\label{app:mitig-vcd}
+
+The lane above registered one method. A second, \textsc{vcd} \citep{vcd}, was dropped from it by
+Amendment~1 on four facts verified at primary source, and was then run under a \emph{separate}
+registration with a different positive control. Because a reader meeting the amendment first would
+reasonably conclude the method was never run, the sequence is set out here in full.
+
+\paragraph{What the parent lane required, and why \textsc{vcd} failed it.} The parent lane required,
+per arm, a published CHAIR number for that method to reproduce. Four facts bear on that requirement.
+\textbf{(F1)} \textsc{vcd} has no published CHAIR evaluation: in the LaTeX source of its arXiv e-print
+(2311.16922v1) the string \texttt{CHAIR} occurs only in a commented-out line, and its reported
+benchmarks are POPE, MME and LLaVA-Bench. \textbf{(F2)} Its published decoding is direct multinomial
+sampling, and the released code cannot run greedy on its own pinned \texttt{transformers} version,
+where a greedy call dispatches to a function the patch does not touch. \textbf{(F3)} The paper and
+the repository disagree about the noise process. \textbf{(F4)} The release was a no-op past the first
+generated token for roughly eight months, until a fix in the public repository (commit
+\texttt{c637c85a}). Under the parent lane's
+rule these compound: the arm would have produced a number with no published referent, under a
+decoding mode its authors did not use. It was not run, and that is Amendment~1.
+
+\paragraph{What changed, and what did not.} None of F1--F4 is argued away; F3 is corrected below, before any generation. What changed
+is the role of the positive control. The parent lane anchored each arm to an external published
+number; this lane anchors instead to a \emph{within-harness} requirement --- the harness must
+reproduce the parent lane's own \texttt{vanilla} rows token-for-token and return its
+$\mathrm{CHAIR}_i$ of $12.78$ exactly. That is checkable without an external \textsc{vcd} number, and
+it licenses a within-harness contrast and nothing more. Two further consequences were fixed before
+any generation existed: the method is \emph{reimplemented} from the published equations rather than
+imported, because F4 is a defect of the release and not of the method and because on a modern
+\texttt{transformers} the released patch would silently make a greedy call stochastic; and both
+decoding modes are run, each against its own mode-matched baseline, so that the greedy arms stay
+commensurable with the parent lane while the sampled arm reproduces the published protocol. The cost
+is stated plainly: we cannot claim our \textsc{vcd} is the
+authors' \textsc{vcd}, and we do not.
+
+\paragraph{Two corrections to Amendment~1, made before any generation.} Re-verification for this lane
+corrected two claims in the parent amendment, recorded rather than quietly inherited. First, the
+released patch overrides both sampling entry points, not one; the conclusion survives for the pinned
+version, but the stated reason was wrong, and the correct reason is sharper --- on a current
+\texttt{transformers} a greedy call would route \emph{through} the overridden path and become
+stochastic sampling with the method active. Second, the noise step is not a paper-versus-repository
+disagreement: the paper sets it by task, $500$ for open-ended generation and $999$ for POPE. CHAIR
+scores free-form captions, so $T=500$ is the paper-consistent setting for this endpoint and is
+primary here; $T=999$ is the sensitivity arm, not the reverse.
+
+\paragraph{Arms and settings.} Amplification $2.0$ and adaptive-plausibility cutoff $0.1$, the value
+the method's paper states. The forward noise process is taken from the repository --- a declared
+deviation, and a load-bearing one: under the paper's own linear schedule the cumulative signal
+coefficient is $3.7\times 10^{-12}$ at $T=500$ and $1.3\times 10^{-23}$ at $T=999$, so the image is
+indistinguishable from pure Gaussian noise long before either setting and no $T$ in the paper's own
+ablation grid could be distinguished from any other. The repository's sigmoid schedule retains
+$0.863$ and $0.285$ at those two steps, which is what makes $T$ a live dose at all. Three arms:
+\texttt{vcd} (greedy, $T=500$, primary), \texttt{vcd\_t999} (greedy, $T=999$, sensitivity) and
+\texttt{vcd\_s} (sampled at $T=1.0$, $T=500$, the published protocol), the first two against the
+parent lane's greedy \texttt{vanilla} and the third against a sampled \texttt{vanilla\_s} it is never
+compared across.
+
+\paragraph{Gates.} The positive control passed exactly: re-scoring the parent lane's own
+\texttt{vanilla} rows through this port returns $\mathrm{CHAIR}_s = 45.00$ and
+$\mathrm{CHAIR}_i = 12.78$, its published figures. Liveness passed on all four of its clauses ---
+determinism with the method held fixed $0.000$; method off versus on $1.000$ against a floor of
+$0.90$; method off versus the parent lane's \texttt{vanilla} $0.000$, which must be zero; and the
+noise dose, $T=0$ versus $T=500$, $1.000$. Because F4 is a silent failure, the second stream is
+checked \emph{during} decoding rather than assumed: the mean per-step KL between the two streams is
+$0.0084$ against a floor of $10^{-3}$ at $T=500$ and rises to $0.1704$ at $T=999$, so the contrast
+strengthens with the dose as it must. Degeneracy screens pass in every arm (unique-token ratio
+$\geq 0.9990$; $95$th-percentile maximum token run $2$).
+
+\begin{table}[htb]
+\caption{The second method, all three arms, each quantity as method minus its own mode-matched
+baseline. The CHAIR gains are written so that \emph{positive means CHAIR fell}, matching
+Table~\ref{tab:mddecomp}; both greedy arms are therefore negative, meaning CHAIR rose. $\Delta d'$
+is the probit separation term and $\Delta c$ the threshold term.}
+\label{tab:mxdecomp}
+\begin{center}
+\scriptsize
+\setlength{\tabcolsep}{2.6pt}
+\begin{tabular}{llll}
+\toprule
+quantity & \texttt{vcd}, $T{=}500$ (primary) & \texttt{vcd\_t999} (sensitivity) & \texttt{vcd\_s} (published) \\
+\midrule
+decoding & greedy & greedy & sampled \\
+baseline & \texttt{vanilla} & \texttt{vanilla} & \texttt{vanilla\_s} \\
+\midrule
+$\mathrm{CHAIR}_i$ gain & $-1.95$ \civ{-3.26}{-0.65} & $-3.48$ \civ{-4.87}{-2.09} & $+0.72$ \civ{-0.94}{+2.38} \\
+$\mathrm{CHAIR}_s$ gain & $-6.60$ \civ{-10.80}{-2.40} & $-11.20$ \civ{-15.60}{-6.80} & $-2.20$ \civ{-6.80}{+2.60} \\
+\midrule
+$\Delta J$ & $-0.0054$ \civ{-0.0206}{+0.0099} & $+0.0208$ \civ{+0.0046}{+0.0365} & $+0.0322$ \civ{+0.0122}{+0.0518} \\
+$\Delta d'$ (separation) & $-0.0717$ \civ{-0.1369}{-0.0062} & $-0.0541$ \civ{-0.1233}{+0.0141} & $+0.0873$ \civ{+0.0151}{+0.1584} \\
+$\Delta c$ (threshold) & $-0.0234$ \civ{-0.0548}{+0.0082} & $-0.1158$ \civ{-0.1502}{-0.0816} & $-0.0585$ \civ{-0.0983}{-0.0186} \\
+\midrule
+$\Delta J$, criterion only & $+0.0062$ \civ{-0.0021}{+0.0146} & $+0.0291$ \civ{+0.0203}{+0.0379} & $+0.0170$ \civ{+0.0054}{+0.0288} \\
+$\Delta J$, separation only & $-0.0117$ \civ{-0.0222}{-0.0010} & $-0.0088$ \civ{-0.0200}{+0.0023} & $+0.0155$ \civ{+0.0027}{+0.0283} \\
+criterion${:}$separation ratio & $0.53$ & $3.30$ & $1.10$ \\
+\midrule
+$\Delta d'$ inside $\pm 0.15$? & yes & yes & no (upper $+0.158$) \\
+registered outcome & \multicolumn{3}{l}{\textsc{no-gain-to-decompose} on all three arms} \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{table}
+
+\paragraph{Registered verdict: \textsc{no-gain}.} Two of the three arms have $\mathrm{CHAIR}_i$ gains
+whose intervals exclude zero \emph{on the wrong side}: at both of the method's published noise
+settings, under greedy decoding, CHAIR gets worse. The third --- the method's own published sampling
+protocol --- is a null whose interval spans zero. There is no gain here to decompose, and the
+registered primary returns \textsc{no-gain-to-decompose} on all three arms and \textsc{no-gain}
+overall. The decomposition columns are therefore reported for completeness and carry no claim about
+where a gain lives, because there is no gain.
+
+\paragraph{The one arm that reports against the section's reading.} The sampled arm's separation term
+is $+0.0873$ \civ{+0.0151}{+0.1584}, the only positive $\Delta d'$ in either lane whose interval
+excludes zero (the greedy primary's $-0.0717$ \civ{-0.1369}{-0.0062} also excludes zero, in the other
+direction) and the only one that leaves the $\pm 0.15$ margin, and it is also the only arm whose
+$\mathrm{CHAIR}_i$ gain is not negative. It decomposes a gain this lane's own registration classes as
+immaterial ($+0.72$, interval spanning zero), so it cannot be read as a separation-driven
+improvement; but it is the single result in this appendix pointing away from ``the separation term
+never moves,'' and it is reported at full strength rather than folded into the others.
+
+\paragraph{What this lane cannot decide, fixed before the verdict.}
+\begin{itemize}
+\itemsep0em
+\item \textbf{It is not evidence that the method does not work.} It is evidence about a
+reimplementation of its published equations, on one model, one prompt, one image draw, with the
+repository's noise process. F1 means no external number anchors any arm, and that absence is carried
+as a limit rather than solved.
+\item \textbf{The greedy arms are not the authors' protocol.} They exist to be commensurable with the
+parent lane. The published-protocol arm is the sampled one, and it is a null, not a loss.
+\item \textbf{Fifteen registered verdicts across the two lanes.} Three primaries for each of the five
+intervened arms (three here, two in the first lane), every interval printed so a reader can apply their own family-wise adjustment. No
+verdict was selected after the fact.
+\end{itemize}
+
+\section{An unsaturated forced-choice readout}
+\label{app:unsat}
+
+\begin{figure}[htb]
+\begin{minipage}[t]{0.46\textwidth}
+\vspace{0pt}
+\centering
+\includegraphics[width=\textwidth]{fig_forced.pdf}
+\caption{Experiment~3's scene-count contrast in two registers, with $95\%$ intervals.}
+\label{fig:forced}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.52\textwidth}
+\vspace{0pt}
+\makeatletter\def\@captype{table}\makeatother
+\caption{Every probe fails all three off-ceiling conditions fixed in advance (pooled over arms):
+C1~$\rateF \in [0.20, 0.80]$, C2~$\rateT \le 0.90$, C3~yes-rate~$\in [0.15, 0.85]$. Image-only:
+``answer only from the image''; mixed: adds ``some are, some are not''. Closed-set rows:
+calibration, $n = 478$.}
+\label{tab:unsatceiling}
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+probe & \rateT{} & \rateF{} & yes-rate \\
+\midrule
+published probe & $0.9732$ & $0.8796$ & $0.8949$ \\
+published probe, re-run here & $0.9739$ & $0.8791$ & $0.8945$ \\
+image-only prompt & $0.9711$ & $0.8622$ & $0.8799$ \\
+two-alternative choice & $0.9437$ & $0.9347$ & $0.9362$ \\
+closed candidate set & $1.0000$ & $1.0000$ & $1.0000$ \\
+closed candidate set, mixed & $1.0000$ & $0.9949$ & $0.9958$ \\
+\bottomrule
+\end{tabular}
+\end{minipage}
+\end{figure}
+
+\paragraph{The objection.} Experiment~3 (Section~\ref{sec:forced}) moves the scene-count contrast by
+$+0.4859$ under free generation and by $-0.0095$ \civ{-0.0314}{+0.0124} under forced choice on
+identical units (Figure~\ref{fig:forced}). But the published forced-choice probe is saturated: its
+false-positive rate rises from $0.022$ with no prefix to $0.8714$ and $0.8835$ under the one- and
+five-scene prefixes, and it fails every off-ceiling condition fixed in advance
+(Table~\ref{tab:unsatceiling}). Its null could mean that forced choice removes the selection step
+carrying the effect, or that the probe would return a null for anything.
+
+\paragraph{Changing the probe does not de-saturate it.}\label{app:unsat-gate} We pre-registered four
+candidate probes, each read in one forward pass as a probability $p_{\mathrm{yes}}$ over two fixed
+answer-token groups and thresholded for the binary answer. All four stay at ceiling, the closed
+candidate set with never-mentioned distractors hardest, at a yes-rate of $1.0000$. A post-hoc
+diagnostic on the two-alternative variant shows why: it chooses the unit object at $0.9362$ when the
+prefix named it and $0.4990$ when it did not, so the binary format measures prefix membership. The
+registered cell is \textsc{still-saturated}, which returns no verdict.
+
+\paragraph{The graded readout of the published probe.} Registered to be reported in every branch, it
+gives $+0.0008$ \civ{-0.0142}{+0.0166}, width $0.0309$ against $0.0425$ for the binary answer, and
+it is not pinned: between $61\%$ and $74\%$ of each arm's units have $p_{\mathrm{yes}}$ inside
+$(0.05, 0.95)$. That evidence is post-hoc, because the registered ceiling gate was defined on the
+binary rate and fired.
+
+\paragraph{Scoring objects the prefix never names.}\label{app:unsat-scope} A second pre-registered
+analysis scores distractors, objects the prefix never mentions, with the two-alternative probe;
+prefix membership is constant across them and cannot pin the readout. The registration names the
+binary readout as primary, gated by the conditions of Table~\ref{tab:unsatceiling}, and the graded
+readout as co-primary, gated on the graded quantity itself (interior fraction at least $0.50$,
+$p > 0.99$ fraction at most $0.10$). Both gates were fixed before any five-scene row existed (the
+earlier run had produced one-scene rows only), and a failure of one does not block the other. Free
+generation on these units moves by $+0.3655$ \civ{+0.2987}{+0.4303}, so there is an effect to find.
+The binary primary missed its ceiling gate ($\rateT = 0.9041$ against a ceiling of $0.90$), so the
+registered cell is \textsc{distractor-saturated}, which is not a verdict. The graded co-primary passed
+its own gate: the forced-choice register moves by $-0.0057$ \civ{-0.0153}{+0.0036}, or
+$-0.006 \pm 0.010$ once widened in quadrature by run-to-run replay noise, and the readout is live on
+the same units and scale, registering ground-truth presence at $+0.2981$ ($0.7966$ against $0.4985$).
+The registration reports the two readouts independently, but its pre-committed reading accepts a null
+verdict only if the binary gates pass. They did not, so the graded null is supporting evidence and not
+a registered confirmation.
+
+\paragraph{Corrections.} The first scoring run reported \textsc{distractor-saturated} as the headline
+cell. A later change to the headline selector, reasoning from the clause that the two readouts are
+gated independently, reported the co-primary's \textsc{distractor-null-confirmed} instead; every
+number is identical between the two runs, and both result files are kept. That change conflicts with
+the registration's pre-committed acceptance rule for a null, which requires the binary gates to pass.
+We follow the stricter clause: the registered cell is \textsc{distractor-saturated}. Separately, a replay gate shown to reject a perfect re-run of the earlier probe was
+replaced before endpoint generation by one requiring exact agreement away from the decision boundary.
+
+\paragraph{Scope.} Both graded analyses are consistent with a forced-choice null that does not
+depend on prefix-membership pinning, since this one scores units where pinning cannot operate.
+Neither is a registered confirmation: the earlier graded readout is post hoc, and this one is excluded
+from confirmation by its registration's own acceptance rule. No off-ceiling binary probe was
+obtained.
+

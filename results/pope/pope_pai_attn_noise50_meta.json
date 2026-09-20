@@ -1,0 +1,300 @@
+{
+ "model": "llava-hf/llava-1.5-7b-hf",
+ "prompt_template": "A chat between a curious user and an artificial intelligence assistant. The assistant gives helpful, detailed, and polite answers to the user's questions.USER: <image> <QUESTION> ASSISTANT:",
+ "max_new": 64,
+ "bs": 16,
+ "splits": [
+  "random",
+  "popular",
+  "adversarial"
+ ],
+ "layers": [
+  2,
+  32
+ ],
+ "n_items": 9000,
+ "plan_sha": "84ef6b5fabd875b2dcd22c6d81fa39a984c4215d232c8d16afec0162f1882de0",
+ "plan_batches": 564,
+ "pix_seed": 20260919,
+ "grey_rgb": [
+  127,
+  127,
+  127
+ ],
+ "host": "vgi1",
+ "limit_images": 0,
+ "job_id": "21059",
+ "torch": "2.11.0+cu130",
+ "operator_is_prior_work": "arXiv 2407.21771 Eq.3 (+Eq.4 when gamma!=1)",
+ "prereg": "SPRINT/POPE_PREREG.md",
+ "tag": "pope_pai_attn_noise50",
+ "method": "pai_attn",
+ "pixarm": "noise50",
+ "alpha": 0.5,
+ "gamma": 1.0,
+ "rowmode": "lastrow",
+ "n_rows": 9000,
+ "n_truncated": 0,
+ "trunc_rate": 0.0,
+ "mean_tokens": 12.035444444444444,
+ "median_tokens": 11.0,
+ "empty_rate": 0.0,
+ "n_distinct_answers": 814,
+ "answer_dist": [
+  [
+   "No, there is no car in the image.",
+   622
+  ],
+  [
+   "No, there is no dining table in the image.",
+   528
+  ],
+  [
+   "No, there is no chair in the image.",
+   448
+  ],
+  [
+   "No, there is no person in the image.",
+   296
+  ],
+  [
+   "Yes, there is a dining table in the image.",
+   224
+  ],
+  [
+   "No, there is no cup in the image.",
+   183
+  ],
+  [
+   "Yes, there is a person in the image.",
+   153
+  ],
+  [
+   "Yes, there is a backpack in the image.",
+   147
+  ],
+  [
+   "Yes, there is a car in the image.",
+   114
+  ],
+  [
+   "Yes, there is a truck in the image.",
+   108
+  ],
+  [
+   "Yes, there is a handbag in the image.",
+   108
+  ],
+  [
+   "Yes, there is a chair in the image.",
+   108
+  ],
+  [
+   "No, there is no bottle in the image.",
+   99
+  ],
+  [
+   "Yes, there is a couch in the image.",
+   91
+  ],
+  [
+   "No",
+   87
+  ],
+  [
+   "No, there is no person visible in the image.",
+   86
+  ],
+  [
+   "Yes, there is a cup in the image.",
+   84
+  ],
+  [
+   "No, there is no sports ball in the image.",
+   78
+  ],
+  [
+   "No, there is no truck in the image.",
+   72
+  ],
+  [
+   "No, there is no backpack in the image.",
+   70
+  ]
+ ],
+ "answer_dist_by_split": {
+  "adversarial": [
+   [
+    "No, there is no car in the image.",
+    244
+   ],
+   [
+    "No, there is no dining table in the image.",
+    191
+   ],
+   [
+    "No, there is no person in the image.",
+    129
+   ],
+   [
+    "Yes, there is a dining table in the image.",
+    85
+   ],
+   [
+    "No, there is no chair in the image.",
+    85
+   ],
+   [
+    "Yes, there is a backpack in the image.",
+    58
+   ],
+   [
+    "No, there is no cup in the image.",
+    56
+   ],
+   [
+    "Yes, there is a handbag in the image.",
+    54
+   ],
+   [
+    "Yes, there is a person in the image.",
+    51
+   ],
+   [
+    "Yes, there is a truck in the image.",
+    48
+   ]
+  ],
+  "popular": [
+   [
+    "No, there is no car in the image.",
+    354
+   ],
+   [
+    "No, there is no chair in the image.",
+    333
+   ],
+   [
+    "No, there is no dining table in the image.",
+    316
+   ],
+   [
+    "No, there is no person in the image.",
+    134
+   ],
+   [
+    "No, there is no cup in the image.",
+    117
+   ],
+   [
+    "Yes, there is a dining table in the image.",
+    89
+   ],
+   [
+    "Yes, there is a person in the image.",
+    51
+   ],
+   [
+    "Yes, there is a chair in the image.",
+    47
+   ],
+   [
+    "Yes, there is a backpack in the image.",
+    45
+   ],
+   [
+    "Yes, there is a car in the image.",
+    42
+   ]
+  ],
+  "random": [
+   [
+    "Yes, there is a person in the image.",
+    51
+   ],
+   [
+    "Yes, there is a dining table in the image.",
+    50
+   ],
+   [
+    "Yes, there is a backpack in the image.",
+    44
+   ],
+   [
+    "No, there is no sports ball in the image.",
+    37
+   ],
+   [
+    "No, there is no spoon in the image.",
+    33
+   ],
+   [
+    "No, there is no person in the image.",
+    33
+   ],
+   [
+    "Yes, there is a car in the image.",
+    31
+   ],
+   [
+    "Yes, there is a truck in the image.",
+    31
+   ],
+   [
+    "No, there is no truck in the image.",
+    30
+   ],
+   [
+    "No, there is no chair in the image.",
+    30
+   ]
+  ]
+ },
+ "derangement": null,
+ "mean_img_mass": 0.2971990402208434,
+ "img_mass_by_layer": [
+  0.5094380571064374,
+  0.4240032988765561,
+  0.6002463962063722,
+  0.4563372717205937,
+  0.354516129240605,
+  0.3492193819545474,
+  0.3163825559647793,
+  0.2973799522147111,
+  0.3662196718526225,
+  0.35730676685876034,
+  0.354710477912891,
+  0.3055383012438497,
+  0.32848091840955385,
+  0.3567240520096417,
+  0.28715493403216624,
+  0.31255293460496775,
+  0.29355099171083027,
+  0.29289849556929676,
+  0.22841877519344608,
+  0.18095919143752004,
+  0.20693727973716478,
+  0.15239397256720996,
+  0.1837853104774411,
+  0.1571347437640454,
+  0.17369903301727688,
+  0.1428399955497143,
+  0.15301211059410522,
+  0.19235797366457627,
+  0.19723596083039932,
+  0.29273489836259936,
+  0.3217962121604182,
+  0.36035336770698534
+ ],
+ "attn_calls": 801728,
+ "pai_applied_steps": 12527,
+ "pai_applied_prefill": 564,
+ "n_edited_first": 294912,
+ "mask_present": 0,
+ "causal_repairs": 36096,
+ "nomask_decode": 765632,
+ "mask_leak": 0,
+ "pixel_arm_desc": "additive Gaussian sigma=50/255, clipped",
+ "pixel_arm_frame": "m336",
+ "secs": 1625.270271539688
+}

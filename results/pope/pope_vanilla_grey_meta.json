@@ -1,0 +1,300 @@
+{
+ "model": "llava-hf/llava-1.5-7b-hf",
+ "prompt_template": "A chat between a curious user and an artificial intelligence assistant. The assistant gives helpful, detailed, and polite answers to the user's questions.USER: <image> <QUESTION> ASSISTANT:",
+ "max_new": 64,
+ "bs": 16,
+ "splits": [
+  "random",
+  "popular",
+  "adversarial"
+ ],
+ "layers": [
+  2,
+  32
+ ],
+ "n_items": 9000,
+ "plan_sha": "84ef6b5fabd875b2dcd22c6d81fa39a984c4215d232c8d16afec0162f1882de0",
+ "plan_batches": 564,
+ "pix_seed": 20260919,
+ "grey_rgb": [
+  127,
+  127,
+  127
+ ],
+ "host": "vgi1",
+ "limit_images": 0,
+ "job_id": "21052",
+ "torch": "2.11.0+cu130",
+ "operator_is_prior_work": "arXiv 2407.21771 Eq.3 (+Eq.4 when gamma!=1)",
+ "prereg": "SPRINT/POPE_PREREG.md",
+ "tag": "pope_vanilla_grey",
+ "method": "vanilla",
+ "pixarm": "grey",
+ "alpha": 0.0,
+ "gamma": 1.0,
+ "rowmode": "decode",
+ "n_rows": 9000,
+ "n_truncated": 0,
+ "trunc_rate": 0.0,
+ "mean_tokens": 22.82788888888889,
+ "median_tokens": 22.0,
+ "empty_rate": 0.0,
+ "n_distinct_answers": 79,
+ "answer_dist": [
+  [
+   "No, there is no person in the image. It is a grayscale photo of a sky background.",
+   1340
+  ],
+  [
+   "No, there is no car in the image. The image features a gray sky and a gray background.",
+   902
+  ],
+  [
+   "No, there is no dining table in the image. The image features a gray background with a gray tablecloth.",
+   793
+  ],
+  [
+   "No, there is no chair in the image. The image features a gray background with a gray chair in the foreground.",
+   591
+  ],
+  [
+   "No, there is no cup in the image. The image features a gray background with a white surface.",
+   288
+  ],
+  [
+   "No, there is no bottle in the image. The image features a gray background with a white dot.",
+   229
+  ],
+  [
+   "No, there is no truck in the image. The image features a gray sky, which is the main subject of the photo.",
+   226
+  ],
+  [
+   "No, there is no backpack in the image. The image features a gray sky and a gray background.",
+   223
+  ],
+  [
+   "No, there is no bowl in the image. The image features a gray background with a white surface.",
+   190
+  ],
+  [
+   "No, there is no handbag in the image. The image features a gray background with a white square.",
+   168
+  ],
+  [
+   "No, there is no TV in the image. The image features a gray background with a gray sky.",
+   156
+  ],
+  [
+   "No, there is no couch in the image. The image features a gray background with a white dot.",
+   148
+  ],
+  [
+   "No, there is no sports ball in the image. The image features a gray background with no objects or subjects.",
+   139
+  ],
+  [
+   "No, there is no spoon in the image. The image features a gray background with a white spoon in the foreground.",
+   126
+  ],
+  [
+   "No, there is no traffic light in the image. The image features a gray sky and a gray background.",
+   123
+  ],
+  [
+   "No, there is no dog in the image. The image features a gray background with no visible objects or animals.",
+   115
+  ],
+  [
+   "No, there is no bicycle in the image. The image features a gray background with no objects or subjects.",
+   106
+  ],
+  [
+   "No, there is no bed in the image. The image features a gray background with a white dot.",
+   100
+  ],
+  [
+   "No, there are no skis in the image. The image features a gray background with a white dot.",
+   95
+  ],
+  [
+   "No, there is no laptop in the image. The image features a gray background with a gray sky.",
+   95
+  ]
+ ],
+ "answer_dist_by_split": {
+  "adversarial": [
+   [
+    "No, there is no person in the image. It is a grayscale photo of a sky background.",
+    491
+   ],
+   [
+    "No, there is no car in the image. The image features a gray sky and a gray background.",
+    351
+   ],
+   [
+    "No, there is no dining table in the image. The image features a gray background with a gray tablecloth.",
+    287
+   ],
+   [
+    "No, there is no chair in the image. The image features a gray background with a gray chair in the foreground.",
+    122
+   ],
+   [
+    "No, there is no truck in the image. The image features a gray sky, which is the main subject of the photo.",
+    107
+   ],
+   [
+    "No, there is no cup in the image. The image features a gray background with a white surface.",
+    102
+   ],
+   [
+    "No, there is no backpack in the image. The image features a gray sky and a gray background.",
+    92
+   ],
+   [
+    "No, there is no bottle in the image. The image features a gray background with a white dot.",
+    90
+   ],
+   [
+    "No, there is no handbag in the image. The image features a gray background with a white square.",
+    89
+   ],
+   [
+    "No, there is no bowl in the image. The image features a gray background with a white surface.",
+    73
+   ]
+  ],
+  "popular": [
+   [
+    "No, there is no person in the image. It is a grayscale photo of a sky background.",
+    497
+   ],
+   [
+    "No, there is no car in the image. The image features a gray sky and a gray background.",
+    473
+   ],
+   [
+    "No, there is no dining table in the image. The image features a gray background with a gray tablecloth.",
+    431
+   ],
+   [
+    "No, there is no chair in the image. The image features a gray background with a gray chair in the foreground.",
+    407
+   ],
+   [
+    "No, there is no cup in the image. The image features a gray background with a white surface.",
+    161
+   ],
+   [
+    "No, there is no bottle in the image. The image features a gray background with a white dot.",
+    77
+   ],
+   [
+    "No, there is no backpack in the image. The image features a gray sky and a gray background.",
+    65
+   ],
+   [
+    "No, there is no bowl in the image. The image features a gray background with a white surface.",
+    49
+   ],
+   [
+    "No, there is no truck in the image. The image features a gray sky, which is the main subject of the photo.",
+    47
+   ],
+   [
+    "No, there is no sports ball in the image. The image features a gray background with no objects or subjects.",
+    38
+   ]
+  ],
+  "random": [
+   [
+    "No, there is no person in the image. It is a grayscale photo of a sky background.",
+    352
+   ],
+   [
+    "No, there is no car in the image. The image features a gray sky and a gray background.",
+    78
+   ],
+   [
+    "No, there is no dining table in the image. The image features a gray background with a gray tablecloth.",
+    75
+   ],
+   [
+    "No, there is no truck in the image. The image features a gray sky, which is the main subject of the photo.",
+    72
+   ],
+   [
+    "No, there is no bowl in the image. The image features a gray background with a white surface.",
+    68
+   ],
+   [
+    "No, there is no backpack in the image. The image features a gray sky and a gray background.",
+    66
+   ],
+   [
+    "No, there is no bottle in the image. The image features a gray background with a white dot.",
+    62
+   ],
+   [
+    "No, there is no chair in the image. The image features a gray background with a gray chair in the foreground.",
+    62
+   ],
+   [
+    "No, there is no sports ball in the image. The image features a gray background with no objects or subjects.",
+    60
+   ],
+   [
+    "No, there is no TV in the image. The image features a gray background with a gray sky.",
+    58
+   ]
+  ]
+ },
+ "derangement": null,
+ "mean_img_mass": 0.12536166937897603,
+ "img_mass_by_layer": [
+  0.6499209747458181,
+  0.33670165268241936,
+  0.1562463503383787,
+  0.12925180897830016,
+  0.11478406764197012,
+  0.09552363697967842,
+  0.09598666843000456,
+  0.09245624333778595,
+  0.12119788959199655,
+  0.1210964957106832,
+  0.12946162475867473,
+  0.11464043104268135,
+  0.1121488732569818,
+  0.11287529106047137,
+  0.14255173714395533,
+  0.11906871849552114,
+  0.12686858935189163,
+  0.11803000861554282,
+  0.0840870821650358,
+  0.08603975666911466,
+  0.11015589939469987,
+  0.07245206217288125,
+  0.08160797489397492,
+  0.06526276086133423,
+  0.07096019833751604,
+  0.053377950623472954,
+  0.06778301768903192,
+  0.04113007685605516,
+  0.051977689582722406,
+  0.08892285921577867,
+  0.06391560240708133,
+  0.18529417212550522
+ ],
+ "attn_calls": 978368,
+ "pai_applied_steps": 0,
+ "pai_applied_prefill": 0,
+ "n_edited_first": 0,
+ "mask_present": 0,
+ "causal_repairs": 36096,
+ "nomask_decode": 942272,
+ "mask_leak": 0,
+ "pixel_arm_desc": "flat (127,127,127) at the image's own pixel size",
+ "pixel_arm_frame": "own",
+ "secs": 1687.916261434555
+}

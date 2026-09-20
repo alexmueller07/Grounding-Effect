@@ -1,0 +1,51 @@
+{
+ "sentinel": true,
+ "arm": "vanilla",
+ "rung": "blur4",
+ "alpha": 0.0,
+ "gamma": 1.0,
+ "layers": [
+  2,
+  32
+ ],
+ "model": "llava-hf/llava-1.5-7b-hf",
+ "n": 500,
+ "max_new": 512,
+ "sample_seed": 20260817,
+ "n_truncated": 0,
+ "prompt": "A chat between a curious user and an artificial intelligence assistant. The assistant gives helpful, detailed, and polite answers to the user's questions.USER: <image> Please help me describe the image in detail. ASSISTANT:",
+ "bs": 4,
+ "limit": 0,
+ "gate_rung_applied": {
+  "rows": 4,
+  "rows_changed": 4,
+  "pairs": 3,
+  "cross_image_distinct": 3,
+  "grey_rows_equal": 0
+ },
+ "rung_cache": {
+  "rung": "blur4",
+  "n_calls": 500,
+  "n_distinct": 500,
+  "determinism_rechecks": 0,
+  "determinism_equal": 0
+ },
+ "attn_calls": 4255872,
+ "pai_applied_steps": 0,
+ "n_edited_first": 0,
+ "mask_present": 0,
+ "causal_repairs": 32000,
+ "nomask_decode": 4223872,
+ "mask_leak": 0,
+ "mention_occurrences": 3310,
+ "captions_with_mention": 489,
+ "hallucinated_occurrences": 488,
+ "chair_i_pooled": 14.743202416918429,
+ "mean_tokens": 103.294,
+ "median_tokens": 103.0,
+ "n_distinct_texts": 500,
+ "host": "vgi1",
+ "job_id": "21029",
+ "prereg": "SPRINT/LADDER_PREREG.md @ f186bcf",
+ "secs": 709.1454908847809
+}

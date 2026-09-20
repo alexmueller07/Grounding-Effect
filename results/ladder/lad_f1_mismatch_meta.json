@@ -1,0 +1,69 @@
+{
+ "sentinel": true,
+ "rung": "mismatch",
+ "tag": "lad_f1_mismatch",
+ "model": "llava-hf/llava-1.5-7b-hf",
+ "smoke": false,
+ "host": "vgi1",
+ "job_id": "21061",
+ "max_new_cont": 384,
+ "bs": 8,
+ "rows": 3000,
+ "kder": 3,
+ "n_cells": 1500,
+ "per_arm_rows": {
+  "cap1_mismatch": 1500,
+  "cap5_mismatch": 1500
+ },
+ "prefix_drift": 0,
+ "batch_order_identical": true,
+ "gate_rung_applied": {
+  "rows_changed": 8,
+  "rows": 8,
+  "cross_image_distinct": 3,
+  "pairs": 3
+ },
+ "rung_cache": {
+  "rung": "mismatch",
+  "n_calls": 3000,
+  "n_distinct": 500,
+  "determinism_rechecks": 26,
+  "determinism_equal": 26
+ },
+ "mismatch": {
+  "n": 500,
+  "seed": 20260919,
+  "cells_where_substitute_is_a_prefix_source": 18,
+  "frac": 0.006,
+  "map_sample": {
+   "885": 267191,
+   "1268": 235836,
+   "2473": 62025,
+   "3553": 163951,
+   "5001": 215778,
+   "6460": 21604,
+   "6763": 405972,
+   "6771": 446651,
+   "7088": 17905,
+   "8844": 366199
+  }
+ },
+ "prereg": "SPRINT/LADDER_PREREG.md @ f186bcf",
+ "per_arm": {
+  "cap1_mismatch": {
+   "mean_cont_len": 188.49,
+   "median_cont_len": 70.0,
+   "at_max_384": 0.45666666666666667,
+   "empty_cont_rate": 0.03133333333333333,
+   "n_distinct_texts": 1376
+  },
+  "cap5_mismatch": {
+   "mean_cont_len": 274.55,
+   "median_cont_len": 384.0,
+   "at_max_384": 0.6826666666666666,
+   "empty_cont_rate": 0.0033333333333333335,
+   "n_distinct_texts": 1483
+  }
+ },
+ "secs": 4373.4
+}
