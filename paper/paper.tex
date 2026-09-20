@@ -14,7 +14,7 @@
 \usepackage{amsmath,amssymb}
 \graphicspath{{figures/}}
 
-\title{A Blank Is Not a Control: Attributing\\Grounding Gains to the Image}
+\title{When a Blank Is Not a Control: Ablation Choice,\\Generation Budget, and the Attribution of Grounding Gains}
 
 % Authors must not appear in the submitted version. They should be hidden
 % as long as the \iclrfinalcopy macro remains commented out below.
@@ -62,7 +62,7 @@ blind-to-sighted ratio of $1.03$ ($95\%$ CI $0.92$--$1.16$) --- but that null be
 ablation and the regime, not to the endpoint. Substituting a mismatched real image gives a ratio of
 $0.67$ \civ{0.57}{0.77}; keeping the blank but scoring only cells that terminate naturally gives
 $0.71$, with $\dSight = +0.100$ \civ{+0.041}{+0.163}. Two independent corrections agree: about seven
-tenths of the rise does not need the image, and the remaining tenth demonstrably does. The blank
+tenths of the rise does not need the image, and the remaining three tenths demonstrably do. The blank
 conceals this by depressing the one-scene hit rate from $0.68$ to $0.47$, preserving the difference
 while destroying the level. Nor is the blank the most disruptive ablation by any measure we
 have: four of the ten displace the image further in the model's own feature space than that
@@ -70,8 +70,8 @@ substitution does, and all four leave $\dSight$ at zero. Grey also empties CHAIR
 returns no data rather than a null. Run with a mismatched image on official POPE the control is informative, and a published method
 partly passes it: PAI's attention-only configuration gives an image-attributable $+0.021$
 \civ{+0.004}{+0.037}, while its released default shows no POPE gain to attribute at all. On
-\textsc{Qwen3-VL-8B} part of our own rise needs the image, $+0.060$ \civ{+0.024}{+0.096}, which
-bounds the claim; the rise does not
+\textsc{Qwen3-VL-8B} $\dSight$ excludes zero at $+0.060$ \civ{+0.024}{+0.096} while still lying
+inside the $\pm 0.10$ band, so it bounds the claim on one reading and is a null on the other; the rise does not
 appear with natural prose, though that test ran at about half the dose, and a forced-choice probe
 is too saturated to say whether the register matters. Throughout,
 the scalar hides its parts, since the image's effects on the two rates cancel inside it. We recommend
@@ -151,7 +151,9 @@ lowers $\mathrm{CHAIR}_i$ by $5.6$ points while the rate of naming present objec
 a trade-off \citet{sparc} already report --- and shortening the unmodified model's own captions to
 PAI's false-alarm rate gives nearly the same $\mathrm{CHAIR}_i$. That pattern is consistent with a threshold shift, although a registered
 test could not resolve whether PAI also changes separation. A uniform field cannot run the blind control on
-CHAIR, but a graded one can, and under it PAI's gain is image-attributable on CHAIR and POPE alike.
+CHAIR, but a graded one can, and under it PAI's gain is substantially image-attributable on both
+benchmarks --- at registered labels of \textsc{cannot-resolve} and \textsc{partial}, neither an
+unqualified pass.
 
 \paragraph{What is new.} Measuring what a score owes to the image is not ours. Question-only baselines
 exposed language priors in VQA \citep{goyal2017vqa, agrawal2018vqacp}, MMStar reports a model's score
@@ -167,15 +169,15 @@ what attributing a \emph{gain} requires.}
 \label{tab:novelty}
 \begin{center}
 \small
-\begin{tabular}{lll}
+\begin{tabular}{@{}lll@{}}
 \toprule
 question & asked before & here \\
 \midrule
-Does a benchmark score depend on the image?        & yes \citep{goyal2017vqa, mmstar, lan2026seeing} & --- \\
-Does an \emph{intervention's gain} depend on it?   & for one method \citep{liao2026decodable} & two benchmarks, four models \\
-Does the ablation leave a scorable endpoint?       & usually implicit & tested; it often fails \\
-Does ablation severity predict attributability?    & --- & measured; it does not \\
-Does $J$ hide offsetting moves in $H$ and $F$?     & --- & decomposed \\
+Score depends on the image? & yes \citep{goyal2017vqa, lan2026seeing} & --- \\
+An intervention's \emph{gain} depends on it? & one method \citep{liao2026decodable} & 2 benchmarks, 4 models \\
+Ablation leaves a scorable endpoint? & usually implicit & can fail silently \\
+Generation regime changes the answer? & --- & yes, $1.03 \rightarrow 0.71$ \\
+$J$ hides offsetting $H$/$F$ moves? & --- & decomposed \\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -364,8 +366,8 @@ reach the generation budget. On the $3{,}500$-image sample where neither conditi
 grey field, same cells --- the rise is $+0.346$ sighted against $+0.246$ blind, so
 $\dSight = +0.100$ \civ{+0.041}{+0.163} excludes zero: a ratio of $0.71$ where the capped regime
 gave $1.03$ (Appendix~\ref{app:regimeblind}; the sighted arm there reproduces the registered
-$+0.3460$ exactly). Seven tenths of the rise still does not need the image, but the tenth that does
-is measured rather than bounded.
+$+0.3460$ exactly). Seven tenths of the rise still does not need the image; the three tenths
+that do are now measured rather than bounded.
 
 \paragraph{A less destructive ablation agrees.} Grey asks whether the rise needs visual input at all.
 Substituting a \emph{different real image} --- prefix tokens identical, and by every absolute measure
@@ -598,22 +600,19 @@ narrower: a change in a present-minus-absent score does not by itself identify a
 grounding; the control that would settle it is informative only under some ablations; and the two
 rates the score collapses carry what it hides.
 
-\textbf{The endpoint is constructed, deliberately.} It is not a model of any mitigation method and
-is not offered as one. Showing that a metric fails to identify grounding requires a case where the
-answer is known independently, which no naturally occurring gain supplies; we therefore built the
-minimal intervention whose route is textual by construction and asked whether the metric could tell.
-That is a counterexample to identifiability, not a claim about how often published gains are
-misread. It was adopted after CHAIR proved unusable on these conditions
-(Appendix~\ref{app:mitig-blind}).
+\textbf{The endpoint is constructed, deliberately.} Showing that a metric fails to identify
+grounding needs a case where the answer is known independently, which no naturally occurring gain
+supplies; we built the minimal intervention whose route is textual by construction and asked whether
+the metric could tell. That is a counterexample to identifiability, not a claim about how often
+published gains are misread.
 
 \textbf{Scope of the evidence.} The measurements concern $J$ on assembled-caption passages; the
 registered mention-rate control fails on five of sixteen powered subsets, the $d'$/$c$ recoding is
-post hoc, and the separation question returns \textsc{cannot-resolve} under its registered primary.
-The uncapped blind arm was added after that lane was registered. Appendix~\ref{app:prereg} lists
+post hoc, the separation question returns \textsc{cannot-resolve}, and the uncapped blind arm was
+added after that lane was registered. Appendix~\ref{app:prereg} lists
 every registered analysis with its outcome, including those that failed. Two \textsc{LLaVA} models
-replicate; \textsc{Kosmos-2} and \textsc{Qwen3-VL-8B} bound the result in opposite directions;
-\textsc{Qwen2.5-VL-7B} is not interpreted \citep{llava15, llavaov, kosmos2, qwen3vl, qwen25vl}.
-All images are COCO \citep{coco}.
+replicate, \textsc{Kosmos-2} and \textsc{Qwen3-VL-8B} bound the result in opposite directions, and
+\textsc{Qwen2.5-VL-7B} is not interpreted; checkpoints and data in Appendix~\ref{app:setup}.
 
 \subsection*{AI use statement}
 
