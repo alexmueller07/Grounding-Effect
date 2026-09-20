@@ -51,23 +51,27 @@ Seoul, South Korea
 
 \begin{abstract}
 Object-hallucination benchmarks check the objects a vision-language model names against those
-annotated in the image, and a better score is read as better visual grounding. The natural check is
-to remove the image and ask whether the gain survives. We show that the answer depends on which
-ablation is used, and that the usual choice --- a blank field --- is often the wrong one. We begin
-\textsc{LLaVA-1.5-7B}'s description of an image with a passage cut from human captions of other
-images, score the objects that passage names, and vary only whether those captions come from one
-other scene or five: the present-minus-absent gap rises by $0.49$ on a $[-1, 1]$ scale. With the
+annotated in the image, and a better score is read as better grounding. The natural check is to
+remove the image and ask whether the gain survives. We show the answer depends on which ablation is
+used, and the usual choice --- a blank field --- is often the wrong one. We begin
+\textsc{LLaVA-1.5-7B}'s description with a passage cut from human captions of other images, score
+the objects it names, and vary only whether those captions come from one other scene or five: the
+present-minus-absent gap rises by $0.49$ on a $[-1,1]$ scale. With the
 image replaced by a uniform grey field and every token of text unchanged it still rises by $0.50$, a
-blind-to-sighted ratio of $1.03$ ($95\%$ CI $0.92$--$1.16$); with a mismatched real image instead
-only $0.33$ survives, and $0.16$ \civ{0.11}{0.21} of the rise is attributable to the image. The
+blind-to-sighted ratio of $1.03$ ($95\%$ CI $0.92$--$1.16$); with a mismatched real image it rises
+by only $0.33$, a ratio of $0.67$ \civ{0.57}{0.77}, leaving $0.16$ \civ{0.11}{0.21} attributable to
+the image. The
 blank conceals this by depressing the one-scene hit rate from $0.68$ to $0.47$, preserving the
-difference while destroying the level. Nor is a blank merely the most severe ablation: a heavy blur
-moves the image further in embedding distance yet leaves POPE at $J = +0.19$ where grey leaves $0$,
-because grey empties CHAIR's denominator and makes POPE's labels false, returning no data rather
-than a null. Run with a mismatched image on official POPE the control is informative, and a
-published method passes it --- PAI's gain is image-attributable, $+0.021$ \civ{+0.004}{+0.037}. On
+difference while destroying the level. Nor is the blank the most disruptive ablation by any measure we
+have: four of the ten displace the image further in the model's own feature space than that
+substitution does, and all four leave $\dSight$ at zero. Grey also empties CHAIR's denominator and makes POPE's labels false, so it
+returns no data rather than a null. Run with a mismatched image on official POPE the control is informative, and a published method
+partly passes it: PAI's attention-only configuration gives an image-attributable $+0.021$
+\civ{+0.004}{+0.037}, while its released default shows no POPE gain to attribute at all. On
 \textsc{Qwen3-VL-8B} part of our own rise needs the image, $+0.060$ \civ{+0.024}{+0.096}, which
-bounds the claim; the rise is also specific to assembled captions and to free generation. Throughout,
+bounds the claim; the rise does not
+appear with natural prose, though that test ran at about half the dose, and a forced-choice probe
+is too saturated to say whether the register matters. Throughout,
 the scalar hides its parts, since the image's effects on the two rates cancel inside it. We recommend
 reporting both rates with their decomposition, blinding every endpoint whose candidates the input
 supplies, and choosing an ablation the model can still answer.
@@ -89,7 +93,7 @@ gone. POPE \citep{pope} names each candidate object in a question, and the endpo
 names each one in text the model is continuing, so a hit rate $H$ on present candidates and a
 false-alarm rate $F$ on absent ones stay measurable whatever the model sees. CHAIR \citep{chair}
 scores only what the model chooses to mention: its instance score is the share of those mentions that
-name absent objects, a false-discovery rate \citep{throne} whose denominator the model chooses. Fixing a candidate
+name absent objects, a false-discovery rate \citep{throne} whose denominator the model chooses. \label{sec:intro-corners}Fixing a candidate
 list is not enough: recoding CHAIR over all $80$ COCO categories fixes the candidates, but a model
 that names nothing leaves both rates at zero, and one that affirms everything sets both to one ---
 either corner sends $J$ and $d'$ to zero. Both occur in published work: blinded \textsc{LLaVA-1.5}
@@ -102,7 +106,7 @@ answers ``no'' to everything \citep{lan2026seeing}, sighted \textsc{MultiModal-G
 \end{center}
 \caption{The blind control. \textbf{(a)} $J = H - F$ on \textsc{LLaVA-1.5-7B} with the target image
 and with a uniform grey field in its place; every token of text is identical across each pair. The
-image raises $J$ by about $0.2$ within each condition and by nearly the same amount in both, so
+image raises $J$ by about $0.2$ within each condition, and by nearly the same amount in both, so
 against \emph{this} ablation the one-to-five-scene rise does not need it --- Table~\ref{tab:models}
 and Section~\ref{sec:blind} show the answer depends on which ablation is used. \textbf{(b)}
 $\dSight = \dPrim - \dBlind$ with $95\%$ intervals clustered on the image; the band is a $\pm 0.10$
@@ -155,19 +159,20 @@ default for steering claims; and \citet{pai} themselves generate with the image 
 text inertia. \citet{safefaith} argue that hallucination reduction often reflects fewer visual
 claims rather than better grounding. We contribute three things. (i) The endpoint-level condition
 above: an image-ablated control is informative only if the model responds non-degenerately about the
-scored objects without the image, which candidates supplied in the input make possible and a
-model-chosen denominator does not. (ii) A controlled demonstration, on an assembled-caption passage,
-two \textsc{LLaVA}-family models and \textsc{Kosmos-2} (on which the rise is larger without the
-image), that a large rise in a present-minus-absent score need not require the image, with a decomposition showing that
-the image's effects on the two rates cancel in the score and that the separation term survives
-blinding. (iii) The same decomposition on a published method under standard CHAIR, and a reporting
+scored objects without the image \emph{and} the ablated arm's score still admits a defensible
+reading --- non-degeneracy alone is necessary, not sufficient, since an ablation can leave the model
+responding while making the labels it is scored against false. (ii) A controlled demonstration that
+the answer to ``does this rise need the image?'' \emph{reverses between two image ablations on the
+same data}: under a blank the rise reproduces at $1.03$ times its sighted size on two
+\textsc{LLaVA} models, and larger still on \textsc{Kosmos-2}, while under a mismatched real image a
+third of it is image-attributable --- with a decomposition showing that the image's effects on the
+two rates cancel in the score. (iii) The same decomposition on a published method under standard CHAIR, and a reporting
 format that exposes what a single score hides.
 
-\paragraph{Scope.} We do not claim that these benchmarks are invalid, that any published gain is
-misattributed, or that models ignore the image. We claim that a change in a present-minus-absent
-score does not identify a change in visual grounding when the intervention can also change which
-objects the model names, and we say which endpoints allow that to be checked. Our evidence of the
-failure is confined to free generation and to assembled-caption passages.
+\paragraph{Scope.} We do not claim these benchmarks are invalid, that any published gain is
+misattributed, or that models ignore the image, and Section~\ref{sec:limits} states the boundary in
+full. We claim that a change in a present-minus-absent score does not identify a change in grounding
+when the intervention can also change which objects the model names.
 
 \section{What a present-minus-absent score can identify}
 \label{sec:theory}
@@ -258,7 +263,10 @@ test; the margin is our reporting choice, not a registered bound.
 \label{sec:exp1}
 
 On \textsc{LLaVA-1.5-7B} the score rises from $+0.19$ to $+0.67$, a contrast of $+0.49$
-\civ{+0.43}{+0.54}, or $+0.36$ \civ{+0.30}{+0.41} when continuations are length-matched. It rises monotonically across a
+\civ{+0.43}{+0.54}, or $+0.36$ \civ{+0.30}{+0.41} when continuations are length-matched. On a $3{,}500$-image sample
+restricted to cells where neither condition hit the budget it is $+0.35$ \civ{+0.28}{+0.41}, and
+$+0.20$ \civ{+0.15}{+0.25} length-matched (Appendix~\ref{app:regime}); no blind arm was run there,
+so $\dSight$ below is the uncontrolled configuration. It rises monotonically across a
 five-point grid in the number of scenes, though that grid was not run blind and cannot separate
 object types from mentions per type. With length matched, $H$ barely moves ($-0.03$
 \civ{-0.08}{+0.02}) while $F$ falls sixfold, from $0.46$ to $0.08$. On \textsc{LLaVA-OneVision-0.5B}
@@ -269,12 +277,11 @@ continuations, a seed change and removal of duplicated passages (Appendix~\ref{a
 that builds the passage from natural prose (Localized Narratives descriptions) instead of COCO captions
 was null ($+0.01$ \civ{-0.04}{+0.05}), and so was every specification of it, including the
 unit-standardised control its failed units-seen gate required ($-0.05$ \civ{-0.14}{+0.03}) and a
-restriction to cells where no continuation reached the budget. That version realised about half the headline's dose
-(one against about two scenes, not one against $2.8$), so its null is weaker than a null at full
-dose; by its registration, the lead result is specific to the assembled-caption construction. An
-earlier registered run drew natural prose from five non-redundant sources: its gap
-($+0.44$ \civ{+0.40}{+0.48}) exceeds single-source prose ($+0.37$) by $+0.07$ \civ{+0.02}{+0.13} raw
-but $+0.02$ \civ{-0.03}{+0.07} length-matched, and separates neither mechanism it was built to test.
+restriction to cells where no continuation reached the budget. That version realised about half the headline's dose, so its
+null is weaker than a null at full dose; by its registration, the lead result is specific to the
+assembled-caption construction. An earlier registered natural-prose run went the other way, its
+five-source gap exceeding single-source prose by $+0.07$ \civ{+0.02}{+0.13} raw, though only
+$+0.02$ \civ{-0.03}{+0.07} length-matched.
 
 \subsection{Experiment 2: the rise under image ablation}
 \label{sec:blind}
@@ -284,14 +291,16 @@ both \textsc{LLaVA} models $\dSight$ contains zero and excludes an image contrib
 either way, and the blind rise on \textsc{LLaVA-1.5-7B} is $1.03$ \civ{0.92}{1.16} times the sighted
 one (Figure~\ref{fig:lead}). The other two exclude zero in opposite directions and bound the claim
 from both sides: on \textsc{Kosmos-2} the rise is larger without the image, while on
-\textsc{Qwen3-VL-8B} it is smaller, by $+0.060$ \civ{+0.024}{+0.096} --- an interval lying inside the
-$\pm 0.10$ margin, so $90\%$ of that rise still survives blinding, with the degeneracy screen passing
-on every arm.
+\textsc{Qwen3-VL-8B} it is smaller, by $+0.060$ \civ{+0.024}{+0.096}. Its length screens pass on
+every arm, but they do not test repetition, and its sighted and blind arms loop at different rates
+in the condition carrying that estimate (Appendix~\ref{app:qwen3}).
 
 \begin{table}[t]
 \caption{The one-scene to five-scene contrast with the image and under a grey field.
-$\dSight = \dPrim - \dBlind$ is the part attributable to the image; the last column is the blind rise
-as a fraction of the sighted one, so a ratio at or above $1$ means blinding did not reduce it.
+$\dSight = \dPrim - \dBlind$ is the difference between the sighted and blind contrasts, read in the
+text as the image-attributable part where that reading is warranted; the last column is the blind
+rise as a fraction of the sighted one, so a ratio at or above $1$ means blinding did not reduce it.
+\textsc{Qwen3-VL-8B} is documented in Appendix~\ref{app:qwen3}; the separate
 \textsc{Qwen2.5-VL-7B}, which is not interpreted, is in Appendix~\ref{app:models}.}
 \label{tab:models}
 \begin{center}
@@ -327,17 +336,18 @@ is nearly equal across conditions, which is why $\dSight$ is null. For $H$ and $
 not (Table~\ref{tab:report}), and the two differences cancel in $J$. \textsc{Kosmos-2}'s component,
 which excludes zero, shows the estimand is not held at zero by construction.
 
-\paragraph{A less destructive ablation disagrees.} Grey asks whether the rise needs visual input at
-all. Substituting a \emph{different real image} --- prefix tokens identical, the model fluent about the
-substituted scene and by every absolute measure less degenerate than the grey arm --- asks whether it
-needs \emph{this} image, and answers differently: $\dSight$ is $+0.16$ \civ{+0.11}{+0.21}, a
-blind-to-sighted ratio of $0.67$ \civ{0.57}{0.77} whose interval excludes grey's $1.03$. All nine pixel ablations
-side with grey, including four that destroy more of the image than the substitution does. The disagreement is entirely in the hit rate --- image-attributable $\Delta H$ of
-$+0.15$ \civ{+0.10}{+0.20} against $-0.01$ \civ{-0.03}{+0.01} for $F$ --- because grey depresses the
-one-scene hit rate to $0.47$ against $0.68$ sighted, inflating the rise that remains, whereas under a
-wrong image it starts at $0.64$ and \emph{falls} to $0.60$. About a third of the rise needs the
-correct image, and the blank-image control does not show it: a blank answers a weaker question than
-it appears to.
+\paragraph{A less destructive ablation disagrees.} Grey asks whether the rise needs visual input at all.
+Substituting a \emph{different real image} --- prefix tokens identical, and by every absolute measure
+less degenerate than the grey arm --- asks whether it needs \emph{this} image, and answers
+differently: $\dSight$ is $+0.16$ \civ{+0.11}{+0.21}, a ratio of $0.67$ \civ{0.57}{0.77} whose
+interval excludes grey's $1.03$. Every other ablation sides with grey, including four that displace
+the image further than the substitution does (Appendix~\ref{app:ladder}). The disagreement is
+entirely in the hit rate ($\Delta H = +0.15$ \civ{+0.10}{+0.20} against $-0.01$ for $F$): grey
+depresses the one-scene hit rate to $0.47$ against $0.68$ sighted, inflating the rise that remains,
+whereas under a wrong image it starts at $0.64$ and \emph{falls} to $0.60$. $\dSight$ is a
+difference of differences of raw rates across arms whose base rates differ by $0.21$, so the null is
+a null on that scale and we do not claim it is link-free. About a third of the rise needs the
+correct image, and a blank does not show it.
 
 \paragraph{Unit composition.} The two conditions score different units, and present units are
 enriched for objects the model names anyway ($90\%$ already appear in its no-passage caption), so
@@ -346,10 +356,12 @@ rises: stratifying by object base rate leaves $+0.33$ \civ{+0.22}{+0.44} of $+0.
 report the blind rise within strata (Appendix~\ref{app:robust}). Because both arms score identical
 units with identical labels, composition cancels from $\dSight$ to first order.
 
-\paragraph{Robustness.} $\dSight$ stays between $-0.04$ and $-0.02$ under three ground-truth
+\paragraph{Robustness.} $\dSight$ stays between $-0.042$ and $-0.016$ under three ground-truth
 constructions and contains zero under every registered truncation rule and a length match. The
 registered mention-rate control does not pass cleanly, failing on five of sixteen powered subsets on
-\textsc{LLaVA-1.5-7B}, so the null on $J$ pools heterogeneous cells; the smallest powered
+\textsc{LLaVA-1.5-7B}; four of those return $\dSight$ between $+0.093$ and $+0.107$, at the
+reference margin and in the pre-specified adverse direction, so the null on $J$ pools heterogeneous
+cells; the smallest powered
 blind-to-sighted ratio is $0.73$, near the mismatch arm's $0.67$ (Appendix~\ref{app:robust}).
 
 \paragraph{When the question supplies the object.}\label{sec:forced} Posed as a pre-registered
@@ -361,38 +373,16 @@ graded readouts are also null (Appendix~\ref{app:unsat}).
 \subsection{Decomposition: what the image does and does not explain}
 \label{sec:decomp}
 
-\begin{table}[t]
-\caption{The one-scene to five-scene rise on \textsc{LLaVA-1.5-7B}, decomposed; the last two columns
-give the image-attributable part and its $95\%$ interval, and columns round independently.
-$^{*}$Post hoc: the registration names $J$ as primary. This is the format we recommend
-(Section~\ref{sec:reco}).}
-\label{tab:report}
-\begin{center}
-\small
-\begin{tabular}{lrrrl}
-\toprule
-quantity & sighted & blind & image-attributable & 95\% CI \\
-\midrule
-hit rate $H$                & $+0.10$ & $+0.24$ & $-0.14$ & \civ{-0.19}{-0.08} \\
-false-alarm rate $F$        & $-0.38$ & $-0.26$ & $-0.12$ & \civ{-0.15}{-0.10} \\
-score $J = H - F$           & $+0.49$ & $+0.50$ & $-0.02$ & \civ{-0.07}{+0.04} \\
-separation $d'$\,$^{*}$     & $+1.53$ & $+1.35$ & $+0.19$ & \civ{+0.03}{+0.35} \\
-threshold $c$\,$^{*}$       & $+0.45$ & $+0.04$ & $+0.41$ & \civ{+0.32}{+0.50} \\
-\bottomrule
-\end{tabular}
-\end{center}
-\end{table}
 
-Table~\ref{tab:report} decomposes the rise on \textsc{LLaVA-1.5-7B}; Appendix~\ref{app:zroc} draws
-it in signal-detection coordinates. The coordinates $d'$ and $c$ exactly recode the two
-rates but were not registered for these conditions, so this analysis is post hoc. Three observations follow.
-First, the image is used: within each condition sighted $d'$ exceeds blind $d'$, and blinding removes
-all discrimination in the one-scene condition (blind $d' = -0.05$ \civ{-0.17}{+0.06}). Second, the
-image changes both rates: its contributions to the rise in $H$ and in $F$ are $-0.14$ and $-0.12$, both
-excluding zero, and they cancel in $J$ --- a single score hides exactly this. Third, the separation
-term survives blinding: $d'$ rises by $1.53$ sighted and $1.35$ blind. Its image-attributable part,
-$+0.19$ \civ{+0.03}{+0.35}, has the opposite sign on \textsc{LLaVA-OV-0.5B}
-(Appendix~\ref{app:dprime-table}), so we draw no conclusion from that sign. We do not claim the
+Table~\ref{tab:report} decomposes the rise on \textsc{LLaVA-1.5-7B}; Appendix~\ref{app:zroc} draws it
+in signal-detection coordinates. The coordinates $d'$ and $c$ exactly recode the two rates but were
+not registered here, so this analysis is post hoc. The image is used --- within each condition
+sighted $d'$ exceeds blind $d'$, and blinding removes all discrimination in the one-scene condition
+($d' = -0.05$ \civ{-0.17}{+0.06}) --- and it changes both rates, contributing $-0.14$ to the rise in
+$H$ and $-0.12$ to the rise in $F$, both excluding zero, which cancel in $J$. The separation term
+nonetheless survives blinding ($d'$ rises $1.53$ sighted, $1.35$ blind); its image-attributable part
+has the opposite sign on \textsc{LLaVA-OV-0.5B} (Appendix~\ref{app:dprime-table}), so we draw no
+conclusion from that sign. We do not claim the
 equal-variance Gaussian model holds --- one operating point cannot test it, and mixtures can mimic
 unequal variance \citep{decarlo2002}; the argument needs only Equation~\ref{eq:J} and the rates.
 
@@ -401,11 +391,12 @@ unequal variance \citep{decarlo2002}; the argument needs only Equation~\ref{eq:J
 
 We applied the same decomposition to PAI \citep{pai}, a training-free method that amplifies attention
 to image tokens during decoding, on \textsc{LLaVA-1.5-7B} captioning $500$ COCO images at its
-prescribed strength. Unlike Section~\ref{sec:decomp} this decomposition was registered in advance,
-with a $\pm 0.15$ equivalence margin on $\Delta d'$ and its logit companion and a $0.15$ materiality
-threshold on $\Delta c$ (Appendix~\ref{app:mitig}). The scored units are all $80$ COCO categories per
-image, so $H$ and $F$ are defined; because $F$ is about $0.01$, $J$ is essentially $H$ and $d'$ is
-large.
+prescribed strength. Unlike Section~\ref{sec:decomp} this decomposition was registered in advance
+(Appendix~\ref{app:mitig}); the scored units are all $80$ COCO categories per image, so $H$ and $F$
+are defined, and because $F$ is about $0.01$, $J$ is essentially $H$. At the repository's default
+strength the method has no CHAIR gain to decompose at all ($\Delta\mathrm{CHAIR}_i$ $-0.26$
+\civ{-1.42}{+0.91}, with $\mathrm{CHAIR}_s$ moving the wrong way), so everything below is at the
+prescribed setting.
 
 \begin{table}[t]
 \caption{PAI against the unmodified model on standard CHAIR (\textsc{LLaVA-1.5-7B}, $500$ COCO
@@ -440,10 +431,9 @@ does not move and the threshold does (Figure~\ref{fig:hf}; Appendix~\ref{app:zro
 in $J$ of $-0.07$, moving $d'$ alone for $+0.003$. Truncation is already a standard length baseline
 \citep{lessismore}; matching instead on the false-alarm rate, shortening the unmodified model's own
 captions to PAI's $F$ gives $\mathrm{CHAIR}_i$ of $8.0$ \civ{6.9}{9.3}, a difference from PAI of
-$-0.8$ \civ{-1.8}{+0.4}; the shortened captions name present objects at $0.684$ against PAI's
-$0.708$ \civ{-0.004}{+0.051}, straddling the registered $\pm 0.03$ margin, so that comparison is
-unresolved too. Shortening is not itself a pure threshold change, so it places PAI near the
-unmodified model's trajectory rather than on it.
+$-0.8$ \civ{-1.8}{+0.4}, with the companion comparison on present objects straddling its registered
+margin and so unresolved. Shortening is not itself a pure threshold change, so it places PAI near
+the unmodified model's trajectory rather than on it.
 
 Whether a small separation gain accompanies the shift is unresolved: a log-odds measure rises
 ($+0.30$ \civ{+0.13}{+0.48}) while probit $d'$ and the matched-$F$ comparison do not, and one
@@ -454,11 +444,12 @@ No uniform field can run the control here: under grey, and equally under flat bl
 \textsc{LLaVA-1.5-7B} named none of the $80$ categories in any of $500$ captions, with or without
 PAI, so $\mathrm{CHAIR}_i$ is $0/0$ and the arm returns no data. Every \emph{graded} degradation leaves it
 intact, however --- $378$ to $500$ of $500$ captions still name a category --- so the control is
-runnable after all, and PAI passes it on CHAIR too. Its $\mathrm{CHAIR}_i$
-gain of $+5.6$ \civ{+3.9}{+7.2} falls to $+0.4$ \civ{-1.2}{+2.0} when the caption is generated from
-a mismatched image, leaving $+5.2$ \civ{+2.9}{+7.4} attributable to the image; a heavy blur agrees
-($+8.7$ \civ{+2.6}{+15.0}). That arm is algebraically our registered permuted-ground-truth
-secondary here, so the two are one test.
+runnable after all, and PAI passes it on CHAIR too. Its $\mathrm{CHAIR}_i$ gain
+(Table~\ref{tab:pai}) falls to $+0.4$ \civ{-1.2}{+2.0} when the caption is generated from a
+mismatched image, leaving $+5.2$ \civ{+2.9}{+7.4} attributable to the image; a heavy blur agrees
+($+8.7$ \civ{+2.6}{+15.0}). That arm estimates the same quantity as our registered
+permuted-ground-truth secondary, though the secondary averages twenty derangements per replicate
+and this one uses a single derangement (Appendix~\ref{app:ladder}).
 
 \paragraph{The blind control on a standard benchmark, and the method passes it.} We ran on official
 POPE the test this paper recommends. With a mismatched real image as the ablation, PAI's
@@ -468,7 +459,8 @@ points against their $+1.06$ --- raises $J$ by $+0.022$ \civ{+0.011}{+0.034} sig
 zero. That gain does need the image, and our registered rule returns \textsc{partial} only because
 the lower bound falls just below its half-gain line. Under a grey field the same test is
 uninformative for a different reason: the model answers ``no'' to all $9{,}000$ questions, correctly,
-so $H = F = 0$ by construction and the screen returns undefined. The released
+so $H = F = 0$ by construction and the screen returns undefined (Appendix~\ref{app:pope}). The
+released
 \texttt{--use-attn --use-cfg} configuration shows no gain at all ($\Delta_{\text{image}} = +0.000$),
 because it suppresses the amplification at the prefill row that carries a one-token answer.
 
@@ -478,8 +470,8 @@ $\Delta d' = +0.04$ against $\Delta c = +0.18$ where Table~\ref{tab:pai} gives $
 $+0.24$ (Appendix~\ref{app:mitig}).
 
 On a standard benchmark, then, a trade-off that its own literature already reports \citep{sparc}
-reads, once decomposed, as a shift in where the model sets its threshold rather than in how well it
-separates present from absent objects, landing near what shortening the unmodified model's captions
+decomposes into a large, resolved movement of the threshold beside a separation term whose
+registered primary returns \textsc{cannot-resolve}; read as a threshold shift, it lands landing near what shortening the unmodified model's captions
 achieves. Nothing here says PAI's improvement is spurious --- it is tied to the image --- only that
 $\mathrm{CHAIR}_i$ alone cannot say which kind of improvement it is, and that the rates which can are
 already computed wherever CHAIR is.
@@ -496,10 +488,10 @@ mention records already contain (Table~\ref{tab:pai}).
 \item \textbf{Blind every endpoint whose candidates are supplied in the input, and choose the
 ablation deliberately.} A question naming each object, as in POPE, or a passage naming it, as here,
 asks the model about every scored object without the image; check the answers are not degenerate
-before reading the result. Severity is not informativeness: over nine pixel ablations,
-how much of the image is destroyed and how much $\dSight$ recovers are unrelated (Spearman $+0.10$),
-and four of them --- grey and flat black among them --- destroy \emph{more} than the mismatched real
-scene that is the only ablation to expose a contribution. Grey also empties CHAIR's denominator and
+before reading the result. Severity is not informativeness: four of the ablations we ran
+--- grey and flat black among them --- displace the image further in the model's own feature space
+than a mismatched real scene does, and all four leave $\dSight$ at zero while the substitution does
+not. (Over nine pixel ablations we have no power to test the relationship itself.) Grey also empties CHAIR's denominator and
 falsifies POPE's labels. Report an interval on $\dSight$, say which ablation produced it, and prefer
 one that supplies a coherent alternative the model can still answer.
 \item \textbf{Do not read an endpoint whose denominator the model chooses as measuring grounding on
@@ -533,7 +525,7 @@ rewarding short captions for want of a recall term \citep{pope, regionaware, thr
 \paragraph{Image-ablated controls.} In VQA a question-only baseline reaches $48.2\%$ against $60.4\%$
 \citep{goyal2017vqa}, and accuracy degrades sharply when answer priors shift \citep{agrawal2018vqacp}. MMStar's multi-modal gain is the score with the image minus the score
 without it, using a grey image for two models that could not run image-free \citep{mmstar}. \citet{lan2026seeing}, whose blinded \textsc{LLaVA-1.5} we
-return to in Section~\ref{sec:reco}, degrade the image across four benchmarks and ask whether the
+discuss in Section~\ref{sec:intro-corners}, degrade the image across four benchmarks and ask whether the
 items can be answered without looking, as do \citet{kaduri2025whats} by ablating the
 attention path rather than the pixels. That is a question about benchmarks; ours is about
 interventions --- is a \emph{change} in score attributable to the image, and on which endpoints can
@@ -584,24 +576,26 @@ misattributed gain on a benchmark people report: we ran that test and the method
 CHAIR's denominator, so the ablation, not the benchmark, decides whether the control can be read.
 The CHAIR analysis covers one method on one model and its registered primary is unresolved.
 
-\textbf{What the null does and does not say.} The null concerns $J$, on an assembled-caption passage;
-with natural prose there is no rise to attribute. The \textsc{LLaVA-OV-0.5B} blind arms are short. The null pools
-heterogeneous cells, and unit composition plausibly contributes to both rises; we did not report the blind rise within base-rate strata or build an
-adversarially sampled variant. Nor do we identify what moves the score:
-distinct object types double as mentions per type halve, and a registered repetition condition was
-unresolved on its precision rule, repetition's share estimated at $0.23$ \civ{0.08}{0.39}.
+\textbf{What the null does and does not say.} It concerns $J$, on an assembled-caption passage, and
+pools heterogeneous cells; \textsc{LLaVA-OV-0.5B}'s blind arms are short (medians of five and eleven
+tokens against $192$ sighted), and we did not report the blind rise within base-rate strata. Nor do
+we identify what moves the score: distinct object types double as mentions per type halve, and a
+registered repetition condition was unresolved, repetition's share estimated at $0.23$
+\civ{0.08}{0.39}.
 
 \textbf{Controls and statistics.} The positive control is built into the data rather than designed.
 The $d'$/$c$ decomposition of the main endpoint is post hoc, and its image-attributable $d'$ has
 opposite signs on the two \textsc{LLaVA} models. The $\pm 0.10$ margin is a reporting choice, the dose
-grid was run only with the image present, and the forced-choice readouts saturate. Our degeneracy screens
-test length, not repetition: continuations loop in most five-scene cells on every model, and on
-\textsc{Qwen3-VL-8B} sighted and blind loop at different rates ($0.83$ against $0.91$) in the
-condition carrying its $\dSight$, with no matched contrast.
+grid was run only with the image present, and the forced-choice readouts saturate. Our degeneracy screens test length, not
+repetition: continuations loop in most five-scene cells on every model, and on
+\textsc{Qwen3-VL-8B} the arms loop at different rates ($0.83$ against $0.91$) in the condition
+carrying its $\dSight$, with no matched contrast.
 
 \textbf{Models and data.} Two \textsc{LLaVA} models replicate; \textsc{Kosmos-2} and
 \textsc{Qwen3-VL-8B} bound the result in opposite directions; \textsc{Qwen2.5-VL-7B} is not
-interpreted \citep{llava15, llavaov, kosmos2, qwen25vl}. All images are COCO \citep{coco}.
+interpreted \citep{llava15, llavaov, kosmos2, qwen3vl, qwen25vl}. All images are COCO
+\citep{coco}. \textsc{Kosmos-2}'s stop gate was amended after it fired, and the
+amended thresholds also reject our lead architecture (Appendix~\ref{app:prereg}).
 
 \subsection*{AI use statement}
 
@@ -624,7 +618,9 @@ with its outcome in Appendix~\ref{app:prereg}.
 \subsection*{Reproducibility statement}
 
 Analyses were pre-registered with their decision rules before data collection, and the registrations
-and their dated amendments are released with the paper; the elements chosen after seeing data are
+and their dated amendments are released with the paper. The endpoint itself, however, was adopted
+after CHAIR proved unusable on these conditions, and the $d'$/$c$ recoding is post hoc, so every
+registered analysis is an analysis of an endpoint selected after seeing data; the elements chosen after seeing data are
 marked where they appear and listed in Appendix~\ref{app:prereg}. Each pipeline reproduces
 previously computed per-condition rates to within $5\times10^{-3}$ before reporting any new
 quantity. Section~\ref{sec:method} gives the stimulus and endpoint, Appendix~\ref{app:setup} the

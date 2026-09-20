@@ -403,7 +403,7 @@ panel(0.30, 0.92, 4.30, 1.92, r"$H$ falls:  $0.78 \rightarrow 0.71$",
 panel(5.40, 0.92, 4.30, 1.92, r"$F$ falls:  $0.010 \rightarrow 0.005$",
       "it names fewer objects that\nare NOT in the image\n(the half CHAIR rewards)", edge=BLIND)
 
-ax.text(5.0, 0.16, r"separation $d'$ $+0.02$ [$-0.06$, $+0.09$], unchanged   "
-                   r"$\cdot$   threshold $c$ $+0.24$ [$+0.20$, $+0.28$]",
+ax.text(5.0, 0.16, r"threshold $c$ $+0.24$ [$+0.20$, $+0.28$]   "
+                   r"$\cdot$   separation: registered primary CANNOT-RESOLVE",
         ha="center", va="bottom", fontsize=7.2, color=MUTED)
 save(fig, "fig_hf.pdf")

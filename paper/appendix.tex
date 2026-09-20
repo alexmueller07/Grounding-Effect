@@ -19,14 +19,15 @@ uniform grey field. On \textsc{LLaVA-1.5-7B} that difference is $-0.016$.}
 \subsection{Models, decoding and prompt}
 \label{app:modelspec}
 
-Four checkpoints are used; the first two carry every primary number. The first architecture is
+Five checkpoints are used; the first two carry every primary number, and the fifth,
+\textsc{Qwen3-VL-8B}, is documented separately in Appendix~\ref{app:qwen3}. The first architecture is
 \texttt{llava-1.5-7b-hf} in bfloat16 on a single consumer GPU. The second is
 \texttt{llava-onevision-qwen2-0.5b-ov-hf}, run with its own tokenizer and its own chat template. It
 differs in language-model family (Qwen2), vision tower (SigLIP), training recipe and resolution
 scheme (anyres), and is $7.90\times$ smaller by parameter count. Where the two disagree, the
 disagreement is reported rather than pooled.
 
-The two further models were each run under their own registration. \textsc{Qwen2.5-VL-7B} is
+The two further models in this group were each run under their own registration. \textsc{Qwen2.5-VL-7B} is
 \texttt{Qwen/Qwen2.5-VL-7B-Instruct} in bfloat16 with its own chat template; its cut, chosen by a
 registered census rule before any generation, is $f = 0.230$ (mean prefix $40.7$ tokens) on all
 $500$ images. \textsc{Kosmos-2} is \texttt{microsoft/kosmos-2-patch14-224} in float32, its
@@ -299,8 +300,8 @@ under segmentation-only and caption-only definitions, with the estimator unmodif
 ground-truth dictionary swapped, gives Table~\ref{tab:gtsens}.
 
 \begin{table}[htb]
-\caption{The contrast under three independent ground-truth constructions. The six $\dSight$ point
-estimates lie between $-0.042$ and $-0.016$, and in all six $\dBlind$ exceeds $\dPrim$; intervals are
+\caption{The contrast under three independent ground-truth constructions. The six $\dSight$ point estimates lie between $-0.042$ and
+$-0.0156$, and in all six $\dBlind$ exceeds $\dPrim$; intervals are
 shown only for the union construction (Table~\ref{tab:trunc}).}
 \label{tab:gtsens}
 \begin{center}
@@ -495,8 +496,7 @@ $192$). Adding images does.
 
 \begin{table}[htb]
 \caption{The generation-regime control at power: the contrast measured only on cells in which neither
-condition reached the generation cap, at $3{,}500$ images.}
-\label{tab:regime}
+condition reached the generation cap, at $3{,}500$ images. On a subset where neither condition reached the cap, greedy decoding makes the $192$- and $384$-token continuations identical, so that row is a determinism check rather than an independent replication.}\label{tab:regime}
 \begin{center}
 \footnotesize
 \setlength{\tabcolsep}{4pt}
@@ -506,7 +506,7 @@ estimate & $\Delta$ & 95\% CI & width \\
 \midrule
 both conditions uncapped, $3{,}500$ images (primary) & $+0.3460$ & \civ{+0.2849}{+0.4058} & $0.1209$ \\
 the same, length-matched & $+0.1999$ & \civ{+0.1462}{+0.2524} & $0.1062$ \\
-the same, $192$-token reconstruction & $+0.3460$ & \civ{+0.2849}{+0.4058} & $0.1209$ \\
+the same, $192$-token reconstruction (determinism check) & $+0.3460$ & \civ{+0.2849}{+0.4058} & $0.1209$ \\
 the same, alternate bootstrap seed & $+0.3460$ & \civ{+0.2876}{+0.4050} & $0.1174$ \\
 composition control, base-rate tertiles & $+0.1994$ & \civ{+0.1059}{+0.2897} & $0.1838$ \\
 composition control, shared object types & $+0.3496$ & \civ{+0.2923}{+0.4168} & $0.1245$ \\
@@ -724,8 +724,37 @@ additive shift of both rates, and only \emph{approximate} under an equal-varianc
 the same shift. The same qualification attaches to the component analysis of
 Appendix~\ref{app:dprime-table}.
 
+\begin{table}[htb]
+\caption{The one-scene to five-scene rise on \textsc{LLaVA-1.5-7B}, decomposed; the last two columns
+give the image-attributable part and its $95\%$ interval, and columns round independently.
+$^{*}$Post hoc: the registration names $J$ as primary. This is the format we recommend
+(Section~\ref{sec:reco}).}
+\label{tab:report}
+\begin{center}
+\small
+\begin{tabular}{lrrrl}
+\toprule
+quantity & sighted & blind & image-attributable & 95\% CI \\
+\midrule
+hit rate $H$                & $+0.10$ & $+0.24$ & $-0.14$ & \civ{-0.19}{-0.08} \\
+false-alarm rate $F$        & $-0.38$ & $-0.26$ & $-0.12$ & \civ{-0.15}{-0.10} \\
+score $J = H - F$           & $+0.49$ & $+0.50$ & $-0.02$ & \civ{-0.07}{+0.04} \\
+separation $d'$\,$^{*}$     & $+1.53$ & $+1.35$ & $+0.19$ & \civ{+0.03}{+0.35} \\
+threshold $c$\,$^{*}$       & $+0.45$ & $+0.04$ & $+0.41$ & \civ{+0.32}{+0.50} \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{table}
+
 \subsection{Operating points in signal-detection coordinates}
 \label{app:zroc}
+
+Figure~\ref{fig:zroc} places the four cells of the main contrast in $z$-coordinates, where a change
+that moves along a constant-$d'$ contour is a pure threshold shift and one that crosses contours is a
+change in separability. It is a reading aid for Table~\ref{tab:report} and adds no new quantity: the
+sighted and blind arms move nearly parallel to the contours between the one-scene and five-scene
+conditions, which is the same fact the table reports as a large $\Delta c$ beside a $\Delta d'$ whose
+interval contains zero.
 
 \begin{figure}[htb]
 \begin{center}
@@ -807,7 +836,7 @@ measure of either.
 
 
 \begin{table}[htb]
-\caption{The rise with and without the image, for all four architectures run. The blind rise is
+\caption{The rise with and without the image, for the four architectures in this group. The blind rise is
 positive in every case. The image-attributable component lies within $\pm 0.10$ on the first three and
 excludes zero on \textsc{Kosmos-2}, where removing the image \emph{increases} the rise.
 $^{\dagger}$\textsc{Qwen2.5-VL-7B} produces a median continuation of four tokens (five on its blind
@@ -1005,7 +1034,7 @@ model carries true and false prefix objects forward at essentially the same rate
 \caption{Sensitivity $d'$ by condition, sighted against blind. The rightmost column is the paired
 difference within a condition; all four rows exclude zero, so the image is being used in every
 condition measured. This decomposition is available on the two \textsc{LLaVA} architectures only;
-the image-attributable component of $d'$ for all four architectures is given in the text below.}
+the image-attributable component of $d'$ for those four architectures is given in the text below.}
 \label{tab:dprime}
 \begin{center}
 \small
@@ -2298,7 +2327,7 @@ verdict was selected after the fact.
 \vspace{0pt}
 \centering
 \includegraphics[width=\textwidth]{fig_forced.pdf}
-\caption{Experiment~3's scene-count contrast in two registers, with $95\%$ intervals.}
+\caption{The forced-choice probe's scene-count contrast in two registers, with $95\%$ intervals.}
 \label{fig:forced}
 \end{minipage}\hfill
 \begin{minipage}[t]{0.52\textwidth}
@@ -2327,7 +2356,7 @@ closed candidate set, mixed & $1.0000$ & $0.9949$ & $0.9958$ \\
 \end{minipage}
 \end{figure}
 
-\paragraph{The objection.} Experiment~3 (Section~\ref{sec:forced}) moves the scene-count contrast by
+\paragraph{The objection.} The forced-choice probe (Section~\ref{sec:forced}) moves the scene-count contrast by
 $+0.4859$ under free generation and by $-0.0095$ \civ{-0.0314}{+0.0124} under forced choice on
 identical units (Figure~\ref{fig:forced}). But the published forced-choice probe is saturated: its
 false-positive rate rises from $0.022$ with no prefix to $0.8714$ and $0.8835$ under the one- and
@@ -2380,3 +2409,221 @@ Neither is a registered confirmation: the earlier graded readout is post hoc, an
 from confirmation by its registration's own acceptance rule. No off-ceiling binary probe was
 obtained.
 
+
+\section{The ablation ladder}
+\label{app:ladder}
+
+Section~\ref{sec:blind} reports that the answer to ``does the rise need the image?'' depends on the
+ablation. This appendix gives the ten ablations, how severe each one is, and what each returns.
+
+\paragraph{Construction.} Every ablation is applied to the canonical $336 \times 336$ image the
+processor produces, so geometry is identical across arms; a gate asserts $32/32$ byte-identical
+geometry against the unablated path. \texttt{noise}$k$ adds uniform pixel noise of amplitude $k$;
+\texttt{blur}$k$ applies a Gaussian blur of radius $k$; \texttt{lowres16} downsamples to $16
+\times 16$ and back; \texttt{shuffle24} permutes $24 \times 24$ patches; \texttt{grey} and
+\texttt{black} replace the image with a uniform field; \texttt{mismatch} substitutes a different
+real COCO image under a derangement (seed $20260919$, asserted bijective and self-pair-free).
+Prefix token ids are bit-identical across all arms. $n = 3000$ cells per rung on the prefix
+endpoint ($1500$ per condition), $500$ images on CHAIR.
+
+\paragraph{Severity.} We define severity as $1 - \cos$ between the mean-pooled image features the
+model's own vision pathway produces for the clean and the ablated image. It is a property of the
+ablation, measured before any endpoint is read. It measures \emph{displacement in feature space},
+not destruction of task-relevant content, and we have not validated it against a downstream task:
+two real scenes share much of their mean-pooled structure, while a uniform field is out of
+distribution for the encoder, so the substitution can displace features less than a blank while
+destroying far more of what the endpoint scores. Claims below are therefore about displacement, and
+the substantive point is the four named counterexamples rather than the ordering as a whole.
+
+\begin{table}[h]
+\caption{The ablation ladder on the prefix endpoint, \textsc{LLaVA-1.5-7B}. Severity is
+$1-\cos$ in the model's own image-feature space. $\dSight$ is the part of the one-to-five-scene rise
+attributable to the image. Only the substitution moves it off zero, and four ablations displace the
+image further than it does. Intervals come from this lane's own resample, so the grey row differs in
+the third decimal from Tables~\ref{tab:trunc} and~\ref{tab:blind}.}
+\label{tab:ladder}
+\begin{center}
+\small
+\begin{tabular}{lrrl}
+\toprule
+ablation & severity & $\Delta_{\mathrm{rung}}$ & $\dSight$ \\
+\midrule
+\texttt{identity}   & $0.000$ & $+0.486$ & (reference) \\
+\texttt{noise16}    & $0.008$ & $+0.493$ & $-0.008$ \civ{-0.038}{+0.022} \\
+\texttt{noise32}    & $0.016$ & $+0.492$ & $-0.007$ \civ{-0.045}{+0.030} \\
+\texttt{noise64}    & $0.034$ & $+0.485$ & $+0.001$ \civ{-0.036}{+0.039} \\
+\texttt{blur4}      & $0.044$ & $+0.498$ & $-0.013$ \civ{-0.054}{+0.031} \\
+\texttt{shuffle24}  & $0.079$ & $+0.498$ & $-0.012$ \civ{-0.063}{+0.041} \\
+\texttt{mismatch}   & $0.080$ & $+0.326$ & $\mathbf{+0.160}$ \civ{+0.105}{+0.213} \\
+\texttt{lowres16}   & $0.089$ & $+0.489$ & $-0.004$ \civ{-0.055}{+0.048} \\
+\texttt{black}      & $0.094$ & $+0.477$ & $+0.009$ \civ{-0.049}{+0.067} \\
+\texttt{grey}       & $0.102$ & $+0.502$ & $-0.016$ \civ{-0.073}{+0.041} \\
+\texttt{blur16}     & $0.126$ & $+0.485$ & $+0.001$ \civ{-0.055}{+0.055} \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{table}
+
+\paragraph{Reading.} The seven graded pixel ablations pool to $-0.006$ \civ{-0.037}{+0.025}; the
+substitution returns $+0.160$ \civ{+0.105}{+0.213}, and the paired difference against grey is
+$+0.176$ \civ{+0.119}{+0.230}. As blind-to-sighted ratios the same contrast is $1.033$
+\civ{0.921}{1.160} under grey against $0.671$ \civ{0.573}{0.774} under the substitution; these are
+the two figures the main text compares. Over the nine pixel ablations severity and $\dSight$ have a rank
+correlation of $+0.10$; with $n = 9$ that is uninformative and we draw no conclusion from it. What
+does the work is the four named counterexamples --- \texttt{lowres16}, \texttt{black}, \texttt{grey}
+and \texttt{blur16} --- each displacing the image further than the substitution and each returning
+an interval containing zero. The contribution sits in the hit rate ($\Delta H = +0.149$
+\civ{+0.097}{+0.201} against $\Delta F = -0.010$ \civ{-0.034}{+0.013}): with the true image $H$
+rises $0.676 \to 0.780$ across the contrast, with a substituted one it \emph{falls} $0.644 \to
+0.599$. Grey hides this by collapsing the one-scene $H$ to $0.468$, preserving the difference while
+destroying the level. Cross-condition length matching gives $+0.138$ \civ{+0.096}{+0.181}.
+
+\paragraph{The substitution arm is not degenerate.} Pooled over both conditions its median
+continuation is $384$ tokens against grey's $60$, its empty rate $0.017$ against $0.025$, its
+$\le 3$-token rate $0.082$ against $0.124$, and it produces $2848$ distinct continuations of $3000$
+against grey's $2693$. It is healthier than the arm it is compared with.
+
+\paragraph{Registration and one amendment that mattered.} The ladder was pre-registered before any
+rung was generated, with three dated amendments. Amendment~3 replaced a \emph{comparative} collapse
+screen (``no more degenerate than the reference arms'') with absolute thresholds, because in the
+five-scene condition both reference arms sit at the $384$-token generation budget, so a bar of
+$\min(\text{sighted},\text{grey})$ equals the ceiling and flags every rung that terminates
+naturally; the diversity ratios fall mechanically with length and have the same fault. The
+amendment was written before any ladder verdict was read and it changed exactly one verdict --- the
+substitution arm, from \textsc{confounded-by-collapse} to \textsc{image-contributes}, on an
+$8$-gram ratio of $0.567$ against $0.575$. We report that rather than bury it: the most damaging
+result in this paper would have been discarded by a screen whose form was wrong.
+
+\paragraph{Positive controls.} The scorer reproduces the published $\dPrim = +0.4859$, $\dBlind =
++0.5019$ and $\dSight = -0.0160$ to $3 \times 10^{-5}$, and a re-generation of the grey arm is
+$3000/3000$ token-identical to the published one with $\dSight$ reproducing to $0.000000$.
+
+\paragraph{On CHAIR.} Under grey, and equally under flat black, the model names none of the $80$
+categories in any of $500$ captions, so $\mathrm{CHAIR}_i$ is $0/0$. Every graded degradation leaves
+the denominator non-empty: $500$, $500$, $498$, $489$, $378$, $405$, $450$ and $500$ captions of
+$500$ retain a category mention under \texttt{noise16/32/64}, \texttt{blur4}, \texttt{blur16},
+\texttt{lowres16}, \texttt{shuffle24} and \texttt{mismatch} respectively. Against a sighted PAI gain
+of $+5.56$ \civ{+3.88}{+7.18} in $\mathrm{CHAIR}_i$, the image-attributable part is $+5.16$
+\civ{+2.89}{+7.42} under substitution and $+8.70$ \civ{+2.55}{+14.96} under \texttt{blur16}. The
+three noise rungs retain the gain but fail the registered severity floor and are not quoted as
+evidence. On this prompt-only endpoint the substitution arm is algebraically the registered
+permuted-ground-truth secondary, so the two are one test.
+
+\paragraph{Not done.} \textsc{LLaVA-OV-0.5B} was not run on the ladder: its processor uses AnyRes
+multi-crop, so the canonical geometry the geometry gate licenses does not transfer and the gate
+would need redesigning first.
+
+
+\section{POPE with a blind arm}
+\label{app:pope}
+
+\paragraph{Data.} Official POPE files from \texttt{RUCAIBox/POPE}, all three MS-COCO splits
+(\texttt{random}, \texttt{popular}, \texttt{adversarial}), $3000$ questions each for $9000$ total
+over $500$ distinct images, exactly $1500$ yes and $1500$ no per split, with per-file sha256
+re-asserted at every load. Because the splits are balanced, $H$ is the reported recall and
+$F = H + 1 - 2\,\mathrm{acc}$ exactly; the scorer asserts this identity on every cell and it holds
+to $2.2\times10^{-16}$ across $48$ cells.
+
+\paragraph{A snapshot trap.} \textsc{LLaVA-1.5}'s own evaluation documentation points at a
+different POPE snapshot whose \texttt{random} split has $2910$ questions at $1500$ yes / $1410$ no.
+An all-``yes'' responder scores $51.55$ there against $50.00$ on the balanced file, so the balanced
+identity above does not hold for numbers computed on that snapshot. We use the current balanced
+files throughout.
+
+\paragraph{Arms.} \texttt{vanilla} ($\alpha = 0$, $\gamma = 1$, kernel- and loop-matched rather than
+a separate code path), \texttt{pai\_full} ($\alpha = 0.5$, $\gamma = 1.1$; the released
+\texttt{--use-attn --use-cfg}), \texttt{pai\_attn} ($\alpha = 0.5$, $\gamma = 1.0$; attention only,
+amplifying the prefill row), and \texttt{pai\_both}, a constructed configuration that is not a
+released one and is labelled as such wherever it appears. All arms are greedy; no contrast compares
+across decoding modes. Ablations: sighted, grey, and a mismatched real image, plus a severity ladder
+(\texttt{noise25/50/100}, \texttt{blur4}, \texttt{blur16}, \texttt{lowres}, \texttt{pshuffle}).
+
+\paragraph{Result.} On \texttt{pai\_attn} --- the configuration that reproduces PAI's published POPE
+number, $+1.10$ accuracy points against their $+1.06$ --- the gain is \emph{partly} attributable to
+the image, at the registered label \textsc{partial} defined below:
+$\Delta_{\text{sighted}}(J) = +0.0220$ \civ{+0.0107}{+0.0336}, $\Delta_{\text{ablated}}(J) = +0.0013$
+\civ{-0.0102}{+0.0124}, and $\Delta_{\text{image}}(J) = +0.0207$ \civ{+0.0042}{+0.0371}; in accuracy
+$+1.033$ \civ{+0.21}{+1.86}. $B = 4000$, paired, clustered on the $500$ images. The registered label
+is \textsc{partial} rather than \textsc{image-attributable}, because the lower bound $+0.0042$ falls
+below the pre-registered half-gain line of $0.0110$, so the rule cannot certify that more than half
+the gain is image-attributable. \texttt{pai\_both} agrees ($+0.0238$ \civ{+0.0078}{+0.0398}).
+
+\paragraph{The released default measures nothing.} \texttt{pai\_full} gives
+$\Delta_{\text{image}} = +0.000$. Its attention stage is guarded so that the conditional prefill pass
+is never amplified, and on POPE the answer is the first generated token; \texttt{pai\_both} and
+\texttt{pai\_full} differ only in whether the prefill last row is touched, and that difference is
+worth $+1.112$ accuracy points against $+0.056$ for the decoding-distribution stage. The whole
+published gain lives in one attention row.
+
+\paragraph{The grey arm returns no data.} Under grey the model answers ``no'' to all $9000$
+questions, fluently and correctly --- a grey field contains none of the queried objects --- so
+$H = F = 0$ by construction, $\Delta_{\text{ablated}}$ is mechanically zero, and an unguarded reading
+would have returned \textsc{image-attributable} while measuring nothing. The registration forbade
+that reading in advance: the arm is \textsc{blind-arm-degenerate} and $\Delta_{\text{image}}$ is
+undefined, not null. The severity ladder shows the same dissociation as Appendix~\ref{app:ladder}:
+\texttt{blur16} retains $J = +0.19$ while a sharp photograph of another scene retains $+0.04$, and
+\texttt{pshuffle} dissociates the rates ($H$ $0.883 \to 0.857$ while $F$ $0.184 \to 0.330$).
+
+\paragraph{Gates and controls.} Fifteen blocking gates passed before any endpoint was read,
+including per-item token identity across arms with zero padding, exactly $576$ image tokens per row,
+copy-drift token-identity against the original kernel, $0/4$ decode mismatches against Hugging
+Face \texttt{generate}, post-softmax mass on strictly-future keys exactly $0.0$, and determinism
+$0/288$. Positive control: our \texttt{vanilla} sighted arm scores $84.91$ accuracy against PAI's
+published $84.76$.
+
+\paragraph{Registration.} Pre-registered before the first generation job, with two dated amendments
+(the mismatched-image co-primary, and a frame-equivalence fix after a rounding discrepancy was found
+and corrected from $2.221$ to $0.030$ maximum absolute pixel difference).
+
+
+\section{A fourth architecture: \textsc{Qwen3-VL-8B}}
+\label{app:qwen3}
+
+\paragraph{Checkpoint and environment.} \texttt{Qwen/Qwen3-VL-8B-Instruct}, revision
+\texttt{0c351dd0}, $8{,}767{,}123{,}696$ parameters, bfloat16, one RTX 4090. This lane ran under a
+different interpreter from the other three architectures (\texttt{torch} 2.11.0, same
+\texttt{transformers} 5.14.1) because the base interpreter has neither PIL nor torchvision, so no
+vision-language processor loads in it.
+
+\paragraph{Template and cut.} The prompt template is the processor's own
+\texttt{apply\_chat\_template} output, frozen to disk and byte-compared by every later stage. It
+carries \emph{no} system turn, unlike \textsc{Qwen2.5-VL}'s. The realised census cut is $0.205$.
+Free-running continuations hit the $256$-token cap on $99.2\%$ of images, so the per-cell budget is
+near-constant rather than image-keyed; this cut is therefore not comparable to the $0.230$ and
+$0.460$ of the other architectures.
+
+\paragraph{Harness gate, calibrated against our own lead model.} Before any endpoint was generated,
+six gates ran. The decisive one exploits greedy determinism: cut the model's own caption at the
+census cut, splice it back as an assistant-turn prefill, and require it to re-emit the remainder. A
+broken template cannot pass this; a merely terse model can. \textsc{Qwen3-VL-8B} scores a median
+$16$-gram agreement of $1.000$, mean $0.958$, with $92\%$ of rows above threshold. The identical test
+run on \textsc{LLaVA-1.5-7B} in the same job scores $1.000$, $0.945$ and $92\%$. The bar therefore
+comes from this paper's own lead model rather than from an invented threshold, and the verdict was
+\textsc{run-endpoint}; the endpoint arms were held and released only on that verdict.
+
+\paragraph{Result.} $\dPrim = +0.5828$ \civ{+0.5337}{+0.6342}, $\dBlind = +0.5231$
+\civ{+0.4708}{+0.5764}, $\dSight = +0.0598$ \civ{+0.0235}{+0.0963}, $n = 1500$ cells per arm,
+$B = 4000$ clustered on the image with one joint resample across all four arms. The interval
+excludes zero, so on this architecture part of the rise does need the image --- but it lies entirely
+inside the $\pm 0.10$ reference band, so about $90\%$ of the rise still survives blinding. The
+contribution is confined to the five-scene condition ($+0.0612$ \civ{+0.0392}{+0.0841}) and absent in
+the one-scene condition ($+0.0014$ \civ{-0.0262}{+0.0285}).
+
+\paragraph{Not the \textsc{Qwen2.5-VL} failure.} The degeneracy screen passes on all four arms:
+median continuation $384$ tokens in every arm, empty rates $0.000$ to $0.003$, $\le 3$-token rates
+approximately zero. Supporting contrasts: length-matched $\dPrim = +0.576$ and $\dBlind = +0.511$;
+object-matched $+0.565$; empty-removed $+0.584$; alternate seed $+0.583$.
+
+\paragraph{A screen we now know is insufficient.} Our degeneracy screens test length and short-output
+rate, not repetition. Measured after the fact, $90\%$ and $83\%$ of this model's cells fall below a
+$0.5$ distinct-$8$-gram ratio --- but so do $67.5\%$ of the lead model's five-scene cells, so looping
+is a property of the design rather than of this architecture. The sighted and blind arms nonetheless
+loop at different rates ($0.827$ against $0.911$) in exactly the condition carrying $\dSight$, and no
+looping-matched contrast was run. \textsc{Qwen2.5-VL}'s apparently clean ratio of $1.0000$ is an
+artefact: four-token continuations contain no $8$-gram.
+
+\paragraph{Registration.} Pre-registered before the checkpoint existed locally, fixing the gate
+thresholds, the census rule, the arms, the estimand, and the text to be published for every outcome
+including the two adverse ones. The estimator was validated before any \textsc{Qwen3-VL} row existed
+by reproducing two published families from their frozen rows: $+0.48587$ against a published
+$+0.4859$, and $+0.15981$ against $+0.1598$.
