@@ -10,10 +10,9 @@ pre-registration record with its decision rules. Figure~\ref{fig:concept} summar
 passage draw in both conditions (\texttt{cap1}, one scene; \texttt{cap5}, five scenes); a \emph{unit}
 is an (image, passage object) pair; an \emph{arm} is one image condition; and a continuation is
 \emph{truncated} when it reaches the $384$-token budget. $H$ and $F$ are the carry-forward rates on
-present and absent units and $J = H - F$. Two older terms remain here: \emph{blind} denotes the
-grey-field arm, the originally registered ablation, and a \emph{lane} is one registered experiment
-with its own code and gates. Registered outcome labels are set in small capitals
-(Appendix~\ref{app:prereg}).
+present and absent units and $J = H - F$. One older term remains: \emph{blind} denotes the
+grey-field arm, the originally registered ablation. Registered outcome labels are quoted as the
+registrations wrote them (Appendix~\ref{app:prereg}).
 
 \begin{figure}[htb]
 {\centering
@@ -253,7 +252,7 @@ encoding against the processor's own, with a known expected value of $51$, and a
 aborts the condition rather than emitting numbers. The risk is acute under \textsc{LLaVA-OV-0.5B}'s
 anyres tiling, where the processor itself left-pads.
 
-\paragraph{Attention gate.} Registered, and required to pass before any decision cell may fire. It
+\paragraph{Attention gate.} Registered, and required to pass before any outcome can be declared. It
 compares object recall from the model's own free caption with a real image against the same with flat
 grey: $0.839$ and $0.781$ on the two architectures against $0.000$ grey, with an identical-caption
 rate of $0.000$ and mean caption length $116.98$ real against $73.01$ grey on \textsc{LLaVA-1.5-7B}.
@@ -265,7 +264,7 @@ checksum drift is $0$. Per-architecture integrity gates on the blind-baseline an
 six checks (four conditions present, budget, prefix identity, five-scene zero doubling, cap, self).
 
 \paragraph{Budget and cell-count gates.} Fatal assertions on budget mismatch, cap exceedance,
-incomplete cells and cell count against the frozen census; none fired on any reported run.
+incomplete cells and cell count against the frozen census; none triggered on any reported run.
 
 \paragraph{Bootstrap multiplicity assertion.} Active in every analysis reported here
 (Appendix~\ref{app:boot}, and see Appendix~\ref{app:bootcheck}).
@@ -334,9 +333,8 @@ The largest pairwise spread in $\dPrim$ across the three constructions is $0.016
 of the effect and roughly a seventh of any one interval's width, and the two architectures' shifts
 point in opposite directions --- the signature of noise at this scale rather than of a systematic
 construction bias. The arithmetic reason is that reclassification is small and balanced across
-conditions: dropping the budgettion-mined half moves $91$ of $8{,}740$ units ($1.04\%$) on the first
-architecture and $109$ of $10{,}334$ ($1.05\%$) on the second, affecting $6.4\%$ of union-true units
-in \emph{both} conditions on \textsc{LLaVA-1.5-7B} and $7.4\%$ and $6.7\%$ on the second. A
+conditions: dropping the caption-mined half moves $91$ of $8{,}740$ units ($1.04\%$) on \textsc{LLaVA-1.5-7B} and $109$ of $10{,}334$ ($1.05\%$) on \textsc{LLaVA-OV-0.5B}, affecting $6.4\%$ of union-true units
+in \emph{both} conditions on \textsc{LLaVA-1.5-7B} and $7.4\%$ and $6.7\%$ on \textsc{LLaVA-OV-0.5B}. A
 construction that reclassified the two conditions at different rates is what would move a contrast
 mechanically, and this one does not.
 
@@ -344,7 +342,7 @@ The union row was cross-checked against a second, independently written scorer w
 seed, which returns $0.48587082$ / $0.50151970$ / $0.48475570$ against this analysis's $0.485871$ /
 $0.5015$ / $0.4848$.
 
-Two constraints travel with this block. That analysis's own decision cell on the segmentation-only runs is
+Two constraints travel with this block. That analysis's own registered decision on the segmentation-only runs is
 mechanical rather than substantive --- its gate compares the recomputed contrast against a
 union-anchored reference, which a segmentation-only run legitimately misses --- and the six paired
 cross-construction differences are point estimates without intervals
@@ -402,7 +400,7 @@ within-condition rule, the cross-condition rule and the empty-continuation rule;
 is a matching rule rather than a truncation rule and is discussed in Appendix~\ref{app:mrate}.
 
 The empty-continuation rows run in opposite directions on the two architectures --- closer to zero on
-the first, further from it on the second, and containing zero in both --- so the empty-rate asymmetry
+\textsc{LLaVA-1.5-7B}, further from it on \textsc{LLaVA-OV-0.5B}, and containing zero in both --- so the empty-rate asymmetry
 between conditions does not explain the null in either direction.
 
 \paragraph{A fifth rule, and why it is not in the table.} A replication analysis computed a
@@ -435,7 +433,7 @@ both architectures (Table~\ref{tab:trunc}, last row of each block).
 
 \begin{table}[htb]
 \caption{The adversarial re-analysis. The registered verdict passes on all fourteen powered blocks on
-\textsc{LLaVA-OV-0.5B} and fails on five of sixteen powered blocks on the first --- four
+\textsc{LLaVA-OV-0.5B} and fails on five of sixteen powered blocks on \textsc{LLaVA-1.5-7B} --- four
 mention-count strata in the positive direction and one type-matched block in the negative direction;
 both architectures are reported.}
 \label{tab:mrate}
@@ -469,7 +467,7 @@ the stratifier is a proxy for something else. It is: every mention stratum above
 token cap and looped'' rather than verbosity.
 
 \paragraph{The smallest ratio across strata.} Across all adequately powered blocks, the smallest point
-estimate of $\dBlind / \dPrim$ is $0.7333$ on \textsc{LLaVA-1.5-7B} and $0.9074$ on the second. These
+estimate of $\dBlind / \dPrim$ is $0.7333$ on \textsc{LLaVA-1.5-7B} and $0.9074$ on \textsc{LLaVA-OV-0.5B}. These
 are minima of point estimates, not confidence bounds; the ratio on the full sample is $1.033$
 \civ{0.922}{1.155}. What we claim is that the image-attributable component of $J$ is null at our
 power --- not that the image adds nothing detectable,
@@ -536,7 +534,7 @@ Two facts bear on this estimate. The confirmatory estimate is $26\%$ below the
 underpowered $500$-image estimate that motivated running it, and the confirmatory interval
 \emph{excludes} that point estimate while the underpowered interval comfortably contains the
 confirmatory one. An arithmetic decomposition of the reported unit counts puts the $3{,}000$
-extension images alone at $+0.3237$; that figure carries no interval and fires no decision cell, and
+extension images alone at $+0.3237$; that figure carries no interval and enters no registered decision, and
 is given because it makes the shrinkage concrete. The frozen original stimulus set replicates cleanly
 alongside it: the original all-cells contrast of $+0.4859$ reproduces at $+0.4877$
 \civ{+0.4298}{+0.5434} on the regenerated cells, and the regenerated untruncated subset gives $+0.4663$
@@ -635,10 +633,10 @@ J(d',c) \le 2\Phi\!\left(\tfrac{d'}{2}\right) - 1
 \label{eq:Jmax}
 \end{equation}
 with equality if and only if $c = 0$. The right-hand side of \eqref{eq:Jmax} is Youden's index of the
-equal-variance Gaussian \textsc{roc} with separation $d'$.
+equal-variance Gaussian ROC with separation $d'$.
 
 Equation~\ref{eq:Jmax} is the precise sense in which a present-minus-absent rate both is and is not
-criterion-free. Youden's index, as a summary of an \textsc{roc} \emph{curve}, is criterion-free by
+criterion-free. Youden's index, as a summary of an ROC \emph{curve}, is criterion-free by
 definition: it is the maximum over operating points, and a maximum does not depend on where on the
 curve one happens to sit. A present-minus-absent rate measured at a single, uncontrolled operating
 point equals that maximum only when the operating point happens to be unbiased, and otherwise
@@ -707,7 +705,7 @@ probit artefacts. More generally, the argument of Appendix~\ref{app:sdt-conditio
 the reparameterisation separate a discriminability coordinate from a propensity coordinate; the
 Gaussian choice fixes which coordinates, not whether the confound exists.
 
-\paragraph{Not warranted.} \emph{(i) There is no z-\textsc{roc}.} Equal variance is testable only
+\paragraph{Not warranted.} \emph{(i) There is no z-ROC.} Equal variance is testable only
 with several criterion points per condition. A binary carry outcome at one operating point supplies a
 single $(H,F)$ pair, so the model is saturated and the equal-variance assumption carries no degree of
 freedom against which it could fail. Unequal variance would change the numerical values of $d'$ and
@@ -720,8 +718,7 @@ not independent.} Object types drawn from one prefix compete for one continuatio
 budget. Deduplication removes repetition \emph{within} a continuation but not this competition. The
 intervals respect the dependence, since they cluster on the image
 (Appendix~\ref{app:boot}); the Gaussian model's unit-level independence does not. \emph{(iv) The
-budget binds.} With shares at the budget of $0.447$ and $0.679$ in the two conditions of the first
-architecture, a large fraction of continuations end at the budget, so a unit's carry probability depends
+budget binds.} With shares at the budget of $0.447$ and $0.679$ in the two conditions of \textsc{LLaVA-1.5-7B}, a large fraction of continuations end at the budget, so a unit's carry probability depends
 on how many other units compete for the remaining budget. A capacity constraint of that kind is not
 representable as a threshold on a per-unit evidence variable, and it cannot be absorbed into either
 $d'$ or $c$.
@@ -921,8 +918,7 @@ against a raw $+0.3780$ \civ{+0.3213}{+0.4333}, so \textsc{LLaVA-OV-0.5B}'s resu
 duplication artefact.
 
 \paragraph{Why the composition controls are load-bearing.} Five source scenes contribute roughly
-twice the prefix objects of one: a mean of $3.92$ distinct object types against $1.91$ on the first
-architecture. Length matching is likewise not optional, because the five-scene condition generates
+twice the prefix objects of one: a mean of $3.92$ distinct object types against $1.91$ on \textsc{LLaVA-1.5-7B}. Length matching is likewise not optional, because the five-scene condition generates
 longer text and reaches the budget far more often ($0.679$ against $0.447$); it costs
 $27\%$ of the effect and threatens neither its sign nor its power.
 
@@ -988,8 +984,7 @@ architecture & condition & sighted $-$ blind & 95\% CI \\
 \label{app:halves}
 
 \begin{table}[htb]
-\caption{Decomposition of the contrast into its two rates, at matched length on the first
-architecture. Each row is the five-scene value minus the one-scene value.}
+\caption{Decomposition of the contrast into its two rates, at matched length on \textsc{LLaVA-1.5-7B}. Each row is the five-scene value minus the one-scene value.}
 \label{tab:halves}
 \begin{center}
 \small
@@ -1045,10 +1040,9 @@ one-scene condition it costs all of it: blind $d' = -0.055$ \civ{-0.171}{+0.063}
 the blind five-scene condition reaches $d' = +1.2918$ \civ{+1.1865}{+1.3984}. Any reading of this
 paper as a claim that the model ignores the image is contradicted by this table.
 
-The contrast is a different matter. The one-scene to five-scene increase in $d'$ on the first
-architecture is $+1.5322$ \civ{+1.36}{+1.70} sighted and $+1.3467$ \civ{+1.19}{+1.50} blind, so the
+The contrast is a different matter. The one-scene to five-scene increase in $d'$ on \textsc{LLaVA-1.5-7B} is $+1.5322$ \civ{+1.36}{+1.70} sighted and $+1.3467$ \civ{+1.19}{+1.50} blind, so the
 image-attributable component is $+0.1855$ \civ{+0.0252}{+0.3463} on \textsc{LLaVA-1.5-7B} and
-$-0.2382$ \civ{-0.400}{-0.082} on the second. Both exclude zero, in opposite directions, and adding
+$-0.2382$ \civ{-0.400}{-0.082} on \textsc{LLaVA-OV-0.5B}. Both exclude zero, in opposite directions, and adding
 the two further architectures, including \textsc{Qwen2.5-VL-7B}, which the main text does not
 interpret, splits them two--two rather than resolving them. Measured together in
 a single run, the two \textsc{LLaVA} components and the two further architectures' are $+0.1855$ \civ{+0.0271}{+0.3481}, $-0.2382$
@@ -1064,7 +1058,7 @@ Two deflations belong beside this table rather than in a footnote. Because
 $c = -\tfrac{1}{2}[Z(\rateT) + Z(\rateF)]$, the criterion result is substantially a re-expression of
 the two carry rates already reported: the image-attributable components of both rate contrasts are negative and of comparable size
 ($-0.1366$ \civ{-0.1898}{-0.0824} and $-0.1206$ \civ{-0.1459}{-0.0953} on \textsc{LLaVA-1.5-7B};
-$-0.1971$ \civ{-0.2512}{-0.1444} and $-0.1623$ \civ{-0.1856}{-0.1397} on the second), and two
+$-0.1971$ \civ{-0.2512}{-0.1444} and $-0.1623$ \civ{-0.1856}{-0.1397} on \textsc{LLaVA-OV-0.5B}), and two
 comparable falls \emph{are} a criterion rise. And neither $d'$ nor $c$ appears in the pre-registration
 governing these conditions; both are post-hoc for them, while the registered primary remains $J$.
 The main text's central claim --- that the rise in $J$ does not need the image --- rests on the
@@ -1105,10 +1099,10 @@ The endpoint contrast is $+0.4791$ \civ{+0.4197}{+0.5391}, interval width $0.119
 registered ceiling of $0.130$. The profile is strictly increasing and all four adjacent steps exclude
 zero, at $+0.2792$, $+0.1180$, $+0.0372$ and $+0.0448$: the largest single step carries $58.3\%$ of
 the total rise, just under the $60\%$ the readout had fixed in advance as the boundary of the
-threshold cell; the fourth step's point estimate slightly exceeds the third's, so the curve is
+threshold outcome; the fourth step's point estimate slightly exceeds the third's, so the curve is
 front-loaded without a plateau inside the grid. The length-matched profile keeps the same sign ($+0.3210$)
 and remains strictly increasing, but its largest step carries $60.1\%$ of its rise, just over the
-same boundary the raw profile sits just under. No registered cell depends on it.
+same boundary the raw profile sits just under. No registered outcome depends on it.
 
 Two positive controls were available at no cost and both held. The $S{=}5$ condition rebuilds
 bit-for-bit against the five-scene condition of the two-point measurement ($1361/1361$ cells identical), and
@@ -1128,7 +1122,7 @@ identity exact. Total object mentions per prefix is conserved across the whole g
 reciprocally ($2.582 \rightarrow 1.232$, $\rho = -1.0$ \civ{-1.0}{-1.0}) and the product of the two
 stays near-constant ($4.77$ against $4.63$). Distinct-type count and mentions-per-type track $S$ with
 identical precision, so no statistic computable on this grid separates them. This diagnostic was
-added after the grid's pre-registration was committed, fires no decision cell, and is reported as a
+added after the grid's pre-registration was committed, enters no registered decision, and is reported as a
 limitation rather than as a result.
 
 The registered eight-unit extension was not run, on a mechanical branch rather than a judgement call:
@@ -1168,7 +1162,7 @@ Three checks address the obvious objections. The probe works: with no
 prefix $J$ is $+0.8334$, four times the registered instrument floor, and a single wrong-scene
 prefix multiplies the false-positive rate from $0.0217$ to roughly $0.88$ --- about $40\times$ ---
 identically in both conditions, so the register carries the context pathology itself at full
-strength. The registered compression flag did not fire, and the ceiling-free log-odds co-primary agrees with
+strength. The registered compression flag was not triggered, and the ceiling-free log-odds co-primary agrees with
 the raw one; a later analysis nonetheless found this binary probe saturated once any prefix is present
 (Appendix~\ref{app:unsat}), so these checks do not rule out a ceiling. And it is not a ground-truth artefact:
 re-derived under segmentation-only and caption-only definitions the cell is invariant, with the
@@ -1215,7 +1209,7 @@ where its copy is byte-identical to the local file and predates the first calibr
 minutes. Random seeds encode the date an analysis was fixed, so they give the same timeline.
 
 \begin{table}[htbp]
-\caption{First commit of each registration (short hash, date, Central European Summer Time). Row
+\caption{First commit of each registration (short hash and date). Row
 numbers follow Tables~\ref{tab:registry} and~\ref{tab:registry2}. Later amendments are separate, dated
 commits. $^{a}$Not committed; the date is that of its byte-identical copy on the compute cluster.
 $^{b}$The mismatched-image arm was added by Amendment~2 (\texttt{463fe01}, 2026-09-19), before its data
@@ -1252,8 +1246,8 @@ Row & Registered analysis & Commit & Date \\
 \end{table}
 
 \begin{table}[htbp]
-\caption{Registered analyses reported in this paper and their outcomes. Small capitals are registered
-labels as printed where each analysis is reported; other outcomes use the wording of that section.
+\caption{Registered analyses reported in this paper and their outcomes. Quoted phrases are registered
+outcome labels; other outcomes use the wording of the section cited.
 Rows are grouped by topic and do not follow the numbering of Appendix~\ref{app:prereg-detail}.}
 \label{tab:registry}
 \begin{center}
@@ -1274,16 +1268,16 @@ Rows are grouped by topic and do not follow the numbering of Appendix~\ref{app:p
 \raggedright App.~\ref{app:percond}, \ref{app:regime} \tabularnewline\addlinespace[1pt]
 \raggedright 3.\ Blind baseline, both \textsc{LLaVA} &
 \raggedright $\dSight$ per architecture, behind an attention gate &
-\raggedright registered cell fired on both; $\dSight$ null on both; zero-$J$ flag \textsc{fails} &
+\raggedright registered outcome held on both; $\dSight$ null on both; zero-$J$ flag ``fails'' &
 \raggedright Sec.~\ref{sec:blind}; App.~\ref{app:models} \tabularnewline\addlinespace[1pt]
 \raggedright 4.\ Contrast and blind arms, \textsc{Qwen2.5-VL-7B} &
 \raggedright scene-count contrast with blind arms, behind an attention gate &
-\raggedright \textsc{image-inert}, outranking \textsc{replicates}; not counted as a replication &
+\raggedright ``image-inert'', outranking ``replicates''; not counted as a replication &
 \raggedright Sec.~\ref{sec:blind}; App.~\ref{app:models} \tabularnewline\addlinespace[1pt]
 \raggedright 5.\ Contrast and blind arms, \textsc{Kosmos-2} &
-\raggedright the same, with $\dSight$ as headline; five-condition stop gate; image-inert cell requires a null at power &
-\raggedright stop gate \textsc{degenerate-continuations} as registered, amended before any endpoint;
-readout mechanically \textsc{replicates}, licence text set aside; $\dSight$ excludes zero downward &
+\raggedright the same, with $\dSight$ as headline; five-condition stop gate; image-inert outcome requires a null at power &
+\raggedright stop gate ``degenerate continuations'' as registered, amended before any endpoint;
+readout mechanically ``replicates'', licence text set aside; $\dSight$ excludes zero downward &
 \raggedright Sec.~\ref{sec:blind}; App.~\ref{app:models} \tabularnewline
 \midrule
 \raggedright 6.\ Dose grid &
@@ -1301,7 +1295,7 @@ readout mechanically \textsc{replicates}, licence text set aside; $\dSight$ excl
 \midrule
 \raggedright 9.\ Repetition &
 \raggedright stated-once against repetition-retained prefixes at a fixed object set; reading conditional on $\rho$ &
-\raggedright unresolved on the width rule; repetition reading cannot fire; one manipulation gate failed &
+\raggedright unresolved on the width rule; repetition reading cannot be returned; one manipulation gate failed &
 \raggedright App.~\ref{app:prereg-detail} \tabularnewline\addlinespace[1pt]
 \raggedright 10.\ Agreement &
 \raggedright contradicting one-scene condition against its anchor, with an edit-matched control &
@@ -1309,7 +1303,7 @@ readout mechanically \textsc{replicates}, licence text set aside; $\dSight$ excl
 \raggedright App.~\ref{app:prereg-detail} \tabularnewline\addlinespace[1pt]
 \raggedright 11.\ Natural prose &
 \raggedright the same manipulation on natural-prose units; units-seen gate &
-\raggedright \textsc{construct-specific} (with \textsc{unit-count-unmatched}): null at power, unit-standardised control also null; lead result specific to assembled captions &
+\raggedright ``construct-specific'' (with ``unit count unmatched''): null at power, unit-standardised control also null; lead result specific to assembled captions &
 \raggedright Sec.~\ref{sec:exp1}; App.~\ref{app:prereg-detail} \tabularnewline
 \bottomrule
 \end{tabular}
@@ -1333,33 +1327,33 @@ readout mechanically \textsc{replicates}, licence text set aside; $\dSight$ excl
 \raggedright App.~\ref{sec:forced}, \ref{app:register} \tabularnewline\addlinespace[1pt]
 \raggedright 13.\ De-saturated forced choice &
 \raggedright select an off-ceiling probe on arm-pooled calibration, then measure it; graded readout reported in every branch &
-\raggedright \textsc{still-saturated}; contrast not computed; graded evidence post-hoc &
+\raggedright ``still saturated''; contrast not computed; graded evidence post-hoc &
 \raggedright App.~\ref{app:unsat-gate} \tabularnewline\addlinespace[1pt]
 \raggedright 14.\ Distractor units &
 \raggedright the contrast on objects the prefix never names; binary and graded readouts gated separately &
-\raggedright \textsc{distractor-saturated} (binary primary over its ceiling); graded co-primary null but not accepted as confirmation under the registration's acceptance rule &
+\raggedright ``distractor probe saturated'' (binary primary over its ceiling); graded co-primary null but not accepted as confirmation under the registration's acceptance rule &
 \raggedright App.~\ref{app:unsat-scope} \tabularnewline
 \midrule
-\raggedright 15.\ \textsc{pai}, standard CHAIR &
+\raggedright 15.\ PAI, standard CHAIR &
 \raggedright decomposition, blinding and truncation-curve components; positive-control and liveness gates &
-\raggedright \textsc{cannot-resolve} at the prescribed $\alpha$: \textsc{link-sensitive}, \textsc{blind-denominator-too-thin}, \textsc{cannot-resolve} &
+\raggedright ``cannot resolve'' at the prescribed $\alpha$: ``link-sensitive'', ``blind denominator too thin'', ``cannot resolve'' &
 \raggedright Sec.~\ref{sec:mitigation}; App.~\ref{app:mitig-verdict} \tabularnewline\addlinespace[1pt]
-\raggedright 16.\ \textsc{vcd}, standard CHAIR &
+\raggedright 16.\ VCD, standard CHAIR &
 \raggedright separate registration; within-harness positive control; mode-matched baselines &
-\raggedright \textsc{no-gain}; \textsc{no-gain-to-decompose} on all three arms &
+\raggedright ``no gain''; ``no gain to decompose'' on all three arms &
 \raggedright App.~\ref{app:mitig-vcd} \tabularnewline
 \midrule
 \raggedright 17.\ Ablation ladder, \textsc{LLaVA-1.5-7B} &
 \raggedright $\dSight$ under ten ablations on both endpoints; severity, geometry and collapse screens &
-\raggedright seven graded rungs \textsc{ladder-null}; substitution \textsc{image-contributes} (after Amendment~3); on CHAIR, substitution \textsc{gain-is-image-attributable} &
+\raggedright seven graded rungs ``ladder null''; substitution ``image contributes'' (after Amendment~3); on CHAIR, substitution ``gain is image-attributable'' &
 \raggedright Sec.~\ref{sec:twofactors}, \ref{sec:mitigation}; App.~\ref{app:ladder} \tabularnewline\addlinespace[1pt]
 \raggedright 18.\ POPE with a blind arm &
 \raggedright $\dSight$ of PAI's gain on official POPE under grey and a mismatched image; fifteen blocking gates &
-\raggedright attention-only arm \textsc{partial}; released default no gain; grey \textsc{blind-arm-degenerate} &
+\raggedright attention-only arm ``partial''; released default no gain; grey ``blind arm degenerate'' &
 \raggedright Sec.~\ref{sec:mitigation}; App.~\ref{app:pope} \tabularnewline\addlinespace[1pt]
 \raggedright 19.\ \textsc{Qwen3-VL-8B} &
 \raggedright the scene-count contrast with a grey arm, behind a harness gate calibrated on \textsc{LLaVA-1.5-7B} &
-\raggedright gate \textsc{run-endpoint}; registered cell \textsc{image-attributable} &
+\raggedright gate ``run endpoint''; registered outcome ``image-attributable'' &
 \raggedright Sec.~\ref{sec:blind}; App.~\ref{app:qwen3} \tabularnewline
 \bottomrule
 \end{tabular}
@@ -1370,12 +1364,12 @@ Nine departures from the registrations bear on how the table is read.
 
 \begin{itemize}
 \itemsep0.2em
-\item The \textsc{Kosmos-2} stop gate returned \textsc{degenerate-continuations} under its
+\item The \textsc{Kosmos-2} stop gate returned ``degenerate continuations'' under its
 registered thresholds; two thresholds were amended before any endpoint for that model existed, and
 both rules are released (the stop-gate disclosure in Appendix~\ref{app:prereg-detail}; Section~\ref{sec:blind}).
 \item The second mitigation method was dropped from the first method's registration by
 Amendment~1 and then run under a separate registration with a within-harness positive control; two
-of the reasons Amendment~1 gave were corrected before that lane generated anything
+of the reasons Amendment~1 gave were corrected before that experiment generated anything
 (Appendix~\ref{app:mitig-vcd}).
 \item On \textsc{LLaVA-1.5-7B}, four mention-count strata of the mention-rate control show a
 positive component, the direction pre-specified as adverse, and the rule was not amended
@@ -1383,23 +1377,23 @@ positive component, the direction pre-specified as adverse, and the rule was not
 \item One rung of the registered type-matching ladder on \textsc{LLaVA-1.5-7B} shows a negative
 component whose interval excludes zero, and it is unexplained (Appendix~\ref{app:oddblock}).
 \item The natural-prose registration's reading required retitling the paper once the lead result
-proved specific to assembled captions. The title under which these lanes were registered was
+proved specific to assembled captions. The title under which these experiments were registered was
 replaced, and the present one makes no claim about the construction (Appendix~\ref{app:prereg-detail}).
 \item Amendment~3 of the ablation-ladder registration replaced a comparative collapse screen with
 absolute thresholds, before any ladder verdict was read. It changed one verdict, the substitution
-arm's, from \textsc{confounded-by-collapse} to \textsc{image-contributes} (Appendix~\ref{app:ladder}).
+arm's, from ``confounded by collapse'' to ``image contributes'' (Appendix~\ref{app:ladder}).
 \item Both untruncated-regime ablation arms, the extension of both ablations to the $3{,}500$-image
-sample, and the mismatched-image arm on \textsc{Qwen3-VL-8B} were added after the corresponding lanes
+sample, and the mismatched-image arm on \textsc{Qwen3-VL-8B} were added after the corresponding experiments
 were registered and analysed; they are post hoc
 (Section~\ref{sec:twofactors}; Appendix~\ref{app:regimeblind}).
 \item The $J$ endpoint and the aggregation across cuts were adopted in the presence of data, and
 $d'$ and $c$ are post-hoc for the conditions they decompose (Appendix~\ref{app:endpoint};
 Section~\ref{sec:decomp}).
 \item In the distractor-unit analysis, the first scoring run reported the non-verdict
-\textsc{distractor-saturated} as its headline; a later selector change reported the graded
-co-primary's \textsc{distractor-null-confirmed} instead. Every number is identical between the two
+``distractor probe saturated'' as its headline; a later selector change reported the graded
+co-primary's ``distractor null confirmed'' instead. Every number is identical between the two
 runs. Because the registration accepts a null only when the binary gates pass, the paper reports the
-registered cell as \textsc{distractor-saturated} and the graded null as supporting evidence. Both result
+registered outcome as ``distractor probe saturated'' and the graded null as supporting evidence. Both result
 files are kept (Appendix~\ref{app:unsat}).
 \end{itemize}
 
@@ -1422,18 +1416,18 @@ and both outcomes so a reader can weigh the distinction independently.
 \item \textbf{Blind and no-prefix baselines.}
 \emph{Rule:} $\dSight = \dPrim - \dBlind$ is the primary, evaluated on each architecture
 independently, with a $0.14$ interval-width ceiling, a floor of $100$ true units, an attention gate
-that must pass before any decision cell may fire, and a standing flag on the
+that must pass before any outcome can be declared, and a standing flag on the
 assertion that a model which does not consult the image has $J$ of zero.
-\emph{Outcome:} the registered cell fired independently on both architectures. $\dBlind$ $+0.5019$
+\emph{Outcome:} the registered outcome held independently on both architectures. $\dBlind$ $+0.5019$
 \civ{+0.4441}{+0.5565} and $+0.4128$ \civ{+0.3609}{+0.4640}; $\dSight$ $-0.0160$
 \civ{-0.0708}{+0.0400} and $-0.0348$ \civ{-0.0905}{+0.0192}, both null; $\dBlind/\dPrim$ $1.033$
 \civ{0.922}{1.155} and $1.092$ \civ{0.954}{1.265}. The attention gate passed. The standing flag reads
-\textsc{fails} on both architectures. This is the control that was registered as a confirmation and
+``fails'' on both architectures. This is the control that was registered as a confirmation and
 returned a refutation, under a grey field on truncated generations; Appendix~\ref{app:regimeblind}
 shows that answer changes with the ablation and the regime.
 
 \item \textbf{Scene-count dose grid.}
-\emph{Rule:} five caption units at every grid point, $S \in \{1,\dots,5\}$, decision cells fixed in
+\emph{Rule:} five caption units at every grid point, $S \in \{1,\dots,5\}$, registered decisions fixed in
 advance with a $0.13$ interval-width ceiling and a $0.60$ step-fraction boundary separating a graded
 reading from a threshold reading.
 \emph{Outcome:} monotone. $\rho_S = +1.0000$ \civ{+0.900}{+1.000}; endpoint $+0.4791$
@@ -1448,19 +1442,19 @@ is the primary; sample raised to $3{,}500$ images with the original $500$ nested
 $100$ true units and the $0.13$ width ceiling carried over unchanged; a sensitivity analysis on the
 original $500$ pre-declared as descriptive and expected to be underpowered.
 \emph{Outcome:} positive. $+0.3460$ \civ{+0.2849}{+0.4058} at width $0.1209$, true units $466/914$,
-on $2{,}089$ of $10{,}500$ cells; length divergence flag did not fire; both composition controls
-remain positive inside the regime-matched subset. Magnitude fires no cell in either direction under
-this rule, and the confirmatory estimate is $26\%$ below the underpowered estimate that motivated the
+on $2{,}089$ of $10{,}500$ cells; length divergence flag was not triggered; both composition controls
+remain positive inside the regime-matched subset. The magnitude rule returns no outcome in either direction
+under this rule, and the confirmatory estimate is $26\%$ below the underpowered estimate that motivated the
 run (Appendix~\ref{app:regime}).
 
 \item \textbf{Second-register test.}
-\emph{Rule:} two decision cells --- the contrast crosses the register, or it is bounded to the
-generative one --- both pre-committed, together with the \emph{reading} of the bounded cell: that it
+\emph{Rule:} two registered decisions --- the contrast crosses the register, or it is bounded to the
+generative one --- both pre-committed, together with the \emph{reading} of the bounded outcome: that it
 appears in the abstract and that every claim in the paper scopes to generative registers. Interval
 ceiling $0.150$; floor on true units.
 \emph{Outcome:} bounded, at power and by a wide margin. $-0.0095$ \civ{-0.0314}{+0.0124} at width
 $0.0438$, true units $528/892$; difference of differences $+0.4954$ \civ{+0.4393}{+0.5517}. The
-compression flag did not fire; the cell is invariant across all three ground-truth constructions. The
+compression flag was not triggered; the outcome is invariant across all three ground-truth constructions. The
 pre-committed reading is executed (Appendix~\ref{app:register}).
 
 \item \textbf{Mention-rate control.}
@@ -1480,13 +1474,13 @@ reaching $0.5$.
 \emph{Outcome:} unresolved on the width rule --- $+0.1181$ \civ{+0.0397}{+0.1957} at width $0.1559$
 over the ceiling, with the true-unit floor cleared threefold. The conditional fixed in advance is
 what settles the question: $\rho = 0.230$ \civ{0.075}{0.389}, the whole interval below $0.5$, so the
-repetition reading could not have fired even at full width-power. Two manipulation gates passed and
+repetition reading could not have been returned even at full power. Two manipulation gates passed and
 one failed; by that pre-registration's own manipulation-check clause the failure makes the affected
-control uninterpretable, and it is excluded from every decision cell rather than quoted.
+control uninterpretable, and it is excluded from every registered decision rather than quoted.
 
 \item \textbf{Agreement, at a fixed scene count.}
 \emph{Rule:} four conditions in one generation job --- a contradicting one-scene condition, an
-edit-matched agreeing control, and both anchors --- with decision cells, subsets and a $0.13$
+edit-matched agreeing control, and both anchors --- with registered decisions, subsets and a $0.13$
 primary-only width ceiling fixed in advance, and a precedence rule making an underpowered member of
 a pair decide the cell.
 \emph{Outcome:} no-data. The primary is $+0.2418$ \civ{+0.1663}{+0.3194} at width $0.1531$, short of
@@ -1505,12 +1499,12 @@ a matched budget, with a gate on units-seen and a pre-committed consequence if i
 \emph{Outcome:} primary null at power --- $+0.0062$ \civ{-0.0368}{+0.0515} at width $0.0883$ against
 a $0.14$ ceiling, true units $560/640$ --- with every co-primary and specification agreeing, including
 the regime-restricted estimate ($+0.0076$ \civ{-0.0366}{+0.0543}). The units-seen gate failed ($1.577$
-against $1.062$), so the registered prefix \textsc{unit-count-unmatched} applies and the
-unit-standardised control is required; it is also null ($-0.0547$ \civ{-0.1398}{+0.0286}) and fires the
-same cell. The registered cell is therefore \textsc{construct-specific}, whose pre-committed reading is
+against $1.062$), so the registered prefix ``unit count unmatched'' applies and the
+unit-standardised control is required; it is also null ($-0.0547$ \civ{-0.1398}{+0.0286}) and returns the
+same outcome. The registered outcome is therefore ``construct-specific'', whose pre-committed reading is
 that the paper's lead result is specific to the assembled-caption construction; the main text states
 this (Section~\ref{sec:exp1}), together with the earlier registered five-source natural-prose run, which
-returned \textsc{negative-at-power} on its contrast defined as single-source minus five-source
+returned ``negative at power'' on its contrast defined as single-source minus five-source
 ($-0.0750$ \civ{-0.1299}{-0.0185}; length-matched $-0.0222$ \civ{-0.0719}{+0.0301}), that is, five
 non-redundant sources scored higher ($J = {+0.4407}$ \civ{+0.3971}{+0.4838}). The same registration
 recorded before the data that its manipulation realises about half the headline's dose ($1.0$ against
@@ -1524,30 +1518,30 @@ budget, so passage construction and generation regime are confounded in that com
 \item \textbf{Two further architectures with different visual interfaces.}
 \emph{Rules:} two separate registrations, with different rules. The \textsc{Qwen2.5-VL-7B}
 registration was committed after a checkpoint fetch and a plumbing smoke test but before any score was
-computed; its \textsc{image-inert} cell fires when $\dBlind$'s lower bound is above zero and
+computed; its ``image-inert'' outcome is returned when $\dBlind$'s lower bound is above zero and
 $\dSight$'s interval contains zero, with no power requirement. The \textsc{Kosmos-2} registration was
-committed before any artefact for that model existed, with decision cells for replication,
+committed before any artefact for that model existed, with registered decisions for replication,
 non-replication, reversal and image-inertness, five stop-gate conditions and an attention gate; its
-image-inert cell requires $\dSight$ to be null \emph{at power} against a ceiling derived for that
+image-inert outcome requires $\dSight$ to be null \emph{at power} against a ceiling derived for that
 contrast, routing a too-wide interval to no-data.
 \emph{Outcome:} run on two architectures outside the \textsc{LLaVA} lineage.
 \textsc{Qwen2.5-VL-7B} returns an image-attributable component of $+0.016$ $[-0.023, +0.055]$, inside
-the reference margin. Its registration fires \textsc{image-inert} under the rule fixed at its \S6.1 ---
+the reference margin. Its registration returns ``image-inert'' under the rule fixed at its \S6.1 ---
 $\Delta_{\text{blind}}$'s lower bound above zero and $\dSight$ containing zero --- and
-that cell outranks the \textsc{replicates} the primary alone would have produced, with the registration
+that cell outranks the ``replicates'' the primary alone would have produced, with the registration
 recording that it must not be written as a third-architecture replication. Its median continuation of
 four tokens is a \emph{post-hoc} confound, not a registered condition: no length floor appears in
 that registration, and the campaign record declines to formalise one because any threshold excluding
 this model would also reject \textsc{LLaVA-OV}. \textsc{Kosmos-2} returns $-0.103$
 $[-0.168, -0.036]$, which excludes zero and falls outside the reference margin. Its \S6.2 readout
-mechanically fires \textsc{replicates}, but that readout keyed reversal to the primary's sign rather
+mechanically returns ``replicates'', but that readout keyed reversal to the primary's sign rather
 than the headline estimand's, so its licence text is false for these data and we set it aside;
 the substantive finding is that $\dSight$ excludes zero \emph{downward}. Its stop gate is treated in the
 stop-gate disclosure immediately below. \textsc{Kosmos-2} is reported in the main text; the third is
 named there but not interpreted, and its numbers are here and in Appendix~\ref{app:models}.
 
 \emph{Stop-gate disclosure for \textsc{Kosmos-2}.} Under the rule as registered, the stop gate
-returned \textsc{degenerate-continuations} and the generation reported above would not have run. Two
+returned ``degenerate continuations'' and the generation reported above would not have run. Two
 of five conditions failed: a units-inside floor ($2.665$ against a floor of $3.0$) and a degeneracy
 ceiling ($0.383$ in the worst arm against a ceiling of $0.20$). Both thresholds were amended, in a
 dated amendment committed before any endpoint for that architecture existed --- no ground truth was
@@ -1555,16 +1549,16 @@ loaded, no object extracted and no $J$ computed at that point --- and the justif
 calibration against the already-frozen earlier families. Measured on those: the units floor also
 rejects \textsc{LLaVA-1.5-7B} at $2.832$ and the third at $2.987$, and the degeneracy ceiling also
 rejects \textsc{LLaVA-1.5-7B}'s arms at $0.678$ and $0.715$ and the second's at $0.535$ and $0.653$.
-Both thresholds therefore reject this paper's own lead result. The clause that fired was
+Both thresholds therefore reject this paper's own lead result. The clause that triggered was
 additionally found to be tracking the rate at which generation reached the token cap rather than
-collapse: its two hazard sub-clauses fired zero times in all four arms. We regard correcting a
+collapse: its two hazard sub-clauses triggered zero times in all four arms. We regard correcting a
 mis-specified feasibility gate before any endpoint exists as admissible and relaxing a readout
 threshold after a result as not, but that distinction is ours, and both the original rule and the
 amended one are released with the paper. The registered readout for this architecture is a further
 complication we do not paper over: its rule keyed reversal to the primary's sign rather than the
-headline estimand's, so it mechanically fires \textsc{replicates} while the estimand it was meant to
+headline estimand's, so it mechanically returns ``replicates'' while the estimand it was meant to
 govern excludes zero downward. We set that licence text aside and report the estimand. It also tightens a rule the \textsc{Qwen2.5-VL-7B} registration used: that earlier
-registration fired an image-inert cell on an interval that merely contained zero, with no power
+registration returned an image-inert outcome on an interval that merely contained zero, with no power
 requirement. That does not change the reported result, whose realised width of $0.0780$ would pass
 the tighter ceiling.
 
@@ -1575,20 +1569,20 @@ blinding component with a thin-denominator guard on the blind arm, and a truncat
 with a $\pm 0.03$ margin on the matched-\rateF{} hit rate --- together with a positive control on
 published vanilla CHAIR levels that had to pass before any contrast was read, and a blocking gate
 requiring the intervention to be demonstrably live.
-\emph{Outcome:} \textsc{cannot-resolve} at the $\alpha$ the method's own paper prescribes for this
+\emph{Outcome:} ``cannot resolve'' at the $\alpha$ the method's own paper prescribes for this
 model. The positive control and every blocking gate passed. The decomposition component returns
-\textsc{link-sensitive}, because the probit and logit companions disagree; the blinding component
-returns \textsc{blind-denominator-too-thin}, the guard firing exactly as written; and the truncation
-component returns \textsc{cannot-resolve} on an interval that straddles its margin, which is an
+``link-sensitive'', because the probit and logit companions disagree; the blinding component
+returns ``blind denominator too thin'', the guard triggering exactly as written; and the truncation
+component returns ``cannot resolve'' on an interval that straddles its margin, which is an
 underpowered result and not a pass. Two amendments are on the record, each committed before the
 endpoint it could have touched. \textbf{Amendment~1} dropped a second candidate method from
-\emph{this} lane, on the grounds that it has no published CHAIR evaluation to reproduce and that its
-released code cannot be run greedily, which is the mode this lane's other arms use. That method was
+\emph{this} experiment, on the grounds that it has no published CHAIR evaluation to reproduce and that its
+released code cannot be run greedily, which is the mode this experiment's other arms use. That method was
 subsequently run under a separate registration, with a within-harness positive control in place of an
 external one and with both decoding modes run against mode-matched baselines
 (Appendix~\ref{app:mitig-vcd}). Amendment~1's \emph{conclusion} --- that the arm did not belong in
-this lane --- stands. Two of the reasons it gave were found to be inaccurate on re-verification and
-are corrected in Appendix~\ref{app:mitig-vcd}, before any generation for that lane existed.
+this experiment --- stands. Two of the reasons it gave were found to be inaccurate on re-verification and
+are corrected in Appendix~\ref{app:mitig-vcd}, before any generation for that experiment existed.
 \textbf{Amendment~2}
 derived the degenerate-corner constant of the log-linear correction and added a
 permuted-ground-truth secondary after the blind arm was seen to degenerate. That secondary
@@ -1602,13 +1596,13 @@ conditions fixed in advance (\rateF{} $\in [0.20, 0.80]$, \rateT{} $\le 0.90$, y
 $\in [0.15, 0.85]$), an instrument gate requiring the selected probe to show a no-prefix $J$ of at
 least $+0.2$, and a standing requirement that the graded readout of the published prompt be reported
 in every branch whatever the selection returns.
-\emph{Outcome:} \textsc{still-saturated}. Every candidate probe failed all three off-ceiling
+\emph{Outcome:} ``still saturated''. Every candidate probe failed all three off-ceiling
 conditions, including the closed candidate set built specifically to de-saturate, which saturated
 further rather than less, to a yes-rate of $1.0000$. Under the registered rule the selected probe's
 contrast was therefore not computed and not interpreted, and that is enforced in the scorer rather
 than by intention. The standing diagnostic still reports: the graded readout of the published prompt
 gives $+0.0008$ \civ{-0.0142}{+0.0166}. Because the ceiling gate is defined on the binary rate and
-fired, the interior-mass evidence that the graded readout is genuinely unpinned is \emph{post-hoc},
+triggered, the interior-mass evidence that the graded readout is genuinely unpinned is \emph{post-hoc},
 and is labelled as such wherever it appears (Appendix~\ref{app:unsat}).
 
 \end{enumerate}
@@ -1618,7 +1612,7 @@ two-alternative variant of the de-saturation design counterbalances which side t
 presented on. Its first scoring pass scored the raw ``answered A'' rate instead of ``chose the unit
 object'', which that registration defines explicitly. The effect was to turn the readout into
 something close to a coin flip, which is exactly why it appeared to be off ceiling --- pooled
-yes-rate $0.5581$ --- and also why the registered instrument gate fired on it: its no-prefix $J$ was
+yes-rate $0.5581$ --- and also why the registered instrument gate triggered on it: its no-prefix $J$ was
 $-0.3185$ \civ{-0.3602}{-0.2752} against a floor of $+0.2$, anti-diagnostic, because under the wrong
 orientation ``answered A'' is pinned near the coin for true units while for false units it follows
 the model's side bias. The gate did exactly the job it exists to do. The side is a deterministic
@@ -1630,8 +1624,8 @@ Stated against our own interest: the selection stage ran on the mis-oriented sta
 two-alternative variant was selected as the only in-band candidate. Correctly oriented, that variant's
 \rateF{} is about $0.93$, so no candidate would have been in band, the no-candidate-in-band flag
 would have raised, and the primary would instead have been the ``answer only from the image''
-variant with the two-alternative variant as its fallback. The registered cell is
-\textsc{still-saturated} either way, because both sit outside the band
+variant with the two-alternative variant as its fallback. The registered outcome is
+``still saturated'' either way, because both sit outside the band
 (Table~\ref{tab:unsatceiling}), so the conclusion is invariant to the selection error --- but the selection itself was made on a wrong number, and that
 is recorded here rather than quietly repaired. One further deviation belongs with it: the scorer
 evaluates the ceiling gate before the instrument gate, while the registration orders the instrument
@@ -1640,16 +1634,15 @@ ordering.
 
 \paragraph{Outcomes against interest.} Four registered tests returned against the hypothesis they
 were attached to and were honoured as written: the blind baseline, which refuted the paper's own lead
-reading; the mention-rate control, which records a failure on five of sixteen powered blocks on the first
-architecture;
+reading; the mention-rate control, which records a failure on five of sixteen powered blocks on \textsc{LLaVA-1.5-7B};
 the repetition conditional, which could only ever have gone against the reading it was attached to;
 and the natural-prose condition, whose null is reported at full strength. One control confirmed the
 quantity it was built to test and simultaneously shrank the estimate that motivated building it, and
 both halves are reported. Two registered analyses failed a width ceiling that was not relaxed after
 the fact. Two later registrations returned non-affirmative outcomes and are reported at their
 registered strength rather than reframed: the mitigation decomposition returns
-\textsc{cannot-resolve} on its combined primary, and the de-saturation design returns no verdict
-because its own ceiling gate fired.
+``cannot resolve'' on its combined primary, and the de-saturation design returns no verdict
+because its own ceiling gate triggered.
 
 \paragraph{What was not pre-registered, and is marked as such.} Three elements of the specification
 were selected in the presence of data and are labelled wherever they appear. The $J$ endpoint itself
@@ -1673,9 +1666,9 @@ from the registered rules above.
 Every pre-registration is released with the paper, together with its dated amendments and its
 resolution. The machine-readable result artefacts are released with their integrity metadata, and
 with a script that re-derives every table cell in this paper from them and fails on disagreement. The
-analysis runs on \textsc{cpu} from the released artefacts, so every number in this paper can be
-checked without a \textsc{gpu} or the original checkpoints. Regenerating the stimuli and the
-generations requires a single consumer \textsc{gpu} and the five public checkpoints of
+analysis runs on CPU from the released artefacts, so every number in this paper can be
+checked without a GPU or the original checkpoints. Regenerating the stimuli and the
+generations requires a single consumer GPU and the five public checkpoints of
 Appendix~\ref{app:modelspec}.
 
 The verification gate of Appendix~\ref{app:gates} is the operative reproducibility instrument rather
@@ -1713,8 +1706,8 @@ processor-side image-token expansion. The COCO file hashes of the downloaded ima
 rebuild under a different batch composition can differ on a small number of tokens. Measured on the
 regenerated stimulus set, this moves the primary contrast from $+0.4859$ to $+0.4877$, which bounds
 the effect for these conditions.
-\item \textbf{The exploratory re-reads of Appendix~\ref{app:register} are not pre-registered and fire
-no decision cell.} Their degeneracy threshold and scoring window are inherited rather than registered
+\item \textbf{The exploratory re-reads of Appendix~\ref{app:register} are not pre-registered and enter
+no registered decision.} Their degeneracy threshold and scoring window are inherited rather than registered
 as endpoints, their windowed and whole-continuation versions disagree materially, and their
 stratifications carry no intervals and no multiplicity correction.
 \end{itemize}
@@ -1747,9 +1740,9 @@ to decompose. Sections~\ref{app:mitig-arms}--\ref{app:mitig-verdict} cover the
 first method: the arms and decoding, the CHAIR port and its validation, the construction of $H$, $F$,
 $J$, $d'$ and $c$, the integrity gates, the full decomposition with intervals, the link-sensitivity
 analysis, and the degeneracy of the blind arm. Appendix~\ref{app:mitig-vcd} covers the second,
-including why it was dropped from the first lane's registration and then run under its own.
+including why it was dropped from the first experiment's registration and then run under its own.
 
-The pre-registered primary returns \textsc{cannot-resolve}. It is a conjunction of three components
+The pre-registered primary returns ``cannot resolve''. It is a conjunction of three components
 fixed before any of these data existed, none of which returned an affirmative outcome
 (Appendix~\ref{app:mitig-verdict}). What survives every instrument is weaker than a resolved
 endpoint, and is the decomposition reading Section~\ref{sec:mitigation} takes from \emph{this}
@@ -1862,7 +1855,7 @@ proportion of captions containing at least one absent category, and $\mathrm{CHA
 proportion of category-mention occurrences that are absent.
 
 Rates entering $Z(\cdot)$ carry a log-linear (add-one-half) correction. On the three sighted arms
-its effect on $d'$ is at most $0.0013$ and the registered materiality flag does not fire. On an arm
+its effect on $d'$ is at most $0.0013$ and the registered materiality flag is not triggered. On an arm
 that mentions nothing it is the entire quantity, which is why the blind rows of
 Table~\ref{tab:mdlevels} carry no $d'$ or $c$; Appendix~\ref{app:mitig-blind} gives that case.
 
@@ -1917,8 +1910,8 @@ arm & tokens & trunc. & mentions & distinct & 8-gram & attn.\ mass \\
 \end{center}
 \end{table}
 
-A registered informativeness guard would have fired had the intervened arm bought its CHAIR gain by
-saying less. It does not fire: at $\alpha = 0.5$ captions are \emph{longer} ($112.5 \rightarrow
+A registered informativeness guard would have triggered had the intervened arm bought its CHAIR gain by
+saying less. It is not triggered: at $\alpha = 0.5$ captions are \emph{longer} ($112.5 \rightarrow
 128.4$ tokens) and carry \emph{more} category-mention occurrences ($7.654 \rightarrow 9.316$), while
 the number of distinct categories named falls ($3.304 \rightarrow 2.684$) and repetition rises
 (distinct-8-gram $0.9990 \rightarrow 0.9440$; $95$th-percentile maximum token run $2 \rightarrow
@@ -1963,7 +1956,7 @@ image block & Pass. Every row carries exactly $576$ image tokens. \\
 blind arm & Pass. The blind pixel tensor is bit-identical across all images, and $16/16$ blind
 captions differ from their sighted counterparts. \\
 mask leak & $0$. Across $376{,}033$ attention calls the interface was handed an explicit mask $0$
-times and the causal repair fired $2{,}689$ times, so the repair is load-bearing. \\
+times and the causal repair was applied $2{,}689$ times, so the repair is load-bearing. \\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -2016,7 +2009,7 @@ Three readings follow, and the order matters.
 
 \paragraph{At the repository default there is no gain to decompose.} $\Delta\mathrm{CHAIR}_i$ is
 $-0.26$ \civ{-1.42}{+0.91} and $\mathrm{CHAIR}_s$ moves the wrong way, $45.00 \rightarrow 48.40$.
-The registered outcome for that arm is \textsc{no-gain-to-decompose}, and nothing is decomposed from
+The registered outcome for that arm is ``no gain to decompose'', and nothing is decomposed from
 it. The two settings are far apart on this benchmark: $\mathrm{CHAIR}_s$ is $48.40$ at the
 repository default and $29.00$ at the value the method's own paper prescribes for this model,
 against a vanilla $45.00$.
@@ -2040,7 +2033,7 @@ a purely criterion-driven trajectory through $(F, H)$ against which a method can
 Table~\ref{tab:mdcurve} gives it. Reading $H$ off that curve at the intervened arm's own $F$ and
 subtracting gives $\Delta H$ at matched $F = +0.0245$ \civ{-0.0037}{+0.0511}, against an equivalence
 margin of $\pm 0.03$ fixed in advance --- the interval straddles the margin, so the registered
-outcome is \textsc{cannot-resolve}, which is an underpowered result and not a pass. On the same
+outcome is ``cannot resolve'', which is an underpowered result and not a pass. On the same
 construction, vanilla truncated to the token budget at which its false-alarm rate matches the
 intervened arm's gives $\mathrm{CHAIR}_i = 8.04$ \civ{6.91}{9.27} against the intervened arm's
 $7.21$, a difference of $-0.83$ \civ{-1.80}{+0.38}. The asymmetry in how that is read was fixed in
@@ -2151,7 +2144,7 @@ equivalence margin on $\Delta d'$ is $\pm 0.15$, a judgement call; a reader who 
 margin is $0.05$ should read the interval rather than the label, which is why every interval is
 printed. And the logit companion is applied at the same \emph{numeric} margin as the probit one,
 which is stricter on the logit scale by roughly a factor of $1.7$, so the link-sensitivity flag
-fires more readily than a scale-matched margin would.
+triggers more readily than a scale-matched margin would.
 
 \subsection{The blind arm degenerates, and why that is a property of the endpoint}
 \label{app:mitig-blind}
@@ -2204,7 +2197,7 @@ blinding the generation degenerates, a secondary was added that blinds the \emph
 already-generated sighted caption is scored against a different image's ground truth, over $20$
 fixed-point-free derangements averaged inside each bootstrap replicate. It was fixed with its own
 decision rule before it was computed, costs no generation, and is never promoted over a primary. It
-returns \textsc{gain-is-image-specific}: the $\alpha = 0.5$ arm's $\mathrm{CHAIR}_i$ advantage under
+returns ``gain is image-specific'': the $\alpha = 0.5$ arm's $\mathrm{CHAIR}_i$ advantage under
 permuted ground truth is $+0.22$ \civ{-0.94}{+1.33}, so scoring the same captions against the wrong
 image removes the advantage. The gain is therefore tied to this image's content even though it buys
 no measurable $\Delta d'$. Independently, vanilla's own $d'$ falls from $+3.1032$ on true ground
@@ -2220,7 +2213,7 @@ arm has no denominator.
 
 \begin{table}[htb]
 \caption{The three registered components and the combined outcome, per arm. The combined primary is
-\textsc{cannot-resolve} at the paper-prescribed $\alpha$. Anyone reading this as a confirmation is
+``cannot resolve'' at the paper-prescribed $\alpha$. Anyone reading this as a confirmation is
 misreading it.}
 \label{tab:mdverdict}
 \begin{center}
@@ -2229,11 +2222,11 @@ misreading it.}
 \toprule
 registered component & $\alpha = 0.5$ & $\alpha = 0.2$ \\
 \midrule
-decomposition & \textsc{link-sensitive} & \textsc{no-gain-to-decompose} \\
-blinding & \textsc{blind-denominator-too-thin} & \textsc{blind-denominator-too-thin} \\
-truncation curve & \textsc{cannot-resolve} & \textsc{extrapolation} \\
+decomposition & ``link-sensitive'' & ``no gain to decompose'' \\
+blinding & ``blind denominator too thin'' & ``blind denominator too thin'' \\
+truncation curve & ``cannot resolve'' & ``extrapolation'' \\
 \midrule
-combined & \textsc{cannot-resolve} & \textsc{no-gain-to-decompose} \\
+combined & ``cannot resolve'' & ``no gain to decompose'' \\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -2262,10 +2255,20 @@ say it does.
 \subsection{A second method, briefly}
 \label{app:mitig-vcd}
 
-The lane above registered one method. A second, \textsc{vcd} \citep{vcd}, was dropped from that lane
-by Amendment~1 on four facts verified at primary source and then run under a separate registration
-with its own positive control; a reader meeting only the amendment would otherwise conclude it was
-never run. It is reported here because it is a registered null, not because it carries any claim.
+A second method, VCD \citep{vcd}, was separated from the PAI registration by its Amendment~1 and run
+under a registration of its own. It returned no CHAIR gain to decompose: $\mathrm{CHAIR}_i$ worsens
+under greedy decoding and is unchanged under the method's sampling protocol. We report it as a
+registered null, not as a claim about VCD.
+
+\paragraph{Why the harness is not the likely explanation.} The same CHAIR port reproduces the
+unmodified model's published $\mathrm{CHAIR}_s$ and $\mathrm{CHAIR}_i$ exactly ($45.00$ and $12.78$),
+the same harness reproduces PAI's published POPE gain ($+1.10$ accuracy points against $+1.06$), and its
+CHAIR recoding recovers the recall drop \citet{sparc} report for PAI. VCD's own paper evaluates POPE,
+MME and LLaVA-Bench, with sampling as its main protocol, and reports no CHAIR figure, so there is no
+published CHAIR gain that this harness failed to reproduce. The worsening appears only under greedy
+decoding, which is not VCD's protocol; under its sampling protocol the estimate is a null.
+\citet{mirage} report, separately, that contrastive decoding's POPE gains reflect a shift in response
+tendency.
 
 \paragraph{Arms and settings.} Amplification $2.0$ and adaptive-plausibility cutoff $0.1$, as the
 method's paper states. The forward noise process is the repository's rather than the paper's --- a
@@ -2274,14 +2277,15 @@ signal coefficient is $3.7\times 10^{-12}$ at $T=500$, so no $T$ in its ablation
 distinguishable from any other, while the repository's sigmoid schedule retains $0.863$ and makes
 $T$ a live dose. Three arms: \texttt{vcd} (greedy, $T=500$, primary), \texttt{vcd\_t999} (greedy,
 sensitivity) and \texttt{vcd\_s} (sampled, the published protocol), the first two against the parent
-lane's greedy \texttt{vanilla} and the third against a sampled \texttt{vanilla\_s}; no contrast
+experiment's greedy \texttt{vanilla} and the third against a sampled \texttt{vanilla\_s}; no contrast
 crosses decoding modes.
-\paragraph{Gates.} The positive control passed exactly: re-scoring the parent lane's own
+\paragraph{Gates.} The positive control passed exactly: re-scoring the parent experiment's own
 \texttt{vanilla} rows through this port returns $\mathrm{CHAIR}_s = 45.00$ and
 $\mathrm{CHAIR}_i = 12.78$, its published figures. Liveness passed on all four of its clauses ---
 determinism with the method held fixed $0.000$; method off versus on $1.000$ against a floor of
-$0.90$; method off versus the parent lane's \texttt{vanilla} $0.000$, which must be zero; and the
-noise dose, $T=0$ versus $T=500$, $1.000$. Because F4 is a silent failure, the second stream is
+$0.90$; method off versus the parent experiment's \texttt{vanilla} $0.000$, which must be zero; and the
+noise dose, $T=0$ versus $T=500$, $1.000$. Because a contrastive stream that silently failed to diverge would look
+like a working one, the second stream is
 checked \emph{during} decoding rather than assumed: the mean per-step KL between the two streams is
 $0.0084$ against a floor of $10^{-3}$ at $T=500$ and rises to $0.1704$ at $T=999$, so the contrast
 strengthens with the dose as it must. Degeneracy screens pass in every arm (unique-token ratio
@@ -2315,40 +2319,40 @@ $\Delta J$, separation only & $-0.0117$ \civ{-0.0222}{-0.0010} & $-0.0088$ \civ{
 criterion${:}$separation ratio & $0.53$ & $3.30$ & $1.10$ \\
 \midrule
 $\Delta d'$ inside $\pm 0.15$? & yes & yes & no (upper $+0.158$) \\
-registered outcome & \multicolumn{3}{l}{\textsc{no-gain-to-decompose} on all three arms} \\
+registered outcome & \multicolumn{3}{l}{``no gain to decompose'' on all three arms} \\
 \bottomrule
 \end{tabular}
 \end{center}
 \end{table}
 
-\paragraph{Registered verdict: \textsc{no-gain}.} Two of the three arms have $\mathrm{CHAIR}_i$ gains
+\paragraph{Registered verdict: ``no gain''.} Two of the three arms have $\mathrm{CHAIR}_i$ gains
 whose intervals exclude zero \emph{on the wrong side}: at both of the method's published noise
 settings, under greedy decoding, CHAIR gets worse. The third --- the method's own published sampling
 protocol --- is a null whose interval spans zero. There is no gain here to decompose, and the
-registered primary returns \textsc{no-gain-to-decompose} on all three arms and \textsc{no-gain}
+registered primary returns ``no gain to decompose'' on all three arms and ``no gain''
 overall. The decomposition columns are therefore reported for completeness and carry no claim about
 where a gain lives, because there is no gain.
 
 \paragraph{The one arm that reports against the section's reading.} The sampled arm's separation term
-is $+0.0873$ \civ{+0.0151}{+0.1584}, the only positive $\Delta d'$ in either lane whose interval
+is $+0.0873$ \civ{+0.0151}{+0.1584}, the only positive $\Delta d'$ in either experiment whose interval
 excludes zero (the greedy primary's $-0.0717$ \civ{-0.1369}{-0.0062} also excludes zero, in the other
 direction) and the only one that leaves the $\pm 0.15$ margin, and it is also the only arm whose
-$\mathrm{CHAIR}_i$ gain is not negative. It decomposes a gain this lane's own registration classes as
+$\mathrm{CHAIR}_i$ gain is not negative. It decomposes a gain this experiment's own registration classes as
 immaterial ($+0.72$, interval spanning zero), so it cannot be read as a separation-driven
 improvement; but it is the single result in this appendix pointing away from ``the separation term
 never moves.'' 
 
-\paragraph{What this lane cannot decide, fixed before the verdict.}
+\paragraph{What this experiment cannot decide, fixed before the verdict.}
 \begin{itemize}
 \itemsep0em
 \item \textbf{It is not evidence that the method does not work.} It is evidence about a
 reimplementation of its published equations, on one model, one prompt, one image draw, with the
-repository's noise process. F1 means no external number anchors any arm, and that absence is carried
-as a limit rather than solved.
+repository's noise process. Because VCD publishes no CHAIR figure, no external number anchors any arm,
+and that absence is carried as a limit rather than solved.
 \item \textbf{The greedy arms are not the authors' protocol.} They exist to be commensurable with the
-parent lane. The published-protocol arm is the sampled one, and it is a null, not a loss.
-\item \textbf{Fifteen registered verdicts across the two lanes.} Three primaries for each of the five
-intervened arms (three here, two in the first lane), every interval printed so a reader can apply their own family-wise adjustment. No
+parent experiment. The published-protocol arm is the sampled one, and it is a null, not a loss.
+\item \textbf{Fifteen registered verdicts across the two experiments.} Three primaries for each of the five
+intervened arms (three here, two in the first experiment), every interval printed so a reader can apply their own family-wise adjustment. No
 verdict was selected after the fact.
 \end{itemize}
 
@@ -2412,13 +2416,13 @@ answer-token groups and thresholded for the binary answer. All four stay at ceil
 candidate set with never-mentioned distractors hardest, at a yes-rate of $1.0000$. A post-hoc
 diagnostic on the two-alternative variant shows why: it chooses the unit object at $0.9362$ when the
 prefix named it and $0.4990$ when it did not, so the binary format measures prefix membership. The
-registered cell is \textsc{still-saturated}, which returns no verdict.
+registered outcome is ``still saturated'', which returns no verdict.
 
 \paragraph{The graded readout of the published probe.} Registered to be reported in every branch, it
 gives $+0.0008$ \civ{-0.0142}{+0.0166}, width $0.0309$ against $0.0425$ for the binary answer, and
 it is not pinned: between $61\%$ and $74\%$ of each arm's units have $p_{\mathrm{yes}}$ inside
 $(0.05, 0.95)$. That evidence is post-hoc, because the registered ceiling gate was defined on the
-binary rate and fired.
+binary rate and triggered.
 
 \paragraph{Scoring objects the prefix never names.}\label{app:unsat-scope} A second pre-registered
 analysis scores distractors, objects the prefix never mentions, with the two-alternative probe;
@@ -2429,7 +2433,7 @@ $p > 0.99$ fraction at most $0.10$). Both gates were fixed before any five-scene
 earlier run had produced one-scene rows only), and a failure of one does not block the other. Free
 generation on these units moves by $+0.3655$ \civ{+0.2987}{+0.4303}, so there is an effect to find.
 The binary primary missed its ceiling gate ($\rateT = 0.9041$ against a ceiling of $0.90$), so the
-registered cell is \textsc{distractor-saturated}, which is not a verdict. The graded co-primary passed
+registered outcome is ``distractor probe saturated'', which is not a verdict. The graded co-primary passed
 its own gate: the forced-choice register moves by $-0.0057$ \civ{-0.0153}{+0.0036}, or
 $-0.006 \pm 0.010$ once widened in quadrature by run-to-run replay noise, and the readout is live on
 the same units and scale, registering ground-truth presence at $+0.2981$ ($0.7966$ against $0.4985$).
@@ -2437,12 +2441,12 @@ The registration reports the two readouts independently, but its pre-committed r
 verdict only if the binary gates pass. They did not, so the graded null is supporting evidence and not
 a registered confirmation.
 
-\paragraph{Corrections.} The first scoring run reported \textsc{distractor-saturated} as the headline
+\paragraph{Corrections.} The first scoring run reported ``distractor probe saturated'' as the headline
 cell. A later change to the headline selector, reasoning from the clause that the two readouts are
-gated independently, reported the co-primary's \textsc{distractor-null-confirmed} instead; every
+gated independently, reported the co-primary's ``distractor null confirmed'' instead; every
 number is identical between the two runs, and both result files are kept. That change conflicts with
 the registration's pre-committed acceptance rule for a null, which requires the binary gates to pass.
-We follow the stricter clause: the registered cell is \textsc{distractor-saturated}. Separately, a replay gate shown to reject a perfect re-run of the earlier probe was
+We follow the stricter clause: the registered outcome is ``distractor probe saturated''. Separately, a replay gate shown to reject a perfect re-run of the earlier probe was
 replaced before endpoint generation by one requiring exact agreement away from the decision boundary.
 
 \paragraph{Scope.} Both graded analyses are consistent with a forced-choice null that does not
@@ -2482,7 +2486,7 @@ the substantive point is the four named counterexamples rather than the ordering
 $1-\cos$ in the model's own image-feature space. $\dSight$ is the part of the one-to-five-scene rise
 attributable to the image. The two $J$ columns show whether an ablation blinded the model: the five
 rungs above the substitution leave the one-scene $J$ within $0.06$ of its sighted $+0.188$, and the
-four below it collapse it to near zero. Only the substitution moves $\dSight$ off zero. Intervals come from this lane's own resample, so the grey row differs in
+four below it collapse it to near zero. Only the substitution moves $\dSight$ off zero. Intervals come from this experiment's own resample, so the grey row differs in
 the third decimal from Tables~\ref{tab:trunc} and~\ref{tab:blind}.}
 \label{tab:ladder}
 \begin{center}
@@ -2533,7 +2537,7 @@ five-scene condition both reference arms sit at the $384$-token generation budge
 $\min(\text{sighted},\text{grey})$ equals the ceiling and flags every rung that terminates
 naturally; the diversity ratios fall mechanically with length and have the same fault. The
 amendment was written before any ladder verdict was read and it changed exactly one verdict --- the
-substitution arm, from \textsc{confounded-by-collapse} to \textsc{image-contributes}, on an
+substitution arm, from ``confounded by collapse'' to ``image contributes'', on an
 $8$-gram ratio of $0.567$ against $0.575$. Under the original screen, the substitution result
 would have been discarded by a screen whose form was wrong.
 
@@ -2546,7 +2550,7 @@ categories in any of $500$ captions, so $\mathrm{CHAIR}_i$ is $0/0$. Every grade
 the denominator non-empty: $500$, $500$, $498$, $489$, $378$, $405$, $450$ and $500$ captions of
 $500$ retain a category mention under \texttt{noise16/32/64}, \texttt{blur4}, \texttt{blur16},
 \texttt{lowres16}, \texttt{shuffle24} and \texttt{mismatch} respectively. Against a sighted PAI gain
-of $+5.56$ in $\mathrm{CHAIR}_i$ (this lane's resample gives \civ{+3.88}{+7.18}, the PAI lane's
+of $+5.56$ in $\mathrm{CHAIR}_i$ (this experiment's resample gives \civ{+3.88}{+7.18}, the PAI experiment's
 \civ{+3.88}{+7.10}), the image-attributable part is $+5.16$
 \civ{+2.89}{+7.42} under substitution. Under \texttt{blur16} it is $+8.70$ \civ{+2.55}{+14.96},
 more than the whole gain, so PAI raises $\mathrm{CHAIR}_i$ on the $378$ blurred captions that keep a
@@ -2586,11 +2590,11 @@ across decoding modes. Ablations: sighted, grey, and a mismatched real image, pl
 
 \paragraph{Result.} On \texttt{pai\_attn} --- the configuration that reproduces PAI's published POPE
 number, $+1.10$ accuracy points against their $+1.06$ --- the gain is \emph{partly} attributable to
-the image, at the registered label \textsc{partial} defined below:
+the image, at the registered label ``partial'' defined below:
 $\Delta_{\text{sighted}}(J) = +0.0220$ \civ{+0.0107}{+0.0336}, $\Delta_{\text{ablated}}(J) = +0.0013$
 \civ{-0.0102}{+0.0124}, and $\Delta_{\text{image}}(J) = +0.0207$ \civ{+0.0042}{+0.0371}; in accuracy
 $+1.033$ \civ{+0.21}{+1.86}. $B = 4000$, paired, clustered on the $500$ images. The registered label
-is \textsc{partial} rather than \textsc{image-attributable}, because the lower bound $+0.0042$ falls
+is ``partial'' rather than ``image-attributable'', because the lower bound $+0.0042$ falls
 below the pre-registered half-gain line of $0.0110$, so the rule cannot certify that more than half
 the gain is image-attributable. \texttt{pai\_both} agrees ($+0.0238$ \civ{+0.0078}{+0.0398}).
 
@@ -2604,8 +2608,8 @@ published gain lives in one attention row.
 \paragraph{The grey arm returns no data.} Under grey the model answers ``no'' to all $9000$
 questions, fluently and correctly --- a grey field contains none of the queried objects --- so
 $H = F = 0$ by construction, $\Delta_{\text{ablated}}$ is mechanically zero, and an unguarded reading
-would have returned \textsc{image-attributable} while measuring nothing. The registration forbade
-that reading in advance: the arm is \textsc{blind-arm-degenerate} and $\Delta_{\text{image}}$ is
+would have returned ``image-attributable'' while measuring nothing. The registration forbade
+that reading in advance: the arm is ``blind arm degenerate'' and $\Delta_{\text{image}}$ is
 undefined, not null. The severity ladder shows the same dissociation as Appendix~\ref{app:ladder}:
 \texttt{blur16} retains $J = +0.19$ while a sharp photograph of another scene retains $+0.04$, and
 \texttt{pshuffle} dissociates the rates ($H$ $0.883 \to 0.857$ while $F$ $0.184 \to 0.330$).
@@ -2654,7 +2658,7 @@ and corrected from $2.221$ to $0.030$ maximum absolute pixel difference).
 \label{app:qwen3}
 
 \paragraph{Checkpoint and environment.} \texttt{Qwen/Qwen3-VL-8B-Instruct} \citep{qwen3vl}, revision
-\texttt{0c351dd0}, $8{,}767{,}123{,}696$ parameters, bfloat16, one RTX 4090. This lane ran under a
+\texttt{0c351dd0}, $8{,}767{,}123{,}696$ parameters, bfloat16, one RTX 4090. This experiment ran under a
 different interpreter from the other architectures (\texttt{torch} 2.11.0, same
 \texttt{transformers} 5.14.1) because the base interpreter has neither PIL nor torchvision, so no
 vision-language processor loads in it.
@@ -2673,7 +2677,7 @@ broken template cannot pass this; a merely terse model can. \textsc{Qwen3-VL-8B}
 $16$-gram agreement of $1.000$, mean $0.958$, with $92\%$ of rows above threshold. The identical test
 run on \textsc{LLaVA-1.5-7B} in the same job scores $1.000$, $0.945$ and $92\%$. The bar therefore
 comes from this paper's own lead model rather than from an invented threshold, and the verdict was
-\textsc{run-endpoint}; the endpoint arms were held and released only on that verdict.
+``run endpoint''; the endpoint arms were held and released only on that verdict.
 
 \paragraph{Result.} $\dPrim = +0.5828$ \civ{+0.5337}{+0.6342}, $\dBlind = +0.5231$
 \civ{+0.4708}{+0.5764}, $\dSight = +0.0598$ \civ{+0.0235}{+0.0963}, $n = 1500$ cells per arm,
@@ -2696,7 +2700,7 @@ loop at different rates ($0.827$ against $0.911$) in exactly the condition carry
 looping-matched contrast was run. \textsc{Qwen2.5-VL}'s apparently clean ratio of $1.0000$ is an
 artefact: four-token continuations contain no $8$-gram.
 
-\paragraph{A mismatched-image arm (post hoc).} After the registered lane, we ran the substitution of
+\paragraph{A mismatched-image arm (post hoc).} After the registered experiment, we ran the substitution of
 Appendix~\ref{app:ladder} on this model: the same $1{,}500$ cells and prefixes, each image replaced by
 another of the $500$ under the derangement with seed $20260919$ (asserted bijective and self-pair-free,
 $3{,}000$ rows). Every hard gate of the registered scorer passed; its grey-flag gate, which requires the
