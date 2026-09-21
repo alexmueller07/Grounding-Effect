@@ -181,7 +181,7 @@ for xi, v, side in [(0 - off, 1.0066, -1), (1 - off, 0.7099, -1), (0 + off, 0.67
                     (1 + off, 0.4741, 1)]:
     axR.text(xi + side * 0.1, v, f"{v:.2f}", ha="left" if side > 0 else "right", va="center",
              fontsize=FS_S, color=INK, bbox=dict(fc="white", ec="none", pad=0.4), zorder=5)
-axR.set_xticks(reg); axR.set_xticklabels(["All cells", "Uncapped cells"])
+axR.set_xticks(reg); axR.set_xticklabels(["All cells", "Untruncated cells"])
 axR.set_xlim(-0.45, 1.45)
 axR.set_ylim(0.25, 1.13); axR.set_yticks([0.25, 0.5, 0.75, 1.0])
 axR.set_ylabel("Ablated / sighted rise")

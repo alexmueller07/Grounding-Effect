@@ -67,3 +67,4 @@ c3ec65ea433e59f49435f1c52d54ae8e005c1460a1ae846e311deb1a9e7b5ae2  500  qwen3/out
 9a5b3f3dde95fbc7955800f2c321e1abc440bc7dcdf9a245945439e56deb4ebe  8  qwen3/out/q3_af_smoke.jsonl
 842c5c478ab52bf29371b0e543e2bd1cf5e584b07f53104bab9bfa75dc6c93df  3000  qwen3/out/q3_blind.jsonl
 029d74615b6b8906f2d2a68e074fbdf67e7218a4e5c59e17e70210dc8d1bd74b  3000  qwen3/out/q3_sighted.jsonl
+542a8c2da3e393439a1d4cc118e6dccdb36eafda2002c4238724b01d35bbb3ee  3000  qwen3/out/q3_mm.jsonl

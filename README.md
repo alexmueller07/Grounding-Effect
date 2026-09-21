@@ -16,6 +16,7 @@ contribution of about half.**
 | claim | evidence |
 |---|---|
 | A blank on truncated generations manufactures a null | On the registered 500 images a grey field gives an ablated/sighted ratio of 1.03 [0.92, 1.16]. On one 3,500-image population (post hoc): grey 1.01 [0.96, 1.05], mismatched real image 0.68 [0.64, 0.72], grey on cells whose sighted continuations end before the budget 0.71 [0.56, 0.87], both corrections 0.47 [0.33, 0.62] with Δ_image = +0.182 [+0.122, +0.245] |
+| On Qwen3-VL-8B the two ablations agree | Mismatched image Δ_image = +0.065 [+0.031, +0.100] against grey's +0.060 [+0.023, +0.096]; its sighted one-scene J is already ≈ 0.05, so grey has no level to destroy (post hoc; `q3_gen_mm.py`, `q3_mm_score.py`) |
 | The mismatch estimate is conservative | The substitute image also contains 46–48% of the present objects the passage names; excluding those units raises Δ_image to +0.241 [+0.211, +0.270] |
 | Severity is not informativeness | Over nine pixel ablations, Spearman(severity, Δ_image) = +0.10. Four ablations — grey and flat black among them — destroy *more* of the image than the mismatched scene that is the only one to expose a contribution |
 | A blank breaks two standard benchmarks outright | Under grey, LLaVA-1.5-7B names none of the 80 COCO categories in 500 captions (CHAIR's denominator is 0/0) and answers "no" to all 9,000 POPE questions — correctly, since a grey field contains none of them |
@@ -63,7 +64,9 @@ their outputs are `results/regime_blind/cpw_blind_score.json` and `cpw_mm_score.
 `cpw_2x2_extra.py` computes the full 2×2 on one population (all 10,500 cells and the 2,089 uncapped
 cells), ratio intervals, cap rates of every arm, the substitute-image overlap analysis and a
 derangement-reconstruction check; its output is `results/regime_blind/cpw_2x2_extra.json` and it
-asserts the three earlier estimates as positive controls.
+asserts the three earlier estimates as positive controls. `code/sprint/ladder/code/lad_score_dprime.py` is the ladder scorer
+extended with d′ and c on the same bootstrap draw (output `results/ladder/lad_l1_dprime.json`); it
+reproduces the registered Δ_primary, Δ_ablated and Δ_image as its positive control.
 
 Each scorer re-derives previously published per-condition rates before reporting anything new and
 aborts if they do not reproduce to 5e-3. The ladder scorer additionally re-generates the published
