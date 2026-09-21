@@ -1216,7 +1216,10 @@ minutes. Random seeds encode the date an analysis was fixed, so they give the sa
 
 \begin{table}[htbp]
 \caption{First commit of each registration (short hash, date, Central European Summer Time). Row
-numbers follow Table~\ref{tab:registry}. Later amendments are separate, dated commits.}
+numbers follow Tables~\ref{tab:registry} and~\ref{tab:registry2}. Later amendments are separate, dated
+commits. $^{a}$Not committed; the date is that of its byte-identical copy on the compute cluster.
+$^{b}$The mismatched-image arm was added by Amendment~2 (\texttt{463fe01}, 2026-09-19), before its data
+existed.}
 \label{tab:reghash}
 \begin{center}
 \small
@@ -1236,11 +1239,11 @@ Row & Registered analysis & Commit & Date \\
 10 & Agreement                                    & \texttt{3adf8ac} & 2026-09-11 \\
 11 & Natural prose                                & \texttt{5701136} & 2026-09-12 \\
 12 & Second register (forced choice)              & \texttt{f009160} & 2026-09-11 \\
-13 & De-saturated forced choice                   & not committed; cluster copy & 2026-09-15 \\
+13 & De-saturated forced choice$^{a}$             & none            & 2026-09-15 \\
 14 & Distractor units                             & \texttt{8fe97a7} & 2026-09-15 \\
 15 & PAI, standard CHAIR                          & \texttt{ce3ed30} & 2026-09-15 \\
 16 & VCD, standard CHAIR                          & \texttt{28a4caa} & 2026-09-15 \\
-17 & Ablation ladder (mismatched image: Amendment~2, \texttt{463fe01}) & \texttt{f186bcf} & 2026-09-19 \\
+17 & Ablation ladder$^{b}$                        & \texttt{f186bcf} & 2026-09-19 \\
 18 & POPE with an ablated arm                     & \texttt{90e428d} & 2026-09-19 \\
 19 & \textsc{Qwen3-VL-8B}                         & \texttt{7a30268} & 2026-09-19 \\
 \bottomrule
@@ -1258,8 +1261,8 @@ Rows are grouped by topic and do not follow the numbering of Appendix~\ref{app:p
 \setlength{\tabcolsep}{4pt}
 \begin{tabular}{@{}p{0.17\linewidth}p{0.305\linewidth}p{0.345\linewidth}p{0.12\linewidth}@{}}
 \toprule
-\raggedright analysis & \raggedright registered primary & \raggedright outcome &
-\raggedright reported in \tabularnewline
+\raggedright Analysis & \raggedright Registered primary & \raggedright Outcome &
+\raggedright Reported in \tabularnewline
 \midrule
 \raggedright 1.\ Scene count, \textsc{LLaVA-1.5-7B} &
 \raggedright five-scene minus one-scene $J$; length-matched co-primary; composition and regime controls &
@@ -1308,6 +1311,21 @@ readout mechanically \textsc{replicates}, licence text set aside; $\dSight$ excl
 \raggedright the same manipulation on natural-prose units; units-seen gate &
 \raggedright \textsc{construct-specific} (with \textsc{unit-count-unmatched}): null at power, unit-standardised control also null; lead result specific to assembled captions &
 \raggedright Sec.~\ref{sec:exp1}; App.~\ref{app:prereg-detail} \tabularnewline
+\bottomrule
+\end{tabular}
+\end{center}
+\end{table}
+
+\begin{table}[htbp]
+\caption{Registered analyses and their outcomes, continued from Table~\ref{tab:registry}.}
+\label{tab:registry2}
+\begin{center}
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}p{0.17\linewidth}p{0.305\linewidth}p{0.345\linewidth}p{0.12\linewidth}@{}}
+\toprule
+\raggedright Analysis & \raggedright Registered primary & \raggedright Outcome &
+\raggedright Reported in \tabularnewline
 \midrule
 \raggedright 12.\ Second register &
 \raggedright the same contrast as a forced-choice existence probe on the same units &
@@ -2736,24 +2754,25 @@ substituted ones in $11\%$ and $27\%$. On all cells the three arms reach it at s
 $48\%$ and $69\%$, substituted $47\%$ and $69\%$), except grey's one-scene arm ($25\%$).
 
 \begin{table}[h]
-\caption{The one-to-five-scene contrast under each ablation on the $3{,}500$-image sample. Gaps are
-$J = H - F$ within each condition. Intervals are $B = 4000$ bootstrap replicates clustered on the
-image; ratio intervals are percentile intervals of the replicate ratios.}
+\caption{The one-to-five-scene contrast under each ablation on the $3{,}500$-image sample. The one- and
+five-scene columns give $J = H - F$ in each condition. Intervals are $B = 4000$ bootstrap replicates clustered on the
+image. Ratio is the ablated contrast over the sighted one; its intervals are percentile intervals of the
+replicate ratios.}
 \label{tab:regimeblind}
 \begin{center}
-\small
-\setlength{\tabcolsep}{4pt}
+\footnotesize
+\setlength{\tabcolsep}{2.4pt}
 \begin{tabular}{llrrrll}
 \toprule
-Cells & Arm & One scene & Five scenes & Contrast & $\dSight$ & Ablated/sighted \\
+Cells & Arm & One scene & Five scenes & Contrast & $\dSight$ & Ratio \\
 \midrule
-All      & Sighted          & $+0.176$ & $+0.647$ & $+0.472$ & (reference) & --- \\
+All      & Sighted          & $+0.176$ & $+0.647$ & $+0.472$ & --- & --- \\
 ($10{,}500$) & Grey field   & $-0.028$ & $+0.447$ & $+0.475$ & $-0.003$ \civ{-0.025}{+0.019} & $1.01$ \civ{0.96}{1.05} \\
-         & Mismatched image & $+0.099$ & $+0.418$ & $+0.319$ & $+0.153$ \civ{+0.132}{+0.175} & $0.68$ \civ{0.64}{0.72} \\
+         & Mismatched & $+0.099$ & $+0.418$ & $+0.319$ & $+0.153$ \civ{+0.132}{+0.175} & $0.68$ \civ{0.64}{0.72} \\
 \midrule
-Untruncated & Sighted          & $+0.105$ & $+0.451$ & $+0.346$ & (reference) & --- \\
+Untruncated & Sighted          & $+0.105$ & $+0.451$ & $+0.346$ & --- & --- \\
 ($2{,}089$) & Grey field    & $-0.069$ & $+0.177$ & $+0.246$ & $+0.100$ \civ{+0.041}{+0.163} & $0.71$ \civ{0.56}{0.87} \\
-         & Mismatched image & $+0.057$ & $+0.221$ & $+0.164$ & $\mathbf{+0.182}$ \civ{+0.122}{+0.245} & $0.47$ \civ{0.33}{0.62} \\
+         & Mismatched & $+0.057$ & $+0.221$ & $+0.164$ & $\mathbf{+0.182}$ \civ{+0.122}{+0.245} & $0.47$ \civ{0.33}{0.62} \\
 \bottomrule
 \end{tabular}
 \end{center}
