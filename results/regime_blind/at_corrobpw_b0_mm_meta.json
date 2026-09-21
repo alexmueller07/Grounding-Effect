@@ -1,0 +1,57 @@
+{
+ "sentinel": true,
+ "model": "llava-hf/llava-1.5-7b-hf",
+ "block": 0,
+ "smoke": false,
+ "rows": 5250,
+ "per_arm": {
+  "cap1": 2625,
+  "cap5": 2625
+ },
+ "n_cells": 2625,
+ "n_cells_published": 360,
+ "loader": "lowmem",
+ "n_images": 875,
+ "max_new_cont": 384,
+ "max_new_cont_reference": 192,
+ "cap1_rows_doubled": 158,
+ "cap1_cycles_total": 158,
+ "budget_tokens": {
+  "mean": 44.518095238095235,
+  "sd": 13.965609331172404,
+  "min": 8,
+  "max": 95
+ },
+ "srcs_gate_drift": 0,
+ "prefix_gate_drift": 0,
+ "census_md5_drift": 0,
+ "construction_gate": {
+  "checked": 500,
+  "mismatches": 0
+ },
+ "recon192_agreement_vs_at_redun": {
+  "cap1": {
+   "checked": 360,
+   "identical": 113,
+   "frac": 0.3138888888888889
+  },
+  "cap5": {
+   "checked": 360,
+   "identical": 10,
+   "frac": 0.027777777777777776
+  }
+ },
+ "mean_cont_len_per_arm": {
+  "cap1": 192.75314285714285,
+  "cap5": 274.6579047619048
+ },
+ "at_max_384_per_arm": {
+  "cap1": 0.4693333333333333,
+  "cap5": 0.6826666666666666
+ },
+ "empty_cont_rate_per_arm": {
+  "cap1": 0.031619047619047616,
+  "cap5": 0.009142857142857144
+ },
+ "smoke_both_uncapped_cells": null
+}

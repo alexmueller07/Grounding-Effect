@@ -1,329 +1,353 @@
 #!/usr/bin/env python3
 """
-Figures for "When Grounding Metrics Survive Blinding".
+Figures for "When a Blank Is Not a Control".
 
 Every number is transcribed from the filed result artefacts (wia_dprime.json,
-wia_baseline.json, wia_mrate.json, wia_xklen_cross_20554.json, wia_bench2).
-This script only draws; it computes nothing that is reported as a result.
+wia_baseline.json, wia_mrate.json, wia_xklen_cross_20554.json, wia_bench2, the
+PAI lane).  This script only draws; it computes nothing reported as a result.
 
-Palette validated colourblind-safe before use (protan dE 23.3, normal dE 30.3).
-Blue/orange means sighted/blind and nothing else; figures whose two series are
-not sighted/blind carry their own pair (see the colour-semantics block below).
-Every pairing also has a non-colour encoding -- hatch, marker shape, row label,
-block rule -- so the figures survive greyscale print.
-Figures are drawn at the width they are placed at in the document, so no figure
-is scaled down and no label lands below ~7pt on the page.
+House style, identical in every figure:
+  * Times New Roman for all text, including mathematics (custom mathtext set),
+    TrueType-embedded (pdf.fonttype 42) so no Type 3 fonts reach the PDF.
+  * Sentence case throughout; panel labels are a bold "(a)"/"(b)" followed by a
+    sentence-case title, left-aligned.
+  * One type scale: 8.5 pt for labels, ticks and legends, 9 pt for panel titles,
+    7.8 pt for value annotations.  One set of line weights: 0.6 pt spines,
+    0.45 pt grid, 1.1 pt data strokes, 0.8 pt reference lines.
+  * Every figure is drawn at the width it occupies on the page and included at
+    natural size, so the point sizes above are the sizes a reader sees.
+
+Colour semantics: blue/orange means sighted/blind and nothing else (validated
+colourblind-safe, protan dE 23.3, normal dE 30.3).  Every other contrast (two
+architectures, two readouts, the mismatched image) is drawn in neutral greys or
+black, so the paper uses one palette.  Every pairing also carries a non-colour cue (hatch, marker
+shape, row label or block rule) so the figures survive greyscale print.
 """
 import os
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-from matplotlib.patches import FancyBboxPatch, FancyArrowPatch
+from matplotlib.patches import FancyBboxPatch, FancyArrowPatch, Rectangle
 import numpy as np
 
 OUT = "figures"
 os.makedirs(OUT, exist_ok=True)
 
-# --- colour semantics -------------------------------------------------------
-# SIGHTED/BLIND (blue/orange) is reserved for the sighted-vs-blind contrast and
-# is used ONLY in fig_concept, fig_paradox(a) and fig_sdt.  Figures whose two
-# series are not sighted/blind get their own pair, so the blue/orange pair never
-# stands for anything else:
-#   fig_robustness  architecture 1 vs architecture 2  -> ARCH_A / ARCH_B (plum)
-#   fig_forced      free generation vs forced choice  -> READ_A / READ_B (green)
-# Both replacement pairs are lightness-ramped within one hue, so the separation
-# survives dichromacy and greyscale.  Measured (CIEDE2000, Vienot dichromat sim)
-# against the validated blue/orange baseline (normal 49.1, protan 57.3, dL* 12.2):
-#   ARCH plum  (#6B2D5B/#C98FB4) normal 36.7 protan 36.0 deutan 36.8 tritan 36.0 dL* 37.2
-#   READ green (#2A6B3C/#98C9A3) normal 33.2 protan 31.9 deutan 33.9 tritan 33.0 dL* 36.6
-# i.e. every axis clears the validated floor (normal 30.3 / protan 23.3) and the
-# greyscale separation is ~3x the baseline's.
 SIGHTED = "#1F5FA9"
 BLIND   = "#C4620A"
 INK     = "#1a1a1a"
-MUTED   = "#6b6b6b"
-GRID    = "#d8d8d4"
-SURFACE = "#ffffff"          # page white: figures must not print an off-white panel
-PALE_S  = "#dbe6f3"          # sighted-tinted fill, fig_concept only
-BAND    = "#e9e9e6"          # neutral equivalence-margin shading (not blue)
-CITEXT  = "#4a4a4a"
-ARCH_A  = "#6B2D5B"
-ARCH_B  = "#C98FB4"
-READ_A  = "#2A6B3C"
-READ_B  = "#98C9A3"
+MUTED   = "#5f5f5f"
+GRID    = "#dcdcd8"
+SURFACE = "#ffffff"
+PALE_S  = "#dbe6f3"
+PALE_B  = "#f6e3d2"
+BAND    = "#ebebe8"
+ARCH_A  = "#333333"      # architecture 1 (fig_robustness): dark neutral, circles
+ARCH_B  = "#9a9a9a"      # architecture 2: light neutral, squares
+READ_A  = "#4a4a4a"      # free generation (fig_forced)
+READ_B  = "#bdbdbd"      # forced choice
+
+FS   = 8.5      # labels, ticks, legends
+FS_T = 9.0      # panel titles
+FS_S = 7.8      # value annotations
+LW_AX, LW_GRID, LW_DATA, LW_REF, LW_EDGE = 0.6, 0.45, 1.1, 0.8, 0.8
+MS = 5.0        # marker size
+TW = 5.5        # text width, inches
 
 plt.rcParams.update({
     "font.family": "serif",
-    "font.serif": ["Times New Roman", "Nimbus Roman", "DejaVu Serif"],
-    "font.size": 8, "axes.labelsize": 8, "axes.titlesize": 8.5,
-    "xtick.labelsize": 7.5, "ytick.labelsize": 7.5, "legend.fontsize": 7.5,
-    "axes.edgecolor": MUTED, "axes.linewidth": 0.6,
+    "font.serif": ["Times New Roman", "Times", "Nimbus Roman", "DejaVu Serif"],
+    "mathtext.fontset": "custom",
+    "mathtext.rm": "Times New Roman",
+    "mathtext.it": "Times New Roman:italic",
+    "mathtext.bf": "Times New Roman:bold",
+    "mathtext.fallback": "stix",
+    "pdf.fonttype": 42, "ps.fonttype": 42,
+    "font.size": FS, "axes.labelsize": FS, "axes.titlesize": FS_T,
+    "xtick.labelsize": FS, "ytick.labelsize": FS, "legend.fontsize": FS,
+    "axes.titlepad": 5, "axes.labelpad": 3,
+    "axes.edgecolor": MUTED, "axes.linewidth": LW_AX,
+    "xtick.major.width": LW_AX, "ytick.major.width": LW_AX,
+    "xtick.major.size": 2.5, "ytick.major.size": 2.5,
+    "xtick.major.pad": 2.5, "ytick.major.pad": 2.5,
     "xtick.color": MUTED, "ytick.color": MUTED,
+    "xtick.labelcolor": INK, "ytick.labelcolor": INK,
     "text.color": INK, "axes.labelcolor": INK,
+    "lines.linewidth": LW_DATA, "patch.linewidth": LW_EDGE,
+    "hatch.linewidth": 0.7,
+    "legend.frameon": False, "legend.handlelength": 1.3,
+    "legend.handletextpad": 0.5, "legend.borderaxespad": 0.2,
+    "legend.labelspacing": 0.3,
     "figure.facecolor": SURFACE, "axes.facecolor": SURFACE,
     "savefig.facecolor": SURFACE, "savefig.edgecolor": "none",
 })
-W = 5.5
-BW = 0.34
+
+
+def sg(v, nd=2):
+    """Signed number with a typographic minus."""
+    return f"{v:+.{nd}f}".replace("-", "\u2212")
 
 
 def recessive(ax, axis="y"):
-    ax.grid(axis=axis, color=GRID, linewidth=0.5, zorder=0)
+    ax.grid(axis=axis, color=GRID, linewidth=LW_GRID, zorder=0)
     ax.set_axisbelow(True)
     for s in ("top", "right"):
         ax.spines[s].set_visible(False)
 
 
+def ptitle(ax, letter, text):
+    """Bold panel label, then a sentence-case title, left-aligned."""
+    ax.set_title(rf"$\mathbf{{({letter})}}$  {text}", loc="left")
+
+
+def stitle(ax, text):
+    ax.set_title(text, loc="left")
+
+
 def save(fig, name):
-    fig.savefig(f"{OUT}/{name}", bbox_inches="tight",
+    fig.savefig(f"{OUT}/{name}", bbox_inches="tight", pad_inches=0.015,
                 facecolor="white", edgecolor="none")
     plt.close(fig)
 
 
-# ============================================================ fig_concept
-# Canvas cropped to the diagram now that the in-figure footnote is gone; the
-# height is cut in the same proportion as the y-range so the boxes and type keep
-# exactly the scale they had.
-fig, ax = plt.subplots(figsize=(W, 1.77))
-ax.set_xlim(0, 11); ax.set_ylim(1.02, 4.78); ax.axis("off")
+def fit_box(ax, texts, pad_x, pad_y, **kw):
+    """Draw a rectangle around the union of the given Text objects (data units)."""
+    fig = ax.figure
+    r = fig.canvas.get_renderer()
+    inv = ax.transData.inverted()
+    bbs = [t.get_window_extent(renderer=r) for t in texts]
+    x0 = min(b.x0 for b in bbs); x1 = max(b.x1 for b in bbs)
+    y0 = min(b.y0 for b in bbs); y1 = max(b.y1 for b in bbs)
+    (dx0, dy0), (dx1, dy1) = inv.transform([(x0, y0), (x1, y1)])
+    ax.add_patch(Rectangle((dx0 - pad_x, dy0 - pad_y), dx1 - dx0 + 2 * pad_x,
+                           dy1 - dy0 + 2 * pad_y, zorder=2, **kw))
+    return dx0 - pad_x, dy0 - pad_y, dx1 + pad_x, dy1 + pad_y
 
 
-def box(x, y, w, h, fc, ec, label, sub=None, fs=7.5):
-    ax.add_patch(FancyBboxPatch((x, y), w, h, boxstyle="round,pad=0.06",
-                                fc=fc, ec=ec, lw=0.9, zorder=3))
-    ax.text(x + w / 2, y + h / 2 + (0.16 if sub else 0), label, ha="center",
-            va="center", fontsize=fs, color=INK, zorder=4)
-    if sub:
-        ax.text(x + w / 2, y + h / 2 - 0.26, sub, ha="center", va="center",
-                fontsize=6.5, color=MUTED, zorder=4, style="italic")
-
-
-ax.text(0.05, 4.35, "SIGHTED", fontsize=7.5, color=SIGHTED, fontweight="bold")
-box(0.05, 3.25, 1.5, 0.95, PALE_S, SIGHTED, "target\nimage", fs=7)
-box(1.85, 3.25, 3.1, 0.95, "#ffffff", MUTED, "prefix tokens", "identical ids", fs=7.5)
-box(5.25, 3.25, 1.9, 0.95, "#ffffff", MUTED, "continuation", fs=7.5)
-ax.text(7.45, 3.72, r"$\Delta = +0.486$", fontsize=8.5, color=SIGHTED,
-        fontweight="bold", va="center")
-
-ax.text(0.05, 2.30, "BLIND", fontsize=7.5, color=BLIND, fontweight="bold")
-box(0.05, 1.20, 1.5, 0.95, "#c9c9c9", BLIND, "grey\nrectangle", fs=7)
-box(1.85, 1.20, 3.1, 0.95, "#ffffff", MUTED, "prefix tokens", "identical ids", fs=7.5)
-box(5.25, 1.20, 1.9, 0.95, "#ffffff", MUTED, "continuation", fs=7.5)
-ax.text(7.45, 1.67, r"$\Delta = +0.502$", fontsize=8.5, color=BLIND,
-        fontweight="bold", va="center")
-
-for y in (3.72, 1.67):
-    ax.add_patch(FancyArrowPatch((1.62, y), (1.80, y), arrowstyle="->",
-                                 mutation_scale=8, color=MUTED, lw=0.8))
-    ax.add_patch(FancyArrowPatch((5.02, y), (5.20, y), arrowstyle="->",
-                                 mutation_scale=8, color=MUTED, lw=0.8))
-
-ax.plot([9.85, 9.85], [1.67, 3.72], color=INK, lw=0.9)
-ax.plot([9.72, 9.85], [3.72, 3.72], color=INK, lw=0.9)
-ax.plot([9.72, 9.85], [1.67, 1.67], color=INK, lw=0.9)
-ax.text(10.0, 2.70, r"$\Delta_{\mathrm{image}}$" "\n" r"$-0.016$", fontsize=7.5,
-        color=INK, va="center")
-
-# The in-figure footnote that used to sit here duplicated the LaTeX caption
-# almost verbatim; it is deleted and the canvas cropped to the diagram, which
-# also returns the vertical space it occupied.
-save(fig, "fig_concept.pdf")
+def inch_canvas(w, h):
+    """A figure whose single axes spans it, with data units equal to inches."""
+    fig = plt.figure(figsize=(w, h))
+    ax = fig.add_axes([0, 0, 1, 1])
+    ax.set_xlim(0, w); ax.set_ylim(0, h); ax.axis("off")
+    return fig, ax
 
 
 # ============================================================ fig_lead
-# The paper's lead figure (Figure 1).  Two decimals throughout, matching the main text.
-# Panel (a) doubles as the positive control: the image raises J by about +0.2 WITHIN each
-# condition (intervals from wia_dprime.json, lanes/F1/ci/sight_gap_cap{1,5}), and raises it by
-# the same amount in both, which is why it contributes nothing to the one->five contrast.
-fig, (axL, axR) = plt.subplots(1, 2, figsize=(W, 1.95),
-                               gridspec_kw={"width_ratios": [1.0, 1.05], "wspace": 0.62})
+# Figure 1.  Panel (a) doubles as the positive control: the image raises J by about +0.2
+# WITHIN each condition (wia_dprime.json, lanes/F1/ci/sight_gap_cap{1,5}), and by the same
+# amount in both, which is why it contributes nothing to the one->five contrast under grey.
+fig, (axL, axR) = plt.subplots(1, 2, figsize=(TW, 1.98),
+                               gridspec_kw={"width_ratios": [1.0, 1.0]})
+fig.subplots_adjust(left=0.085, right=0.985, bottom=0.2, top=0.86, wspace=0.36)
+BW = 0.36
 x = np.arange(2)
 g_s = [0.18814, 0.67401]
 g_b = [-0.02191, 0.47997]
-axL.bar(x - BW/2, g_s, BW, color=SIGHTED, label="sighted   (rise $+0.49$)",
-        zorder=3, edgecolor=SURFACE, linewidth=1.0)
-axL.bar(x + BW/2, g_b, BW, color=BLIND, label="blind   (rise $+0.50$)",
-        zorder=3, edgecolor=SURFACE, linewidth=1.0, hatch="///")
-axL.axhline(0, color=MUTED, linewidth=0.7, zorder=2)
+axL.bar(x - BW/2, g_s, BW, color=SIGHTED, label=r"Sighted (rise $+0.49$)",
+        zorder=3, edgecolor=SURFACE, linewidth=LW_EDGE)
+axL.bar(x + BW/2, g_b, BW, color=BLIND, label=r"Grey field (rise $+0.50$)",
+        zorder=3, edgecolor=SURFACE, linewidth=LW_EDGE, hatch="///")
+axL.axhline(0, color=MUTED, linewidth=LW_REF, zorder=2)
 for xi, v in list(zip(x - BW/2, g_s)) + list(zip(x + BW/2, g_b)):
-    axL.text(xi, v + (0.025 if v >= 0 else -0.075), f"{v:+.2f}", ha="center",
-             fontsize=7, color=INK)
-# within-condition image effect, sighted minus blind
-for xc, top, lab in [(0, 0.188, "image: $+0.21$"), (1, 0.674, "image: $+0.19$")]:
-    axL.text(xc, top + 0.13, lab, ha="center", fontsize=6.8, color=MUTED, style="italic")
-axL.set_xticks(x); axL.set_xticklabels(["one scene", "five scenes"])
+    axL.text(xi, v + (0.03 if v >= 0 else -0.035), sg(v), ha="center",
+             va="bottom" if v >= 0 else "top", fontsize=FS_S, color=INK)
+axL.set_xticks(x); axL.set_xticklabels(["One scene", "Five scenes"])
 axL.set_ylabel(r"$J = H - F$")
-axL.set_ylim(-0.14, 1.26)
-axL.set_title("(a) the score, with and without the image", loc="left")
-axL.legend(frameon=False, loc="upper left", handlelength=1.2, ncol=1,
-           borderaxespad=0.2, labelspacing=0.3, fontsize=7)
+axL.set_ylim(-0.13, 1.22); axL.set_yticks([0, 0.5, 1.0])
+axL.set_xlim(-0.55, 1.55)
+ptitle(axL, "a", "The score with and without the image")
+axL.legend(loc="upper left")
 recessive(axL)
 
-# Four-architecture run (all measured together); Qwen2.5-VL is reported in the appendix only,
-# because its four-token median continuation leaves the endpoint almost nothing to measure.
-labels = ["LLaVA-1.5-7B", "LLaVA-OV-0.5B", "Kosmos-2", "Qwen3-VL-8B"]
-pt = [-0.0160, -0.0348, -0.1028, +0.0598]
-lo = [-0.0701, -0.0906, -0.1677, +0.0235]
-hi = [+0.0399, +0.0179, -0.0360, +0.0963]
-y = np.arange(4)[::-1]
-err = [[p - l for p, l in zip(pt, lo)], [h - p for p, h in zip(pt, hi)]]
-axR.axvspan(-0.10, 0.10, color=BAND, alpha=0.9, zorder=1)
-for xi, yi, e0, e1 in zip(pt, y, err[0], err[1]):
-    axR.errorbar([xi], [yi], xerr=[[e0], [e1]], fmt="o", color=INK, ecolor=INK,
-                 elinewidth=1.0, capsize=3, markersize=4.5, zorder=3)
-axR.axvline(0, color=MUTED, linewidth=0.9, linestyle="--", zorder=2)
-for xi, yi in zip(pt, y):
-    axR.text(xi, yi + 0.22, f"{xi:+.2f}", ha="center", fontsize=7.0, color=INK)
-axR.set_yticks(list(y) + [-0.95, -1.72])
-axR.set_yticklabels(labels + ["mismatched image", "blank, uncapped cells"], fontsize=7.4)
-for lab in axR.get_yticklabels()[-2:]:
-    lab.set_color(SIGHTED); lab.set_fontsize(6.6)
-axR.set_ylim(-0.6, 3.6); axR.set_xlim(-0.20, 0.15)
-axR.set_xlabel(r"$\Delta_{\mathrm{image}}$   (shaded: $\pm 0.10$)")
-axR.errorbar([0.1598], [-0.95], xerr=[[0.1598 - 0.1052], [0.2129 - 0.1598]], fmt="s",
-             color=SIGHTED, ecolor=SIGHTED, elinewidth=1.0, capsize=3, markersize=4.5, zorder=3)
-axR.errorbar([0.1004], [-1.72], xerr=[[0.1004 - 0.0411], [0.1628 - 0.1004]], fmt="D",
-             color=SIGHTED, ecolor=SIGHTED, elinewidth=1.0, capsize=3, markersize=4.0, zorder=3)
-axR.text(0.1004, -1.50, "$+0.10$", ha="center", fontsize=7.0, color=SIGHTED)
-axR.text(0.1598, -0.73, "$+0.16$", ha="center", fontsize=7.0, color=SIGHTED)
-
-axR.set_ylim(-2.5, 3.6); axR.set_xlim(-0.20, 0.25)
-axR.set_title("(b) the part of the rise due to the image", loc="left")
-recessive(axR, axis="x")
+# (b) The 2x2 on one population: {grey, mismatched image} x {all cells, cells whose sighted
+# continuations both end before the budget}, 3,500 images (cpw_2x2_extra.json; ratio =
+# ablated rise / sighted rise, 95% percentile intervals, B = 4000 clustered on the image).
+MM = INK
+reg = np.array([0.0, 1.0])
+r_g = [1.0066, 0.7099]; lo_g = [0.9612, 0.5555]; hi_g = [1.0545, 0.8688]
+r_m = [0.6754, 0.4741]; lo_m = [0.6350, 0.3257]; hi_m = [0.7163, 0.6206]
+axR.axhline(1.0, color=MUTED, linewidth=LW_REF, linestyle="--", zorder=2)
+axR.text(0.62, 1.03, "Image contributes nothing", fontsize=FS_S, color=MUTED, va="bottom",
+         ha="center")
+off = 0.07
+for xs_, r, lo_, hi_, col, mk, lab, ls in [
+        (reg - off, r_g, lo_g, hi_g, BLIND, "o", "Grey field", "-"),
+        (reg + off, r_m, lo_m, hi_m, MM, "s", "Mismatched image", "-")]:
+    axR.plot(xs_, r, color=col, linewidth=LW_DATA, linestyle=ls, zorder=3)
+    axR.errorbar(xs_, r, yerr=[np.subtract(r, lo_), np.subtract(hi_, r)], fmt=mk, color=col,
+                 ecolor=col, elinewidth=LW_DATA, capsize=2.5, capthick=LW_DATA,
+                 markersize=MS, zorder=4, label=lab)
+for xi, v, side in [(0 - off, 1.0066, -1), (1 - off, 0.7099, -1), (0 + off, 0.6754, 1),
+                    (1 + off, 0.4741, 1)]:
+    axR.text(xi + side * 0.1, v, f"{v:.2f}", ha="left" if side > 0 else "right", va="center",
+             fontsize=FS_S, color=INK, bbox=dict(fc="white", ec="none", pad=0.4), zorder=5)
+axR.set_xticks(reg); axR.set_xticklabels(["All cells", "Uncapped cells"])
+axR.set_xlim(-0.45, 1.45)
+axR.set_ylim(0.25, 1.13); axR.set_yticks([0.25, 0.5, 0.75, 1.0])
+axR.set_ylabel("Ablated / sighted rise")
+axR.legend(loc="lower left", handlelength=1.6)
+ptitle(axR, "b", "Both choices move the answer")
+recessive(axR)
 save(fig, "fig_lead.pdf")
 
 
+# ============================================================ fig_concept
+fig, ax = inch_canvas(4.3, 1.42)
+
+
+def box(x, y, w, h, fc, ec, label, sub=None):
+    ax.add_patch(FancyBboxPatch((x, y), w, h, boxstyle="round,pad=0,rounding_size=0.05",
+                                fc=fc, ec=ec, lw=LW_DATA * 0.8, zorder=3))
+    ax.text(x + w / 2, y + h / 2 + (0.075 if sub else 0), label, ha="center",
+            va="center", fontsize=FS, color=INK, zorder=4, linespacing=1.05)
+    if sub:
+        ax.text(x + w / 2, y + h / 2 - 0.095, sub, ha="center", va="center",
+                fontsize=FS_S, color=MUTED, zorder=4, style="italic")
+
+
+def harrow(x0, x1, y):
+    ax.add_patch(FancyArrowPatch((x0, y), (x1, y), arrowstyle="-|>", mutation_scale=7,
+                                 color=MUTED, lw=LW_REF, zorder=2))
+
+
+BH = 0.40
+for yb, name, col, fc, img in [(0.86, "Sighted", SIGHTED, PALE_S, "Target\nimage"),
+                               (0.12, "Blind", BLIND, "#cfcfcf", "Grey\nfield")]:
+    ax.text(0.0, yb + BH + 0.07, name, fontsize=FS_T, color=col, fontweight="bold")
+    box(0.0, yb, 0.62, BH, fc, col, img)
+    box(0.84, yb, 1.20, BH, "#ffffff", MUTED, "Prefix tokens", "identical token ids")
+    box(2.26, yb, 0.94, BH, "#ffffff", MUTED, "Continuation")
+    harrow(0.63, 0.83, yb + BH / 2)
+    harrow(2.05, 2.25, yb + BH / 2)
+ax.text(3.30, 0.86 + BH / 2, r"$\Delta = +0.486$", fontsize=FS_T, color=SIGHTED,
+        fontweight="bold", va="center")
+ax.text(3.30, 0.12 + BH / 2, r"$\Delta = +0.502$", fontsize=FS_T, color=BLIND,
+        fontweight="bold", va="center")
+yT, yB = 0.86 + BH / 2, 0.12 + BH / 2
+ax.plot([4.02, 4.07, 4.07, 4.02], [yT, yT, yB, yB], color=INK, lw=LW_REF)
+ax.text(4.12, (yT + yB) / 2, r"$\Delta_{\mathrm{image}}$" "\n" r"$-0.016$", fontsize=FS,
+        color=INK, va="center", ha="left", linespacing=1.3)
+save(fig, "fig_concept.pdf")
+
+
+# ============================================================ fig_robustness
+fig, ax = plt.subplots(figsize=(TW * 0.93, 2.75))
+fig.subplots_adjust(left=0.33, right=0.985, top=0.985, bottom=0.15)
+rows = [
+    ("Raw primary (registered)",            -0.0160, -0.0708,  0.0400, "f1"),
+    ("Within-condition, two-arm",           -0.0124, -0.0673,  0.0427, "f1"),
+    ("Cross-condition length match",         0.0223, -0.0190,  0.0665, "f1"),
+    ("Empty continuations removed",         -0.0045, -0.0614,  0.0536, "f1"),
+    ("Object-type matched",                  0.0019, -0.0488,  0.0516, "f1"),
+    ("Raw primary (registered)",            -0.0348, -0.0905,  0.0192, "f2"),
+    ("Within-condition, two-arm",            0.0426, -0.0041,  0.0891, "f2"),
+    ("Empty continuations removed",         -0.0557, -0.1172,  0.0053, "f2"),
+    ("Object-type matched",                 -0.0413, -0.0895,  0.0040, "f2"),
+]
+y = [9, 8, 7, 6, 5, 3, 2, 1, 0]
+CI_X = 0.106
+ax.axvspan(-0.10, 0.10, color=BAND, zorder=1, linewidth=0)
+STYLE = {"f1": (ARCH_A, "o", ARCH_A), "f2": (ARCH_B, "s", ARCH_A)}
+for (lab, p, l, h, fam), yi in zip(rows, y):
+    col, mk, mec = STYLE[fam]
+    ax.errorbar([p], [yi], xerr=[[p - l], [h - p]], fmt=mk, color=col, ecolor=col,
+                elinewidth=LW_DATA, capsize=2.5, capthick=LW_DATA, markersize=MS - 0.5,
+                markeredgecolor=mec, markeredgewidth=0.7, zorder=3)
+    ax.text(CI_X, yi, f"[{sg(l, 3)}, {sg(h, 3)}]", va="center", ha="left",
+            fontsize=FS_S, color=INK, zorder=4)
+ax.axvline(0, color=INK, linewidth=LW_REF, linestyle="--", zorder=2)
+ax.axhline(4.0, color="#9a9a9a", linewidth=LW_REF, zorder=5)
+ax.set_yticks(y); ax.set_yticklabels([lab for lab, *_ in rows])
+ax.tick_params(axis="y", length=0)
+ax.set_xticks([-0.10, -0.05, 0.0, 0.05, 0.10])
+ax.set_xlabel(r"$\Delta_{\mathrm{image}}$ (shaded: reference margin $\pm 0.10$, not registered)")
+ax.set_xlim(-0.125, 0.172); ax.set_ylim(-0.65, 10.4)
+ax.text(-0.121, 9.55, "LLaVA-1.5-7B", fontsize=FS_T, color=INK, fontweight="bold",
+        va="baseline")
+ax.text(-0.121, 3.5, "LLaVA-OV-0.5B", fontsize=FS_T, color=INK, fontweight="bold",
+        va="baseline")
+recessive(ax, axis="x")
+ax.spines["left"].set_visible(False)
+save(fig, "fig_robustness.pdf")
+
+
 # ============================================================ fig_dose
-fig, ax = plt.subplots(figsize=(W * 0.58, 1.72))
+fig, ax = plt.subplots(figsize=(3.05, 1.85))
 steps = [0.2792, 0.1180, 0.0372, 0.0448]
 xs = np.arange(4)
-ax.bar(xs, steps, 0.6, color=SIGHTED, zorder=3, edgecolor=SURFACE, linewidth=1.0)
+ax.bar(xs, steps, 0.6, color=SIGHTED, zorder=3, edgecolor=SURFACE, linewidth=LW_EDGE)
 for xi, v in zip(xs, steps):
-    ax.text(xi, v + 0.008, f"{v:+.4f}", ha="center", fontsize=7, color=INK)
-# The arrow lands on the left flank of bar 4, below its "+0.0448" data label,
-# so the arrowhead no longer strikes through the number it points at.
-ax.annotate("step 4 $>$ step 3\n(point estimates)", xy=(2.715, 0.0255),
-            xytext=(1.78, 0.150), fontsize=7, color=INK,
-            arrowprops=dict(arrowstyle="->", color=INK, lw=0.8,
+    ax.text(xi, v + 0.007, sg(v, 3), ha="center", va="bottom", fontsize=FS_S, color=INK)
+ax.annotate("Step 4 > step 3\n(point estimates)", xy=(2.72, 0.026),
+            xytext=(1.62, 0.165), fontsize=FS_S, color=INK, linespacing=1.15,
+            arrowprops=dict(arrowstyle="-|>", color=INK, lw=LW_REF, mutation_scale=7,
                             shrinkA=2, shrinkB=1))
 ax.set_xticks(xs); ax.set_xticklabels(["1", "2", "3", "4"])
-ax.set_xlabel("step along the realised distinct-scene ladder")
-ax.set_ylabel(r"increment in $J$")
-ax.set_ylim(0, 0.32)
-ax.set_title(r"monotone and front-loaded ($\rho_S = +1.0$)", loc="left")
+ax.set_xlabel("Step along the realised distinct-scene ladder")
+ax.set_ylabel(r"Increment in $J$")
+ax.set_ylim(0, 0.32); ax.set_yticks([0, 0.1, 0.2, 0.3])
 recessive(ax)
 save(fig, "fig_dose.pdf")
 
 
 # ============================================================ fig_sdt
-fig, (a1, a2) = plt.subplots(1, 2, figsize=(W, 2.05))
+fig, (a1, a2) = plt.subplots(1, 2, figsize=(TW * 0.93, 1.95))
+fig.subplots_adjust(left=0.1, right=0.99, bottom=0.14, top=0.87, wspace=0.36)
 x = np.arange(2)
-
 d_s = [0.4861, 2.0183]; d_b = [-0.0549, 1.2918]
 a1.bar(x - BW/2, d_s, BW, color=SIGHTED, zorder=3, edgecolor=SURFACE,
-       linewidth=1.0, label="sighted")
+       linewidth=LW_EDGE, label="Sighted")
 a1.bar(x + BW/2, d_b, BW, color=BLIND, zorder=3, edgecolor=SURFACE,
-       linewidth=1.0, hatch="///", label="blind")
-a1.axhline(0, color=MUTED, linewidth=0.7, zorder=2)
+       linewidth=LW_EDGE, hatch="///", label="Blind")
+a1.axhline(0, color=MUTED, linewidth=LW_REF, zorder=2)
 for xi, v in list(zip(x - BW/2, d_s)) + list(zip(x + BW/2, d_b)):
-    a1.text(xi, v + (0.07 if v >= 0 else -0.19), f"{v:+.2f}", ha="center",
-            fontsize=6.8, color=INK)
-a1.set_xticks(x); a1.set_xticklabels(["one scene", "five scenes"])
-a1.set_ylabel(r"sensitivity $d'$"); a1.set_ylim(-0.6, 2.45)
-a1.set_title(r"(a) $d'$ rises with scene count, blind or not", loc="left")
-a1.legend(frameon=False, loc="upper left", handlelength=1.3)
+    a1.text(xi, v + (0.06 if v >= 0 else -0.06), sg(v), ha="center",
+            va="bottom" if v >= 0 else "top", fontsize=FS_S, color=INK)
+a1.set_xticks(x); a1.set_xticklabels(["One scene", "Five scenes"])
+a1.set_xlim(-0.55, 1.55)
+a1.set_ylabel("Sensitivity $d$\u2032"); a1.set_ylim(-0.55, 2.45)
+ptitle(a1, "a", "$d$\u2032 rises with scene count, blind or not")
+a1.legend(loc="upper left")
 recessive(a1)
 
 c_s = [-0.2130, 0.2371]; c_b = [0.0532, 0.0975]
-a2.bar(x - BW/2, c_s, BW, color=SIGHTED, zorder=3, edgecolor=SURFACE, linewidth=1.0)
+a2.bar(x - BW/2, c_s, BW, color=SIGHTED, zorder=3, edgecolor=SURFACE, linewidth=LW_EDGE)
 a2.bar(x + BW/2, c_b, BW, color=BLIND, zorder=3, edgecolor=SURFACE,
-       linewidth=1.0, hatch="///")
-a2.axhline(0, color=MUTED, linewidth=0.7, zorder=2)
+       linewidth=LW_EDGE, hatch="///")
+a2.axhline(0, color=MUTED, linewidth=LW_REF, zorder=2)
 for xi, v in list(zip(x - BW/2, c_s)) + list(zip(x + BW/2, c_b)):
-    a2.text(xi, v + (0.022 if v >= 0 else -0.055), f"{v:+.2f}", ha="center",
-            fontsize=6.8, color=INK)
-a2.set_xticks(x); a2.set_xticklabels(["one scene", "five scenes"])
-a2.set_ylabel(r"criterion $c$"); a2.set_ylim(-0.32, 0.36)
-a2.set_title(r"(b) $c$ moves $+0.45$ sighted, $+0.04$ blind", loc="left")
+    a2.text(xi, v + (0.015 if v >= 0 else -0.015), sg(v), ha="center",
+            va="bottom" if v >= 0 else "top", fontsize=FS_S, color=INK)
+a2.set_xticks(x); a2.set_xticklabels(["One scene", "Five scenes"])
+a2.set_xlim(-0.55, 1.55)
+a2.set_ylabel(r"Criterion $c$"); a2.set_ylim(-0.33, 0.36)
+ptitle(a2, "b", r"$c$ moves $+0.45$ sighted, $+0.04$ blind")
 recessive(a2)
 save(fig, "fig_sdt.pdf")
 
 
 # ============================================================ fig_forced
-fig, ax = plt.subplots(figsize=(W * 0.62, 1.95))
+fig, ax = plt.subplots(figsize=(2.5, 1.95))
 vals = [0.4859, -0.0095]
 los  = [0.4283, -0.0314]
 his  = [0.5417,  0.0124]
 xs = np.arange(2)
-# free generation vs forced choice is a readout contrast, not sighted/blind, so
-# it gets its own lightness-ramped green pair; the x tick labels name the arms.
 cols = [READ_A, READ_B]
 err = [[v - l for v, l in zip(vals, los)], [h - v for v, h in zip(vals, his)]]
-ax.bar(xs, vals, 0.5, color=cols, zorder=3, edgecolor=READ_A, linewidth=0.8)
-ax.errorbar(xs, vals, yerr=err, fmt="none", ecolor=INK, elinewidth=1.0,
-            capsize=3, zorder=4)
-ax.axhline(0, color=MUTED, linewidth=0.7, zorder=2)
+ax.bar(xs, vals, 0.52, color=cols, zorder=3, edgecolor=READ_A, linewidth=LW_EDGE)
+ax.errorbar(xs, vals, yerr=err, fmt="none", ecolor=INK, elinewidth=LW_DATA,
+            capsize=2.5, capthick=LW_DATA, zorder=4)
+ax.axhline(0, color=MUTED, linewidth=LW_REF, zorder=2)
 for xi, v, h in zip(xs, vals, his):
-    ax.text(xi, h + 0.03, f"{v:+.4f}", ha="center", fontsize=7.5, color=INK)
+    ax.text(xi, h + 0.025, sg(v), ha="center", va="bottom", fontsize=FS_S, color=INK)
 ax.set_xticks(xs)
-ax.set_xticklabels(["free generation\n(model selects objects)",
-                    "forced choice\n(question supplies object)"])
-ax.set_ylabel(r"scene-count contrast in $J$")
-ax.set_ylim(-0.12, 0.64)
-ax.set_title("same stimuli, same model, same units", loc="left")
+ax.set_xticklabels(["Free generation", "Forced choice"])
+ax.set_xlim(-0.6, 1.6)
+ax.set_ylabel(r"Scene-count contrast in $J$")
+ax.set_ylim(-0.1, 0.64); ax.set_yticks([0, 0.2, 0.4, 0.6])
 recessive(ax)
 save(fig, "fig_forced.pdf")
 
-
-# ============================================================ fig_robustness
-# Canvas sized to the width it is placed at (0.92 x 5.5in text block) so the
-# figure is not scaled down in the document: at the old 5.5in canvas the tight
-# bbox came out 5.77in and everything shrank by 12%, which is what dropped the
-# CI strings to ~5.8pt on the page.
-fig, ax = plt.subplots(figsize=(5.02, 2.95))
-fig.subplots_adjust(left=0.300, right=0.988, top=0.972, bottom=0.160)
-rows = [
-    ("raw primary (registered)",            -0.0160, -0.0708,  0.0400, "f1"),
-    ("within-condition, two-arm",           -0.0124, -0.0673,  0.0427, "f1"),
-    ("cross-condition length match",         0.0223, -0.0190,  0.0665, "f1"),
-    ("empty continuations removed",         -0.0045, -0.0614,  0.0536, "f1"),
-    ("object-type matched",                  0.0019, -0.0488,  0.0516, "f1"),
-    ("raw primary (registered)",            -0.0348, -0.0905,  0.0192, "f2"),
-    ("within-condition, two-arm",            0.0426, -0.0041,  0.0891, "f2"),
-    ("empty continuations removed",         -0.0557, -0.1172,  0.0053, "f2"),
-    ("object-type matched",                 -0.0413, -0.0895,  0.0040, "f2"),
-]
-# Every row of the appendix truncation table for the two LLaVA architectures is plotted.
-# A two-row gap between the blocks carries the separating rule and the second
-# block heading without either touching a data row.
-y = [9, 8, 7, 6, 5, 3, 2, 1, 0]
-CI_X = 0.104                      # CI column starts clear of the shaded band
-ax.axvspan(-0.10, 0.10, color=BAND, alpha=0.9, zorder=1)
-# Two architectures reuse the same row labels, so the grouping must survive
-# greyscale: a rule between the blocks, a bold block heading over each, and a
-# different marker shape per block.  Colour is the fourth, redundant cue.
-STYLE = {"f1": (ARCH_A, "o", ARCH_A), "f2": (ARCH_B, "s", ARCH_A)}
-for (lab, p, l, h, fam), yi in zip(rows, y):
-    col, mk, mec = STYLE[fam]
-    ax.errorbar([p], [yi], xerr=[[p - l], [h - p]], fmt=mk, color=col,
-                ecolor=col, elinewidth=1.1, capsize=3, markersize=4.5,
-                markeredgecolor=mec, markeredgewidth=0.7, zorder=3)
-    ax.text(CI_X, yi, f"[{l:+.4f}, {h:+.4f}]", va="center", ha="left",
-            fontsize=7.2, color=CITEXT, zorder=4)
-ax.axvline(0, color=INK, linewidth=0.9, linestyle="--", zorder=2)
-ax.axhline(4.05, color="#8e8e8e", linewidth=0.8, zorder=5)
-ax.set_yticks(y); ax.set_yticklabels([lab for lab, *_ in rows])
-ax.set_xticks([-0.10, -0.05, 0.0, 0.05, 0.10])   # no gridline through the CI column
-ax.set_xlabel(r"$\Delta_{\mathrm{image}}$  (shaded: reference margin $\pm 0.10$, not registered)")
-ax.set_xlim(-0.125, 0.176); ax.set_ylim(-0.70, 10.15)
-ax.text(-0.122, 9.48, "A.  LLaVA-1.5-7B", fontsize=7.5, color=INK,
-        fontweight="bold", va="baseline")
-ax.text(-0.122, 3.42, "B.  LLaVA-OV-0.5B", fontsize=7.5, color=INK,
-        fontweight="bold", va="baseline")
-recessive(ax, axis="x")
-save(fig, "fig_robustness.pdf")
-
-print("wrote:", ", ".join(sorted(os.listdir(OUT))))
 
 # ============================================================ fig_zroc
 # Operating points in z-coordinates.  d' = z(H) - z(F) is height above the chance diagonal, so
@@ -331,82 +355,104 @@ print("wrote:", ", ".join(sorted(os.listdir(OUT))))
 # Rates: appendix tab:percond (prefix endpoint, LLaVA-1.5-7B) and tab:mdlevels (CHAIR, PAI).
 from scipy.stats import norm as _norm
 zz = _norm.ppf
-fig, (a1, a2) = plt.subplots(1, 2, figsize=(W, 2.35),
-                             gridspec_kw={"width_ratios": [1.25, 1.0], "wspace": 0.42})
+fig, (a1, a2) = plt.subplots(1, 2, figsize=(TW * 0.93, 2.3),
+                             gridspec_kw={"width_ratios": [1.3, 1.0]})
+fig.subplots_adjust(left=0.085, right=0.99, bottom=0.17, top=0.9, wspace=0.3)
+
 
 def isod(ax, xs, ds):
     for d in ds:
-        ax.plot(xs, xs + d, color=MUTED, linewidth=0.6, linestyle=":", zorder=1)
+        ax.plot(xs, xs + d, color=MUTED, linewidth=LW_GRID + 0.15, linestyle=":", zorder=1)
 
-def dlab(ax, x, d, text=None, off=0.02):
-    ax.text(x, x + d + off, text or f"$d'={d:g}$", fontsize=6.6, color=MUTED, rotation=45,
-            rotation_mode="anchor", ha="left", va="bottom", clip_on=True)
 
-def arrow(ax, p0, p1, col, ls, lab, lab_xy):
+def dlab(ax, x, d, text=None, off=0.02, below=False):
+    ax.text(x, x + d + (-off if below else off), text or f"$d$\u2032 = {d:g}", fontsize=FS_S,
+            color=MUTED, rotation=45, rotation_mode="anchor", ha="left",
+            va="top" if below else "bottom", clip_on=True)
+
+
+def zarrow(ax, p0, p1, col, ls, lab, lab_xy):
     ax.annotate("", xy=p1, xytext=p0, zorder=4,
-                arrowprops=dict(arrowstyle="-|>", color=col, lw=1.4, linestyle=ls,
-                                shrinkA=2, shrinkB=2, mutation_scale=9))
-    ax.plot(*p0, "o", mfc="white", mec=col, ms=4.2, zorder=5)
-    ax.plot(*p1, "o", color=col, ms=4.2, zorder=5)
-    ax.text(*lab_xy, lab, fontsize=7.2, color=col, ha="left", va="center", clip_on=True)
+                arrowprops=dict(arrowstyle="-|>", color=col, lw=LW_DATA + 0.3, linestyle=ls,
+                                shrinkA=2.5, shrinkB=2.5, mutation_scale=9))
+    ax.plot(*p0, "o", mfc="white", mec=col, mew=LW_DATA, ms=MS, zorder=5)
+    ax.plot(*p1, "o", color=col, ms=MS, zorder=5)
+    ax.text(*lab_xy, lab, fontsize=FS, color=col, ha="left", va="center")
 
-# (a) prefix endpoint, one scene -> five scenes (open marker = one scene, filled = five)
+
 S0 = (zz(0.4880), zz(0.6761)); S1 = (zz(0.1063), zz(0.7803))
 B0 = (zz(0.4897), zz(0.4678)); B1 = (zz(0.2285), zz(0.7085))
 isod(a1, np.linspace(-2.0, 0.5, 50), [0, 1, 2])
-dlab(a1, 0.00, 0, "chance", off=0.10)
-dlab(a1, -1.32, 1, off=0.10); dlab(a1, -1.82, 2, off=0.10)
-arrow(a1, S0, S1, SIGHTED, "-",  "sighted", (-1.22, 0.93))
-arrow(a1, B0, B1, BLIND,   "--", "blind",   (-1.10, 0.38))
+dlab(a1, 0.12, 0, "Chance", off=0.08)
+dlab(a1, -1.30, 1, off=0.08); dlab(a1, -1.84, 2, off=0.08)
+zarrow(a1, S0, S1, SIGHTED, "-",  "Sighted", (-0.80, 0.78))
+zarrow(a1, B0, B1, BLIND,   "--", "Blind",   (-1.07, 0.38))
 a1.set_xlim(-1.9, 0.35); a1.set_ylim(-0.45, 1.2)
 a1.set_aspect("equal", adjustable="box")
 a1.set_xlabel("$z(F)$"); a1.set_ylabel("$z(H)$")
-a1.set_title("(a) prefix endpoint, one $\\rightarrow$ five scenes", loc="left")
+ptitle(a1, "a", r"Prefix endpoint, one $\rightarrow$ five scenes")
 recessive(a1)
 
-# (b) standard CHAIR, vanilla -> PAI
 V = (zz(0.0100), zz(0.7816)); P = (zz(0.0050), zz(0.7083))
 isod(a2, np.linspace(-2.8, -2.0, 20), [2.9, 3.1, 3.3])
-dlab(a2, -2.31, 2.9, off=0.035); dlab(a2, -2.28, 3.1, off=0.035); dlab(a2, -2.73, 3.3, off=0.035)
-arrow(a2, V, P, INK, "-", "vanilla $\\rightarrow$ PAI", (-2.74, 0.47))
+dlab(a2, -2.29, 2.9, off=0.03); dlab(a2, -2.235, 3.1, off=0.03, below=True)
+dlab(a2, -2.66, 3.3, off=0.03)
+zarrow(a2, V, P, INK, "-", r"Vanilla $\rightarrow$ PAI", (-2.37, 0.45))
 a2.set_xlim(-2.75, -2.06); a2.set_ylim(0.40, 0.98)
+a2.set_xticks([-2.6, -2.4, -2.2])
 a2.set_aspect("equal", adjustable="box")
 a2.set_xlabel("$z(F)$"); a2.set_ylabel("$z(H)$")
-a2.set_title("(b) PAI on CHAIR", loc="left")
+ptitle(a2, "b", "PAI on CHAIR")
 recessive(a2)
+# equal-aspect panels of different heights: pin both titles to one baseline
+fig.canvas.draw()
+ytop = max(a1.get_position().y1, a2.get_position().y1)
+for ax_ in (a1, a2):
+    t = ax_.title
+    bb = ax_.get_position()
+    t.set_transform(fig.transFigure); t.set_position((bb.x0, ytop + 0.03)); t.set_ha("left")
 save(fig, "fig_zroc.pdf")
 
+
 # ============================================================ fig_hf
-# Prof. Park's Priority 3: make the H/F decomposition the star.  Two rows only; the "one number,
-# two behaviours" reading lives in the caption so the float stays inside the page budget.
-# Numbers: appendix tab:mdlevels / tab:mddecomp (PAI alpha=0.5 vs vanilla, LLaVA-1.5-7B, 500 images).
-fig, ax = plt.subplots(figsize=(W, 1.62))
-ax.set_xlim(0, 10); ax.set_ylim(0, 5.05); ax.axis("off")
+# The H/F decomposition of PAI's CHAIR gain (appendix tab:mdlevels / tab:mddecomp; PAI
+# alpha=0.5 vs vanilla, LLaVA-1.5-7B, 500 images).  Boxes are fitted to their text, so no
+# line can cross a border.
+fig, ax = inch_canvas(4.9, 1.72)
+fig.canvas.draw()
 
-def panel(x, y, w, h, title, body, edge=INK, fc="white"):
-    ax.add_patch(plt.Rectangle((x, y), w, h, facecolor=fc, edgecolor=edge, linewidth=1.0, zorder=2))
-    ax.text(x + w/2, y + h - 0.33, title, ha="center", va="top", fontsize=8.0, color=INK,
-            fontweight="bold", zorder=3)
-    ax.text(x + w/2, y + h - 0.83, body, ha="center", va="top", fontsize=7.2, color=INK,
-            zorder=3, linespacing=1.35)
 
-def arrow(x0, y0, x1, y1):
-    ax.annotate("", xy=(x1, y1), xytext=(x0, y0), zorder=4,
-                arrowprops=dict(arrowstyle="-|>", color=MUTED, lw=1.3, mutation_scale=11))
+def text_panel(xc, ytop, title, body, edge, fc="white"):
+    t1 = ax.text(xc, ytop, title, ha="center", va="top", fontsize=FS_T, color=INK,
+                 fontweight="bold", zorder=3)
+    t2 = ax.text(xc, ytop - 0.2, body, ha="center", va="top", fontsize=FS, color=INK,
+                 zorder=3, linespacing=1.25)
+    return fit_box(ax, [t1, t2], 0.12, 0.07, facecolor=fc, edgecolor=edge,
+                   linewidth=LW_DATA)
 
-panel(2.55, 3.72, 4.9, 1.28, r"$\mathrm{CHAIR}_i$ improves:  $12.8 \rightarrow 7.2$",
-      "a published method, scored the standard way", fc=BAND)
-ax.plot([2.45, 7.55], [3.34, 3.34], color=MUTED, lw=1.0, zorder=1)
-arrow(5.0, 3.72, 5.0, 3.36)
-arrow(2.45, 3.34, 2.45, 2.86)
-arrow(7.55, 3.34, 7.55, 2.86)
 
-panel(0.30, 0.92, 4.30, 1.92, r"$H$ falls:  $0.78 \rightarrow 0.71$",
-      "it names fewer objects that\nARE in the image\n(seven points of recall)", edge=SIGHTED)
-panel(5.40, 0.92, 4.30, 1.92, r"$F$ falls:  $0.010 \rightarrow 0.005$",
-      "it names fewer objects that\nare NOT in the image\n(the half CHAIR rewards)", edge=BLIND)
+def varrow(x, y0, y1):
+    ax.annotate("", xy=(x, y1), xytext=(x, y0), zorder=4,
+                arrowprops=dict(arrowstyle="-|>", color=MUTED, lw=LW_DATA,
+                                mutation_scale=9, shrinkA=0, shrinkB=0))
 
-ax.text(5.0, 0.16, r"threshold $c$ $+0.24$ [$+0.20$, $+0.28$]   "
-                   r"$\cdot$   separation: registered primary CANNOT-RESOLVE",
-        ha="center", va="bottom", fontsize=7.2, color=MUTED)
+
+top = text_panel(2.45, 1.64, r"$\mathbf{CHAIR}_{\mathbf{i}}$ improves: $12.8 \rightarrow 7.2$",
+                 "A published method, scored the standard way", INK, fc=BAND)
+left = text_panel(1.2, 1.02, r"$H$ falls: $0.78 \rightarrow 0.71$",
+                  "It names fewer objects that\n" r"$are$ in the image" "\n(seven points of recall)",
+                  SIGHTED)
+right = text_panel(3.7, 1.02, r"$F$ falls: $0.010 \rightarrow 0.005$",
+                   "It names fewer objects that\n" r"are $not$ in the image" "\n(the half CHAIR rewards)",
+                   BLIND)
+yb = top[1]
+ym = (yb + left[3]) / 2
+ax.plot([1.2, 3.7], [ym, ym], color=MUTED, lw=LW_DATA, zorder=1)
+ax.plot([2.45, 2.45], [yb, ym], color=MUTED, lw=LW_DATA, zorder=1)
+varrow(1.2, ym, left[3]); varrow(3.7, ym, right[3])
+ax.text(2.45, left[1] - 0.06, r"Threshold $c$: $+0.24$ [$+0.20$, $+0.28$]   $\cdot$   "
+        "Separation: registered primary cannot resolve",
+        ha="center", va="top", fontsize=FS_S, color=MUTED)
 save(fig, "fig_hf.pdf")
+
+print("wrote:", ", ".join(sorted(os.listdir(OUT))))

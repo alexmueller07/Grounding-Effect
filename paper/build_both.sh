@@ -43,11 +43,11 @@ for f in "$OUT"/*.pdf; do printf "  %-42s %s\n" "$(basename "$f")" "$(pdfinfo "$
 
 echo
 echo "-- ANONYMOUS must leak nothing (expect 0) --"
-HITS=$(pdftotext "$OUT/ICLR2027_submission_ANONYMOUS.pdf" - | grep -icE "mueller|park|wisconsin|korea|github|/Users/|alexmueller" || true)
+HITS=$(pdftotext "$OUT/ICLR2027_submission_ANONYMOUS.pdf" - | grep -icE "mueller|park|wisconsin|korea|github|/Users/|alexmueller|jae-ho|gyeong" || true)
 echo "  identifying-marker hits: $HITS"
 if [ "$HITS" != "0" ]; then
   echo "  *** FAIL -- would be desk-rejected. Offending lines:"
-  pdftotext "$OUT/ICLR2027_submission_ANONYMOUS.pdf" - | grep -inE "mueller|park|wisconsin|korea|github|/Users/|alexmueller" | head
+  pdftotext "$OUT/ICLR2027_submission_ANONYMOUS.pdf" - | grep -inE "mueller|park|wisconsin|korea|github|/Users/|alexmueller|jae-ho|gyeong" | head
   exit 1
 fi
 

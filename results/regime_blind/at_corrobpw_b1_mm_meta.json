@@ -1,0 +1,57 @@
+{
+ "sentinel": true,
+ "model": "llava-hf/llava-1.5-7b-hf",
+ "block": 1,
+ "smoke": false,
+ "rows": 5250,
+ "per_arm": {
+  "cap1": 2625,
+  "cap5": 2625
+ },
+ "n_cells": 2625,
+ "n_cells_published": 396,
+ "loader": "lowmem",
+ "n_images": 875,
+ "max_new_cont": 384,
+ "max_new_cont_reference": 192,
+ "cap1_rows_doubled": 164,
+ "cap1_cycles_total": 164,
+ "budget_tokens": {
+  "mean": 44.330666666666666,
+  "sd": 13.912228007295745,
+  "min": 9,
+  "max": 92
+ },
+ "srcs_gate_drift": 0,
+ "prefix_gate_drift": 0,
+ "census_md5_drift": 0,
+ "construction_gate": {
+  "checked": 500,
+  "mismatches": 0
+ },
+ "recon192_agreement_vs_at_redun": {
+  "cap1": {
+   "checked": 396,
+   "identical": 114,
+   "frac": 0.2878787878787879
+  },
+  "cap5": {
+   "checked": 396,
+   "identical": 14,
+   "frac": 0.03535353535353535
+  }
+ },
+ "mean_cont_len_per_arm": {
+  "cap1": 194.4975238095238,
+  "cap5": 274.23809523809524
+ },
+ "at_max_384_per_arm": {
+  "cap1": 0.47276190476190477,
+  "cap5": 0.6807619047619048
+ },
+ "empty_cont_rate_per_arm": {
+  "cap1": 0.030857142857142857,
+  "cap5": 0.005714285714285714
+ },
+ "smoke_both_uncapped_cells": null
+}

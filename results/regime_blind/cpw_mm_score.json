@@ -1,0 +1,18 @@
+{
+ "n_cells": 2089,
+ "n_images": 1649,
+ "rule": "both sighted arms cont_len<384",
+ "Delta_sighted": 0.3459897824757895,
+ "gap_cap1_sighted": 0.10533184441723731,
+ "gap_cap5_sighted": 0.4513216268930268,
+ "Delta_blind": 0.16404094568808078,
+ "gap_cap1_blind": 0.0568605994830651,
+ "gap_cap5_blind": 0.22090154517114588,
+ "Delta_image": 0.1819488367877087,
+ "ratio_blind_over_sighted": 0.47412078042957667,
+ "Delta_image_ci": [
+  0.12210050940046455,
+  0.24490919686534895
+ ],
+ "n_boot_used": 4000
+}
