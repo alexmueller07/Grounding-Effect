@@ -54,7 +54,7 @@ fi
 echo
 echo "-- NAMED must carry both authors and the code URL (expect >=1 each) --"
 for pat in "Mueller" "Park" "Wisconsin" "Korea" "github.com/alexmueller07"; do
-  n=$(pdftotext "$OUT/arXiv_NAMED.pdf" - | grep -ic "$pat" || true)
+  n=$(pdftotext "$OUT/arXiv_NAMED.pdf" - | tr -d '\n' | grep -o -i "$pat" | wc -l | tr -d ' ')
   printf "  %-34s %s\n" "$pat" "$n"
   [ "$n" = "0" ] && { echo "  *** FAIL: '$pat' missing from the named build"; exit 1; }
 done
@@ -84,12 +84,13 @@ def lines(n):
 # page <= 9, or it is the very first line of page 10 (body filled page 9 exactly).
 for p in range(1,13):
     L=lines(p)
-    if "AI USE STATEMENT" in L:
-        k=L.index("AI USE STATEMENT")
+    hit=[i for i,l in enumerate(L) if re.sub(r"\s","",l).upper()=="REPRODUCIBILITYSTATEMENT"]
+    if hit:
+        k=hit[0]
         if p<=9 or (p==10 and k==0):
             print("  main text ends on page %d (first end statement on p%d, line %d)"%(p if k>0 else p-1,p,k+1)); sys.exit(0)
         print("  *** FAIL: main text runs to page %d"%p); sys.exit(1)
-print("  *** FAIL: AI USE STATEMENT heading not found"); sys.exit(1)
+print("  *** FAIL: REPRODUCIBILITY STATEMENT heading not found"); sys.exit(1)
 PYGATE
 nref=$(pdftotext "$OUT/ICLR2027_submission_ANONYMOUS.pdf" - 2>/dev/null | grep -c '??' || true)
 echo "  unresolved cross-references: $nref"

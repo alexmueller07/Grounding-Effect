@@ -1,4 +1,4 @@
-\section{Experimental details}
+\section{Experimental Details}
 \label{app:setup}
 
 This appendix supplies everything needed to check the measurements in the main text: the stimulus
@@ -23,7 +23,7 @@ uniform grey field. On \textsc{LLaVA-1.5-7B} that difference is $-0.016$.}
 \label{fig:concept}
 \end{figure}
 
-\subsection{Models, decoding and prompt}
+\subsection{Models, Decoding and Prompt}
 \label{app:modelspec}
 
 Five checkpoints are used; the first two carry every primary number, and the fifth,
@@ -56,7 +56,7 @@ approximately.
 
 The prompt is the LLaVA-1.5 v1 conversation format, verbatim, unchanged across every condition:
 
-\begingroup\small\begin{verbatim}
+\begingroup\fontsize{8}{9.5}\selectfont\begin{verbatim}
 A chat between a curious human and an artificial intelligence assistant. The
 assistant gives helpful, detailed, and polite answers to the human's questions.
 USER: <image>
@@ -87,7 +87,7 @@ this floor, and the observed minimum is $55$ tokens.
 One analysis --- the generation-regime control of Appendix~\ref{app:regime} --- extends the sample to
 $3{,}500$ images with the original $500$ nested inside, giving $10{,}500$ cells and $21{,}000$ rows.
 
-\subsection{Stimulus construction}
+\subsection{Stimulus Construction}
 \label{app:stimulus}
 
 For image $i$, let $L_i$ be the token length of the model's own greedy caption; the cut is
@@ -141,7 +141,7 @@ prefix token ids held bit-identical to the corresponding sighted condition. The 
 component is $\dSight = \dPrim - \dBlind$, an algebraic identity in its components; what is empirical
 is its magnitude.
 
-\subsection{Object extraction and ground truth}
+\subsection{Object Extraction and Ground Truth}
 \label{app:gt}
 
 The scorer is a faithful port of the CHAIR object scorer. The 80-category synonym table is used
@@ -176,7 +176,7 @@ objects mined from the human captions). The estimator is unmodified across the t
 ground-truth dictionary is swapped, and the switch asserts its own union branch equal to the
 published $G(i)$ per image.
 
-\subsection{The endpoint and its units}
+\subsection{The Endpoint and Its Units}
 \label{app:endpoint}
 
 For each (image, condition) pair we extract the object types named in the prefix, $P$, and in the
@@ -215,7 +215,7 @@ The endpoint $J$ is not pre-registered. It was adopted after CHAIR and the per-m
 defective on these conditions, for the reason given in Appendix~\ref{app:gt}; this is recorded in
 Appendix~\ref{app:prereg} among the specification elements selected in the presence of data.
 
-\subsection{Interval estimation}
+\subsection{Interval Estimation}
 \label{app:boot}
 
 All intervals are paired image-level bootstraps clustered on the image. A replicate resamples the
@@ -231,7 +231,7 @@ $B = 8000$ for pooled estimates and $B = 4000$ elsewhere. The two-point measurem
 $B = 4000$. Alternate-seed replications are reported for every primary contrast
 (Appendix~\ref{app:seeds}).
 
-\subsection{Integrity gates}
+\subsection{Integrity Gates}
 \label{app:gates}
 
 Six gates run before any number is reported. All are pass/abort rather than advisory.
@@ -269,7 +269,7 @@ incomplete cells and cell count against the frozen census; none triggered on any
 \paragraph{Bootstrap multiplicity assertion.} Active in every analysis reported here
 (Appendix~\ref{app:boot}, and see Appendix~\ref{app:bootcheck}).
 
-\section{Additional robustness analyses}
+\section{Additional Robustness Analyses}
 \label{app:robust}
 
 \begin{figure}[htb]
@@ -299,7 +299,7 @@ Every analysis in this section tests the same quantity: $\dSight = \dPrim - \dBl
 contrast attributable to the image. Figure~\ref{fig:robustness} plots a subset of these rows; the full
 set is here, and Figure~\ref{fig:dose} shows the dose-response grid the contrast sits on.
 
-\subsection{Ground-truth construction}
+\subsection{Ground-Truth Construction}
 \label{app:gtsens}
 
 The null does not depend on how the ground truth was built. Re-scoring all four conditions
@@ -348,7 +348,7 @@ union-anchored reference, which a segmentation-only run legitimately misses --- 
 cross-construction differences are point estimates without intervals
 (Appendix~\ref{app:repro-limits}). They say how far the constructions agree, not how confidently.
 
-\subsection{Truncation and length-matching rules}
+\subsection{Truncation and Length-Matching Rules}
 \label{app:trunc}
 
 ``Length-matched $\dSight$'' names more than one estimand, and the distinction is consequential, so
@@ -417,7 +417,7 @@ The cross-condition version on those cells reads $-0.0140$ \civ{-0.0452}{+0.0172
 narrowest of the three. The registered raw primary is untouched by any of this; the replication
 analysis computes it on its own cell set, at $-0.0104$ against the registered $-0.0160$.
 
-\subsection{The mention-rate control}
+\subsection{The Mention-Rate Control}
 \label{app:mrate}
 
 The strongest competing explanation for the blind null is that a shift in overall mention rate,
@@ -473,7 +473,7 @@ are minima of point estimates, not confidence bounds; the ratio on the full samp
 power --- not that the image adds nothing detectable,
 which Appendix~\ref{app:dprime-table} shows directly to be false.
 
-\subsection{One block that runs in our favour and is unexplained}
+\subsection{One Block That Runs in Our Favour and Is Unexplained}
 \label{app:oddblock}
 
 A type-restricted block on \textsc{LLaVA-1.5-7B} returns $\dSight = -0.0688$
@@ -488,7 +488,7 @@ subgroups of opposite sign; this split was examined after the fact. Both halves 
 post-treatment quantity, so neither half is a causal contrast and no re-weighting of these data will settle it; resolving it
 requires a design that manipulates prefix type-content directly.
 
-\subsection{Generation regime}
+\subsection{Generation Regime}
 \label{app:regime}
 
 The five-scene condition generates longer continuations and reaches the generation cap more often
@@ -548,7 +548,7 @@ control is likewise unevaluated: truncation rises monotonically with the dose
 all-untruncated control reaches $150$ cells with true-unit counts between $29$ and $72$ against a floor
 of $100$.
 
-\subsection{Seeds and reconstructions}
+\subsection{Seeds and Reconstructions}
 \label{app:seeds}
 
 \begin{table}[htb]
@@ -569,7 +569,7 @@ forced-choice contrast, alternate bootstrap seed & $-0.0095$ & \civ{-0.0312}{+0.
 \end{center}
 \end{table}
 
-\section{Signal-detection derivation}
+\section{Signal-Detection Derivation}
 \label{app:sdt}
 
 \begin{figure}[htb]
@@ -587,7 +587,7 @@ Write $H$ for the carry-forward rate on prefix objects present in the image and
 $F$ for the rate on absent ones. Let $\Phi$ be the standard normal distribution function,
 $\varphi$ its density, and $Z = \Phi^{-1}$.
 
-\subsection{The reparameterisation}
+\subsection{The Reparameterisation}
 
 The three summaries are
 \begin{align}
@@ -612,7 +612,7 @@ two parameters. On a single operating point the equal-variance Gaussian model is
 them rather than fits --- a point we return to in Appendix~\ref{app:sdt-assumptions}, because it cuts
 both ways.
 
-\subsection{$J$ is not invariant to the criterion}
+\subsection{$J$ Is Not Invariant to the Criterion}
 \label{app:sdt-noninvariance}
 
 Differentiating \eqref{eq:Jdc} in $c$ at fixed $d'$, and using the symmetry of $\varphi$,
@@ -657,7 +657,7 @@ neighbourhood of the unbiased point costs $J$ only at second order, which is why
 routinely described as bias-corrected. A criterion shift between two points that are not symmetric
 about zero moves $J$ at first order, with the slope given by \eqref{eq:appdJdc}.
 
-\subsection{The conditions under which it would be invariant}
+\subsection{The Conditions Under Which It Would Be Invariant}
 \label{app:sdt-conditions}
 
 From \eqref{eq:appdJdc}, $J$ is \emph{exactly} invariant to the criterion in three cases and no others.
@@ -686,7 +686,7 @@ is not, unless $c = 0$. The two summaries are exactly invariant to different per
 neither is invariant to the other's. Which of those two invariances an evaluation wants is a
 substantive choice about what the evaluation is for; reporting only $J$ makes that choice silently.
 
-\subsection{Where the equal-variance Gaussian assumption is and is not warranted}
+\subsection{Where the Equal-Variance Gaussian Assumption Is and Is Not Warranted}
 \label{app:sdt-assumptions}
 
 The assumption is warranted in three respects and unwarranted in four, and we state both halves
@@ -730,7 +730,7 @@ Appendix~\ref{app:dprime-table}.
 
 
 
-\subsection{Operating points in signal-detection coordinates}
+\subsection{Operating Points in Signal-Detection Coordinates}
 \label{app:zroc}
 
 Figure~\ref{fig:zroc} places the four cells of the main contrast in $z$-coordinates, where a change
@@ -754,7 +754,7 @@ scale the threshold changes and separation does not, although a logit separation
 \label{fig:zroc}
 \end{figure}
 
-\subsection{Numerical audit at the reported operating points}
+\subsection{Numerical Audit at the Reported Operating Points}
 \label{app:sdt-audit}
 
 Table~\ref{tab:sdt-audit} evaluates \eqref{eq:Jdc}, \eqref{eq:appdJdc} and \eqref{eq:Jmax} at the
@@ -815,7 +815,7 @@ the same increment in $d'$ buys less $J$ at the higher $d'$ at which the sighted
 endpoint that is stationary in one coordinate by construction and compressive in the other is not a
 measure of either.
 
-\section{Additional model results}
+\section{Additional Model Results}
 \label{app:models}
 
 
@@ -845,7 +845,7 @@ Architecture & Sighted $\dPrim$ & Blind $\dBlind$ & $\dSight$ \\
 \end{table}
 
 
-\subsection{Per-condition rates and contrasts}
+\subsection{Per-Condition Rates and Contrasts}
 \label{app:percond}
 
 \begin{table}[htb]
@@ -949,7 +949,7 @@ fraction of prefixes containing a restated type & $0.902$ & $0.539$ \\
 \end{center}
 \end{table}
 
-\subsection{The image's contribution within each condition}
+\subsection{The Image's Contribution Within Each Condition}
 \label{app:withincond}
 
 The blind null concerns the \emph{change} in the image's contribution between conditions, not whether
@@ -980,7 +980,7 @@ architecture & condition & sighted $-$ blind & 95\% CI \\
 \end{center}
 \end{table}
 
-\subsection{Which rate moves}
+\subsection{Which Rate Moves}
 \label{app:halves}
 
 \begin{table}[htb]
@@ -1011,7 +1011,7 @@ consequence is worth isolating: because \textsc{LLaVA-OV-0.5B}'s true-object hal
 one-scene $J$ is $+0.0406$, so given five captions that all describe the same wrong scene the smaller
 model carries true and false prefix objects forward at essentially the same rate.
 
-\subsection{Sensitivity by condition}
+\subsection{Sensitivity by Condition}
 \label{app:dprime-table}
 
 \begin{table}[htb]
@@ -1072,7 +1072,7 @@ and $2.8\times10^{-17}$). The empirical content is that each component is large 
 and that the two components are close in magnitude. Nothing forces that closeness; had the image
 moved \rateT{} by $0.14$ and \rateF{} by $0.02$, $J$ would have registered a large visual effect.
 
-\subsection{The dose-response grid}
+\subsection{The Dose-Response Grid}
 \label{app:dose}
 
 \begin{table}[htb]
@@ -1129,7 +1129,7 @@ The registered eight-unit extension was not run, on a mechanical branch rather t
 eight units buys units-as-seen $2.671 \rightarrow 2.702$ and scenes-as-seen $+0.031$, against gates
 of $5.0$ and $0.5$.
 
-\subsection{The forced-choice register}
+\subsection{The Forced-Choice Register}
 \label{app:register}
 
 The identical manipulation was re-posed on the identical units as a binary existence probe, in which
@@ -1181,7 +1181,7 @@ or a readout that is not thresholded. Both were built and run, and Appendix~\ref
 them: the closed set saturates further rather than less, and the graded readout, which is
 demonstrably not pinned, returns the same null.
 
-\subsection{The base-rate reference}
+\subsection{The Base-Rate Reference}
 \label{app:noprefix}
 
 With no prefix at all, $90.3\%$ (\textsc{LLaVA-1.5-7B}) and $85.0\%$ (\textsc{LLaVA-OV-0.5B}) of the objects scored as
@@ -1190,9 +1190,9 @@ $+0.816$. Most of \rateT{} is therefore available without reading the prefix, wh
 enrichment that an earlier pre-registration predicted in writing, and it is the reason
 the true-object half has little room to move.
 
-\section{Pre-registration and deviations}
+\section{Pre-registration and Deviations}
 \label{app:prereg}
-\subsection{Summary of registered analyses}
+\subsection{Summary of Registered Analyses}
 \label{app:registry}
 
 Table~\ref{tab:registry} lists every pre-registered analysis reported in this paper, one row per
@@ -1398,7 +1398,7 @@ files are kept (Appendix~\ref{app:unsat}).
 \end{itemize}
 
 
-\subsection{Registered analyses in detail}
+\subsection{Registered Analyses in Detail}
 \label{app:prereg-detail}
 
 Each entry below states the decision rule as it was fixed before the data it governs existed, and
@@ -1661,7 +1661,7 @@ from the registered rules above.
 \section{Reproducibility}
 \label{app:repro}
 
-\subsection{What can be checked, and how}
+\subsection{What Can Be Checked, and How}
 
 Every pre-registration is released with the paper, together with its dated amendments and its
 resolution. The machine-readable result artefacts are released with their integrity metadata, and
@@ -1676,7 +1676,7 @@ than a formality: no analysis in this paper reports a new quantity until it has 
 previously published per-condition rates to within $5\times10^{-3}$, and the realised margins are
 three to four orders of magnitude inside that tolerance.
 
-\subsection{Bootstrap implementation check}
+\subsection{Bootstrap Implementation Check}
 \label{app:bootcheck}
 
 All reported intervals were recomputed with image-level paired resampling with replacement,
@@ -1686,7 +1686,7 @@ estimates were recomputed under the registered procedure; no primary conclusion 
 multiplicity assertion described in Appendix~\ref{app:boot} is the standing check that closes this
 class of defect, and it is active in every analysis reported here.
 
-\subsection{Known limits of the released record}
+\subsection{Known Limits of the Released Record}
 \label{app:repro-limits}
 
 We list these rather than leave them to be discovered.
@@ -1712,7 +1712,7 @@ as endpoints, their windowed and whole-continuation versions disagree materially
 stratifications carry no intervals and no multiplicity correction.
 \end{itemize}
 
-\subsection{Reporting conventions}
+\subsection{Reporting Conventions}
 
 Intervals are $95\%$ percentile bootstrap intervals throughout, written \civ{\mathrm{lower}}{\mathrm{upper}}
 next to the point estimate. A contrast is written as the five-scene value minus the one-scene value,
@@ -1721,17 +1721,8 @@ The image-attributable component is written $\dSight = \dPrim - \dBlind$, so a p
 the sighted contrast exceeds the blind one. Rates are fractions in $[0,1]$; the literature commonly
 quotes the same quantities as percentages.
 
-\section{Decomposing published methods on standard CHAIR}
+\section{Decomposing Published Methods on Standard CHAIR}
 \label{app:mitig}
-
-\begin{figure}[t]
-{\centering
-\includegraphics{fig_hf.pdf}\par}
-\caption{What the scalar score hides, on standard CHAIR: PAI's $\mathrm{CHAIR}_i$ improvement comes
-from naming fewer objects of \emph{both} kinds. Numbers from Table~\ref{tab:pai}.}
-\label{fig:hf}
-\end{figure}
-
 
 Section~\ref{sec:mitigation} applies the decomposition of Section~\ref{sec:theory} to a published
 training-free mitigation method scored with standard CHAIR on free COCO captioning, rather than to
@@ -1750,7 +1741,7 @@ method (it also reports the permuted-ground-truth secondary of Appendix~\ref{app
 change in $J$ is \emph{dominated} by the criterion, with a small separation component that cannot be
 excluded.
 
-\subsection{Method, arms and decoding}
+\subsection{Method, Arms and Decoding}
 \label{app:mitig-arms}
 
 The method is PAI \citep{pai}, a training-free intervention that amplifies attention to the image
@@ -1784,7 +1775,7 @@ $B = 8000$, with resample size asserted on every replicate as in Appendix~\ref{a
 \emph{gain} is written so that a positive value means CHAIR fell: $\mathrm{CHAIR}(\texttt{vanilla})
 - \mathrm{CHAIR}(\text{method})$. Every other contrast is written method minus \texttt{vanilla}.
 
-\subsection{The CHAIR port, its positive control, and what its deviations touch}
+\subsection{The CHAIR Port, Its Positive Control, and What Its Deviations Touch}
 \label{app:mitig-port}
 
 The scorer is the port of Appendix~\ref{app:gt}: the $80$-category synonym table verbatim, with a
@@ -1837,7 +1828,7 @@ scorer variant & $\mathrm{CHAIR}_s$ & $\mathrm{CHAIR}_i$ & mention occurrences \
 \end{center}
 \end{table}
 
-\subsection{How $H$, $F$, $J$, $d'$ and $c$ are formed}
+\subsection{How $H$, $F$, $J$, $d'$ and $c$ Are Formed}
 \label{app:mitig-rates}
 
 The scored unit is the (image, COCO category) pair: $500$ images $\times$ $80$ categories
@@ -1868,6 +1859,7 @@ of the $80$ categories (the log-linear correction would print $0.0003$ for $H$).
 \label{tab:mdlevels}
 \begin{center}
 \small
+\setlength{\tabcolsep}{4pt}
 \begin{tabular}{lrrrrrrrr}
 \toprule
 arm & $\alpha$ & $\mathrm{CHAIR}_s$ & $\mathrm{CHAIR}_i$ & $H$ & $F$ & $J$ & $d'$ & $c$ \\
@@ -1917,7 +1909,7 @@ the number of distinct categories named falls ($3.304 \rightarrow 2.684$) and re
 (distinct-8-gram $0.9990 \rightarrow 0.9440$; $95$th-percentile maximum token run $2 \rightarrow
 3$).
 
-\subsection{Integrity gates}
+\subsection{Integrity Gates}
 \label{app:mitig-gates}
 
 Gates were run at the full $512$-token budget on $16$ images before the endpoint arms. Every
@@ -1967,7 +1959,7 @@ differing is $0.998$ between \texttt{vanilla} and \texttt{pai02} and $1.000$ for
 pair, including each sighted arm against its blind counterpart and the blind arms against each
 other.
 
-\subsection{The decomposition}
+\subsection{The Decomposition}
 \label{app:mitig-decomp}
 
 \begin{table}[htb]
@@ -2069,7 +2061,7 @@ $512$ & $0.0100$ & $0.7816$ & $45.0$ & $12.78$ & $7.65$ \\
 \end{center}
 \end{table}
 
-\subsection{Link sensitivity, and the mechanical reason the links disagree}
+\subsection{Link Sensitivity, and the Mechanical Reason the Links Disagree}
 \label{app:mitig-link}
 
 The three separation instruments all have a positive point estimate at $\alpha = 0.5$; they differ
@@ -2146,7 +2138,7 @@ printed. And the logit companion is applied at the same \emph{numeric} margin as
 which is stricter on the logit scale by roughly a factor of $1.7$, so the link-sensitivity flag
 triggers more readily than a scale-matched margin would.
 
-\subsection{The blind arm degenerates, and why that is a property of the endpoint}
+\subsection{The Blind Arm Degenerates, and Why That Is a Property of the Endpoint}
 \label{app:mitig-blind}
 
 The blind arm was registered and run, and it does not yield a contrast. This is a fact about the
@@ -2208,7 +2200,7 @@ asks; on this prompt-only endpoint the two are algebraically the same test
 (Appendix~\ref{app:ladder}). It does not say what a uniform-field blind arm would return, since that
 arm has no denominator.
 
-\subsection{Registered outcomes, and what this measurement cannot decide}
+\subsection{Registered Outcomes, and What This Measurement Cannot Decide}
 \label{app:mitig-verdict}
 
 \begin{table}[htb]
@@ -2252,7 +2244,7 @@ Nothing here generalises to every training-free method, and Section~\ref{sec:mit
 say it does.
 \end{itemize}
 
-\subsection{A second method, briefly}
+\subsection{A Second Method, Briefly}
 \label{app:mitig-vcd}
 
 A second method, VCD \citep{vcd}, was separated from the PAI registration by its Amendment~1 and run
@@ -2356,7 +2348,7 @@ intervened arms (three here, two in the first experiment), every interval printe
 verdict was selected after the fact.
 \end{itemize}
 
-\section{Forced-choice readouts}
+\section{Forced-Choice Readouts}
 
 \paragraph{The registered probe.}\label{sec:forced} Posed as a pre-registered
 yes/no probe on the identical units, the scene-count contrast is $-0.01$ \civ{-0.03}{+0.01} against
@@ -2456,7 +2448,7 @@ from confirmation by its registration's own acceptance rule. No off-ceiling bina
 obtained.
 
 
-\section{The ablation ladder}
+\section{The Ablation Ladder}
 \label{app:ladder}
 
 Section~\ref{sec:twofactors} reports that the answer to ``does the rise need the image?'' depends on the
@@ -2480,36 +2472,6 @@ two real scenes share much of their mean-pooled structure, while a uniform field
 distribution for the encoder, so the substitution can displace features less than a blank while
 destroying far more of what the endpoint scores. Claims below are therefore about displacement, and
 the substantive point is the four named counterexamples rather than the ordering as a whole.
-
-\begin{table}[h]
-\caption{The ablation ladder on the prefix endpoint, \textsc{LLaVA-1.5-7B}. Severity is
-$1-\cos$ in the model's own image-feature space. $\dSight$ is the part of the one-to-five-scene rise
-attributable to the image. The two $J$ columns show whether an ablation blinded the model: the five
-rungs above the substitution leave the one-scene $J$ within $0.06$ of its sighted $+0.188$, and the
-four below it collapse it to near zero. Only the substitution moves $\dSight$ off zero. Intervals come from this experiment's own resample, so the grey row differs in
-the third decimal from Tables~\ref{tab:trunc} and~\ref{tab:blind}.}
-\label{tab:ladder}
-\begin{center}
-\small
-\begin{tabular}{lrrrrl}
-\toprule
-Ablation & Severity & $J$, one scene & $J$, five scenes & $\Delta_{\mathrm{rung}}$ & $\dSight$ \\
-\midrule
-\texttt{identity}   & $0.000$ & $+0.188$ & $+0.674$ & $+0.486$ & (reference) \\
-\texttt{noise16}    & $0.008$ & $+0.177$ & $+0.670$ & $+0.493$ & $-0.008$ \civ{-0.038}{+0.022} \\
-\texttt{noise32}    & $0.016$ & $+0.176$ & $+0.669$ & $+0.492$ & $-0.007$ \civ{-0.045}{+0.030} \\
-\texttt{noise64}    & $0.034$ & $+0.164$ & $+0.648$ & $+0.485$ & $+0.001$ \civ{-0.036}{+0.039} \\
-\texttt{blur4}      & $0.044$ & $+0.154$ & $+0.652$ & $+0.498$ & $-0.013$ \civ{-0.054}{+0.031} \\
-\texttt{shuffle24}  & $0.079$ & $+0.137$ & $+0.635$ & $+0.498$ & $-0.012$ \civ{-0.063}{+0.041} \\
-\texttt{mismatch}   & $0.080$ & $+0.124$ & $+0.450$ & $+0.326$ & $\mathbf{+0.160}$ \civ{+0.105}{+0.213} \\
-\texttt{lowres16}   & $0.089$ & $+0.025$ & $+0.514$ & $+0.489$ & $-0.004$ \civ{-0.055}{+0.048} \\
-\texttt{black}      & $0.094$ & $+0.007$ & $+0.485$ & $+0.477$ & $+0.009$ \civ{-0.049}{+0.067} \\
-\texttt{grey}       & $0.102$ & $-0.022$ & $+0.480$ & $+0.502$ & $-0.016$ \civ{-0.073}{+0.041} \\
-\texttt{blur16}     & $0.126$ & $+0.020$ & $+0.505$ & $+0.485$ & $+0.001$ \civ{-0.055}{+0.055} \\
-\bottomrule
-\end{tabular}
-\end{center}
-\end{table}
 
 \paragraph{Reading.} The seven graded pixel ablations pool to $-0.006$ \civ{-0.037}{+0.025}; the
 substitution returns $+0.160$ \civ{+0.105}{+0.213}, and the paired difference against grey is
@@ -2564,7 +2526,7 @@ multi-crop, so the canonical geometry the geometry gate licenses does not transf
 would need redesigning first.
 
 
-\section{POPE with a blind arm}
+\section{POPE with a Blind Arm}
 \label{app:pope}
 
 \paragraph{Data.} Official POPE files from \texttt{RUCAIBox/POPE}, all three MS-COCO splits
@@ -2723,7 +2685,7 @@ by reproducing two published families from their frozen rows: $+0.48587$ against
 $+0.4859$, and $+0.15981$ against $+0.1598$.
 
 
-\section{Both ablations on the 3{,}500-image sample}
+\section{Both Ablations on the 3{,}500-Image Sample}
 \label{app:regimeblind}
 
 Appendix~\ref{app:regime} controls the generation regime on the sighted arms by restricting to
